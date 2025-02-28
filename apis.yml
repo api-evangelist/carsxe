@@ -12,90 +12,90 @@ apis:
         type: Documentation
     description: 'The most comprehensive and accessible vehicle data API. '
   - aid: carsxe:vehicle-specifications-api
-    name: Vehicle Specifications API
+    name: CarsXE Vehicle Specifications API
+    tags: []
+    humanURL: https://api.carsxe.com/vehicle-specifications
+    properties:
+      - url: https://api.carsxe.com/vehicle-specifications
+        type: Documentation
     description: >-
       VIN decoding just got a whole lot easier. Our Vehicle Specifications API
       is the most comprehensive in the industry, providing everything from basic
       vehicle information to detailed specifications.
-    humanURL: https://api.carsxe.com/vehicle-specifications
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vehicle-specifications
   - aid: carsxe:vehicle-market-value-api
-    name: Vehicle Market Value API
+    name: CarsXE Vehicle Market Value API
+    tags: []
+    humanURL: https://api.carsxe.com/vehicle-market-value
+    properties:
+      - url: https://api.carsxe.com/vehicle-market-value
+        type: Documentation
     description: >-
       Get market value estimates for new and used cars based on millions of
       historical vehicle sales.
-    humanURL: https://api.carsxe.com/vehicle-market-value
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vehicle-market-value
   - aid: carsxe:vehicle-images-api
-    name: Vehicle Images API
+    name: CarsXE Vehicle Images API
+    tags: []
+    humanURL: https://api.carsxe.com/vehicle-images
+    properties:
+      - url: https://api.carsxe.com/vehicle-images
+        type: Documentation
     description: >-
       Lookup beautiful photos of vehicles from their year, make and model. You
       can even specify the color youre looking for and if you want the
       background to be transparent.
-    humanURL: https://api.carsxe.com/vehicle-images
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vehicle-images
   - aid: carsxe:vin-ocr-api
-    name: VIN OCR API
+    name: CarsXE VIN OCR API
+    tags: []
+    humanURL: https://api.carsxe.com/vin-ocr
+    properties:
+      - url: https://api.carsxe.com/vin-ocr
+        type: Documentation
     description: >-
       Utilize OCR technology to extract VINs from images with high accuracy and
       speed. Our AI-powered API reads Vehicle Identification Numbers from
       various image formats.
-    humanURL: https://api.carsxe.com/vin-ocr
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vin-ocr
   - aid: carsxe:vehicle-plate-decoder-api
-    name: Vehicle Plate Decoder API
+    name: CarsXE Vehicle Plate Decoder API
+    tags: []
+    humanURL: https://api.carsxe.com/vehicle-plate-decoder
+    properties:
+      - url: https://api.carsxe.com/vehicle-plate-decoder
+        type: Documentation
     description: >-
       Get robust information just from the license plate and province of a
       vehicle.
-    humanURL: https://api.carsxe.com/vehicle-plate-decoder
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vehicle-plate-decoder
   - aid: carsxe:vehicle-history-api
-    name: Vehicle History API
+    name: CarsXE Vehicle History API
+    tags: []
+    humanURL: https://api.carsxe.com/vehicle-history
+    properties:
+      - url: https://api.carsxe.com/vehicle-history
+        type: Documentation
     description: >-
       Take ultimate control and get access to the raw vehicle history data. Get
       a comprehensive report on the vehicles history, including title records,
       accident history, and more.
-    humanURL: https://api.carsxe.com/vehicle-history
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vehicle-history
   - aid: carsxe:vehicle-plate-recognition-api
-    name: Vehicle Plate Recognition API
+    name: CarsXE Vehicle Plate Recognition API
+    tags: []
+    humanURL: https://api.carsxe.com/vehicle-plate-recognition
+    properties:
+      - url: https://api.carsxe.com/vehicle-plate-recognition
+        type: Documentation
     description: >-
       Best in class Vehicle License Plate OCR Image to Text API. Paired with our
       decoder, you can get robust information just from the license plate and
       state of a vehicle.
-    humanURL: https://api.carsxe.com/vehicle-plate-recognition
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/vehicle-plate-recognition
   - aid: carsxe:obd-codes-decoder-api
-    name: OBD Codes Decoder API
+    name: CarsXE OBD Codes Decoder API
+    tags: []
+    humanURL: https://api.carsxe.com/obd-codes-decoder
+    properties:
+      - url: https://api.carsxe.com/obd-codes-decoder
+        type: Documentation
     description: >-
       The OBD Codes Decoder API matches the code to the vehicle trouble or
       diagnosis.
-    humanURL: https://api.carsxe.com/obd-codes-decoder
-    tags: []
-    properties:
-      - type: Documentation
-        url: https://api.carsxe.com/obd-codes-decoder
 name: CarsXE
 tags:
   - Cars
@@ -104,6 +104,59 @@ tags:
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 access: 3rd-Party
+common:
+  - url: https://api.carsxe.com/docs
+    name: Documentation
+    type: Documentation
+    description: 'null'
+  - url: https://api.carsxe.com/
+    name: Vehicle Data API | CarsXE
+    type: Portal
+    description: 'null'
+  - url: https://api.carsxe.com/docs/quickstart
+    name: Quickstart
+    type: GettingStarted
+    description: 'null'
+  - url: https://api.carsxe.com/docs/authentication
+    name: Authentication
+    type: Authentication
+    description: 'null'
+  - url: https://api.carsxe.com/docs/errors
+    name: Error Handling
+    type: Errors
+    description: 'null'
+  - url: https://api.carsxe.com/pricing
+    name: Pricing | CarsXE
+    type: Pricing
+    description: 'null'
+  - url: https://api.carsxe.com/about
+    name: About | CarsXE
+    type: About
+    description: 'null'
+  - url: https://api.carsxe.com/blog
+    name: The Driving Innovation Blog | CarsXE
+    type: Blog
+    description: 'null'
+  - url: https://api.carsxe.com/support
+    name: Support Center | CarsXE
+    type: Support
+    description: 'null'
+  - url: https://api.carsxe.com/contact-us
+    name: Contact Us | CarsXE
+    type: Contact
+    description: 'null'
+  - url: https://api.carsxe.com/terms-and-conditions
+    name: Terms and conditions
+    type: TermsOfService
+    description: 'null'
+  - url: https://api.carsxe.com/login
+    name: Sign in to CarsXE
+    type: Login
+    description: 'null'
+  - url: https://api.carsxe.com/register
+    name: Create your CarsXE Account
+    type: SignUp
+    description: 'null'
 created: '2025-02-24'
 modified: '2025-02-27'
 position: Consumer
@@ -122,56 +175,3 @@ maintainers:
   - FN: Kin Lane
     email: info@apievangelist.com
 specificationVersion: '0.19'
-common:
-  - name: Documentation
-    description: 'null'
-    url: https://api.carsxe.com/docs
-    type: Documentation
-  - name: Vehicle Data API | CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/
-    type: Portal
-  - name: Quickstart
-    description: 'null'
-    url: https://api.carsxe.com/docs/quickstart
-    type: GettingStarted
-  - name: Authentication
-    description: 'null'
-    url: https://api.carsxe.com/docs/authentication
-    type: Authentication
-  - name: Error Handling
-    description: 'null'
-    url: https://api.carsxe.com/docs/errors
-    type: Errors
-  - name: Pricing | CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/pricing
-    type: Pricing
-  - name: About | CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/about
-    type: About
-  - name: The Driving Innovation Blog | CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/blog
-    type: Blog
-  - name: Support Center | CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/support
-    type: Support
-  - name: Contact Us | CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/contact-us
-    type: Contact
-  - name: Terms and conditions
-    description: 'null'
-    url: https://api.carsxe.com/terms-and-conditions
-    type: TermsOfService
-  - name: Sign in to CarsXE
-    description: 'null'
-    url: https://api.carsxe.com/login
-    type: Login
-  - name: Create your CarsXE Account
-    description: 'null'
-    url: https://api.carsxe.com/register
-    type: SignUp
