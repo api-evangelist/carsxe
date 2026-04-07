@@ -4,8 +4,7 @@ url: >-
 apis:
   - aid: carsxe:carsxe
     name: CarsXE
-    tags:
-      - API
+    tags: []
     humanURL: ' https://api.carsxe.com/'
     properties:
       - url: ' https://api.carsxe.com/'
@@ -99,8 +98,8 @@ apis:
       diagnosis.
 name: CarsXE
 tags:
-  - Cars
   - Automobiles
+  - Cars
   - Vehicles
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
