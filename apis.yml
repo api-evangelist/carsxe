@@ -10,7 +10,8 @@ apis:
     properties:
       - url: ' https://api.carsxe.com/'
         type: Documentation
-    description: 'The most comprehensive and accessible vehicle data API. '
+    description: >-
+      The most comprehensive and accessible vehicle data API.
   - aid: carsxe:vehicle-specifications-api
     name: CarsXE Vehicle Specifications API
     tags: []
@@ -161,16 +162,11 @@ created: '2025-02-24'
 modified: '2025-02-27'
 position: Consumer
 description: >-
-  CarsXE is a car dealership that specializes in providing high-quality used
-  vehicles to customers. With a wide selection of cars, trucks, and SUVs, CarsXE
-  ensures that each vehicle is thoroughly inspected and maintained to meet the
-  highest standards of quality and reliability. The dealership offers
-  competitive pricing and financing options to make purchasing a vehicle easy
-  and affordable for customers. In addition, CarsXE provides exceptional
-  customer service, helping customers find the perfect vehicle to suit their
-  needs and budget. Whether customers are looking for a reliable daily driver or
-  a luxury vehicle, CarsXE is dedicated to helping them find the perfect car for
-  their lifestyle.
+  CarsXE is a car dealership that specializes in providing high-quality used vehicles
+  to customers. With a wide selection of cars, trucks, and SUVs, CarsXE ensures that
+  each vehicle is thoroughly inspected and maintained to meet the highest standards
+  of quality and reliability. The dealership offers competitive pricing and financing
+  options to make purchasing a vehicle easy and affordable for customers.
 maintainers:
   - FN: Kin Lane
     email: info@apievangelist.com
