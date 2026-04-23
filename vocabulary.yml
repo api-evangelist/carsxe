@@ -1,0 +1,60 @@
+vocabulary: carsxe
+description: >-
+  Controlled vocabulary for CarsXE's vehicle data APIs. Defines the core
+  vehicle, valuation, history, and image concepts used across CarsXE's VIN,
+  plate, OCR, and diagnostic endpoints.
+version: '1.0.0'
+concepts:
+  - term: VIN
+    definition: >-
+      The 17-character Vehicle Identification Number uniquely identifying a
+      North American motor vehicle.
+  - term: InternationalVIN
+    definition: >-
+      A VIN or manufacturer identifier for a non-US vehicle, decoded through
+      the International VIN Decoder endpoint.
+  - term: Vehicle
+    definition: >-
+      A year/make/model/trim entity returned by CarsXE, with optional
+      engine, drivetrain, body style, and feature attributes.
+  - term: LicensePlate
+    definition: >-
+      A jurisdictional license plate string plus its state or province code,
+      decodable to a vehicle identity.
+  - term: MarketValue
+    definition: >-
+      A retail, wholesale, or trade-in price estimate for a specific vehicle
+      configuration, based on recent transaction data.
+  - term: VehicleHistoryRecord
+    definition: >-
+      An event in a vehicle's lifetime such as a title change, reported
+      accident, service entry, odometer reading, or salvage/brand flag.
+  - term: SafetyRecall
+    definition: >-
+      A manufacturer or regulator-issued campaign identifying a defect
+      applicable to a vehicle by VIN.
+  - term: VehicleImage
+    definition: >-
+      A photographic asset of a vehicle keyed by year/make/model and optional
+      color, trim, and background-transparency attributes.
+  - term: OBDCode
+    definition: >-
+      An OBD-II Diagnostic Trouble Code identifying a fault condition in a
+      vehicle's powertrain or emissions system.
+  - term: OCRResult
+    definition: >-
+      The output of recognizing a VIN string or license plate string from a
+      submitted image.
+mappings:
+  - term: Vehicle
+    schema_org: schema:Vehicle
+  - term: VIN
+    schema_org: schema:vehicleIdentificationNumber
+  - term: LicensePlate
+    schema_org: schema:vehicleIdentificationNumber
+  - term: MarketValue
+    schema_org: schema:PriceSpecification
+  - term: VehicleImage
+    schema_org: schema:ImageObject
+  - term: SafetyRecall
+    schema_org: schema:ProductRecall

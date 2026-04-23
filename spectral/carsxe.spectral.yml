@@ -1,0 +1,79 @@
+extends:
+  - spectral:oas
+
+rules:
+  carsxe-info-title:
+    description: CarsXE API info.title SHOULD end with "API".
+    given: $.info
+    severity: warn
+    then:
+      field: title
+      function: pattern
+      functionOptions:
+        match: ".*API$"
+
+  carsxe-info-version:
+    description: CarsXE APIs MUST declare a semantic version.
+    given: $.info
+    severity: error
+    then:
+      field: version
+      function: pattern
+      functionOptions:
+        match: "^\\d+\\.\\d+\\.\\d+(-.*)?$"
+
+  carsxe-server-basepath-versioned:
+    description: CarsXE API server URL should include a /vN segment.
+    given: $.servers[*]
+    severity: warn
+    then:
+      field: url
+      function: pattern
+      functionOptions:
+        match: ".*/v\\d+.*"
+
+  carsxe-security-apikey-required:
+    description: CarsXE APIs must declare API key security.
+    given: $.components.securitySchemes
+    severity: error
+    then:
+      function: truthy
+
+  carsxe-vin-parameter:
+    description: CarsXE VIN-keyed operations should accept a `vin` query parameter.
+    given: $.paths[?(@property.match(/vin|specifications|history|market|recalls/i))][get].parameters
+    severity: info
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          contains:
+            type: object
+            properties:
+              name:
+                const: vin
+
+  carsxe-error-response:
+    description: CarsXE operations should declare a 400 and 401 error response.
+    given: $.paths[*][*].responses
+    severity: warn
+    then:
+      field: "400"
+      function: truthy
+
+  carsxe-tag-descriptions:
+    description: Each CarsXE tag should carry a description.
+    given: $.tags[*]
+    severity: warn
+    then:
+      field: description
+      function: truthy
+
+  carsxe-operation-summary:
+    description: Each CarsXE operation should have a summary.
+    given: $.paths[*][get,post,put,delete,patch]
+    severity: warn
+    then:
+      field: summary
+      function: truthy

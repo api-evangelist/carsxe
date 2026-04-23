@@ -1,0 +1,130 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "carsxe": "https://carsxe.com/vocab#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "Vehicle": {
+      "@id": "schema:Vehicle",
+      "@context": {
+        "vin": {
+          "@id": "schema:vehicleIdentificationNumber",
+          "@type": "xsd:string"
+        },
+        "year": {
+          "@id": "schema:vehicleModelDate",
+          "@type": "xsd:gYear"
+        },
+        "make": "schema:brand",
+        "model": "schema:model",
+        "trim": "carsxe:trim",
+        "engine": "carsxe:engine",
+        "drivetrain": "carsxe:drivetrain",
+        "bodyStyle": "schema:bodyType",
+        "fuelType": "schema:fuelType"
+      }
+    },
+
+    "LicensePlate": {
+      "@id": "carsxe:LicensePlate",
+      "@context": {
+        "plate": {
+          "@id": "carsxe:plate",
+          "@type": "xsd:string"
+        },
+        "state": "schema:addressRegion",
+        "country": "schema:addressCountry"
+      }
+    },
+
+    "MarketValue": {
+      "@id": "carsxe:MarketValue",
+      "@context": {
+        "retail": {
+          "@id": "carsxe:retail",
+          "@type": "xsd:decimal"
+        },
+        "wholesale": {
+          "@id": "carsxe:wholesale",
+          "@type": "xsd:decimal"
+        },
+        "tradeIn": {
+          "@id": "carsxe:tradeIn",
+          "@type": "xsd:decimal"
+        },
+        "currency": "schema:priceCurrency",
+        "asOf": {
+          "@id": "carsxe:asOf",
+          "@type": "xsd:date"
+        }
+      }
+    },
+
+    "VehicleHistoryRecord": {
+      "@id": "carsxe:VehicleHistoryRecord",
+      "@context": {
+        "eventType": "carsxe:eventType",
+        "eventDate": {
+          "@id": "schema:dateRecorded",
+          "@type": "xsd:date"
+        },
+        "odometer": {
+          "@id": "carsxe:odometer",
+          "@type": "xsd:integer"
+        },
+        "titleState": "carsxe:titleState",
+        "source": "schema:provider"
+      }
+    },
+
+    "SafetyRecall": {
+      "@id": "schema:ProductRecall",
+      "@context": {
+        "campaignId": "schema:identifier",
+        "summary": "schema:description",
+        "remedy": "carsxe:remedy",
+        "issuedAt": {
+          "@id": "carsxe:issuedAt",
+          "@type": "xsd:date"
+        }
+      }
+    },
+
+    "VehicleImage": {
+      "@id": "schema:ImageObject",
+      "@context": {
+        "url": "schema:contentUrl",
+        "color": "carsxe:color",
+        "transparentBackground": {
+          "@id": "carsxe:transparentBackground",
+          "@type": "xsd:boolean"
+        }
+      }
+    },
+
+    "OBDCode": {
+      "@id": "carsxe:OBDCode",
+      "@context": {
+        "code": "carsxe:code",
+        "description": "schema:description",
+        "system": "carsxe:system"
+      }
+    },
+
+    "OCRResult": {
+      "@id": "carsxe:OCRResult",
+      "@context": {
+        "text": {
+          "@id": "carsxe:text",
+          "@type": "xsd:string"
+        },
+        "confidence": {
+          "@id": "carsxe:confidence",
+          "@type": "xsd:decimal"
+        },
+        "imageUrl": "schema:contentUrl"
+      }
+    }
+  }
+}
