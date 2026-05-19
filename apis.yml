@@ -173,6 +173,10 @@ apis:
       - type: Documentation
         url: https://api.carsxe.com/obd-codes-decoder
 common:
+  - type: GitHubOrganization
+    url: https://github.com/carsxe
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/carsxe
   - type: Website
     url: https://api.carsxe.com/
   - type: Portal
