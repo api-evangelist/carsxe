@@ -1,0 +1,162 @@
+openapi: 3.1.0
+info:
+  title: CarsXE Vehicle Data API
+  description: >-
+    CarsXE is a vehicle data API platform offering VIN decoding, vehicle
+    specifications, market value, license plate decoding, vehicle recalls and
+    related lookups. All endpoints accept an API key as a query string
+    parameter `key`.
+  version: "1"
+  contact:
+    name: CarsXE
+    url: https://api.carsxe.com
+servers:
+  - url: https://api.carsxe.com
+    description: Production
+security:
+  - ApiKeyQuery: []
+tags:
+  - name: Specifications
+  - name: Plate
+  - name: Market Value
+  - name: Recalls
+  - name: Auth
+paths:
+  /specs:
+    get:
+      tags: [Specifications]
+      summary: Decode a VIN and return vehicle specifications
+      operationId: getSpecifications
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - in: query
+          name: vin
+          required: true
+          schema:
+            type: string
+            minLength: 17
+            maxLength: 17
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [json, xml]
+            default: json
+      responses:
+        '200':
+          description: Vehicle specifications
+          content:
+            application/json:
+              schema:
+                type: object
+  /decodeplate:
+    get:
+      tags: [Plate]
+      summary: Decode a license plate to vehicle data
+      operationId: decodePlate
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - in: query
+          name: plate
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: country
+          schema:
+            type: string
+            description: ISO 3166-1 alpha-2 country code
+        - in: query
+          name: state
+          schema:
+            type: string
+            description: Required for US, AU, CA
+        - in: query
+          name: require_vin
+          schema:
+            type: boolean
+            description: Spain only; returns VIN with 2x billing
+      responses:
+        '200':
+          description: Decoded plate data
+          content:
+            application/json:
+              schema:
+                type: object
+  /marketvalue:
+    get:
+      tags: [Market Value]
+      summary: Retrieve market value data for a vehicle by VIN
+      operationId: getMarketValue
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - in: query
+          name: vin
+          required: true
+          schema:
+            type: string
+            minLength: 17
+            maxLength: 17
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [json, xml]
+            default: json
+      responses:
+        '200':
+          description: Market value response
+          content:
+            application/json:
+              schema:
+                type: object
+  /v1/recalls:
+    get:
+      tags: [Recalls]
+      summary: Retrieve recall information by VIN
+      operationId: getRecalls
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - in: query
+          name: vin
+          required: true
+          schema:
+            type: string
+            minLength: 17
+            maxLength: 17
+      responses:
+        '200':
+          description: Recall data
+          content:
+            application/json:
+              schema:
+                type: object
+  /v1/auth/validate:
+    post:
+      tags: [Auth]
+      summary: Validate the API key
+      operationId: validateKey
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: CarsXE API key from https://api.carsxe.com/dashboard
+  parameters:
+    ApiKey:
+      in: query
+      name: key
+      required: true
+      schema:
+        type: string
+      description: Your CarsXE API key
