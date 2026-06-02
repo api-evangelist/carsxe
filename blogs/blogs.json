@@ -2,13 +2,13 @@
   "repo": "carsxe",
   "feeds": [
     {
-      "source": "https://api.carsxe.com/blog",
-      "feed_url": "",
+      "source": "https://api.carsxe.com/about",
+      "feed_url": "https://api.carsxe.com/about",
       "title": "",
       "saved": 0,
-      "error": "no_feed"
+      "method": "none"
     }
   ],
-  "fetched": "2026-05-17T20:48:52Z",
+  "fetched": "2026-06-01T23:35:02Z",
   "post_count": 0
 }
