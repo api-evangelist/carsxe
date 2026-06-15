@@ -1,0 +1,198 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CarsXE Vehicle Data API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "key",
+      "value": "{{key}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Specifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Decode a VIN and return vehicle specifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/specs",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "vin",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Decode a VIN and return vehicle specifications"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Plate",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Decode a license plate to vehicle data",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/decodeplate",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "plate",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "country",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "state",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "require_vin",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Decode a license plate to vehicle data"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Market Value",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve market value data for a vehicle by VIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/marketvalue",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "vin",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve market value data for a vehicle by VIN"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Recalls",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve recall information by VIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/v1/recalls",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "vin",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve recall information by VIN"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Validate the API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.carsxe.com/v1/auth/validate",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              }
+            ]
+          },
+          "docs": "Validate the API key"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
