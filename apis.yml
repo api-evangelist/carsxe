@@ -188,7 +188,7 @@ common:
     url: https://api.carsxe.com/docs/quickstart
   - type: Authentication
     url: https://api.carsxe.com/docs/authentication
-  - type: Errors
+  - type: ErrorCodes
     url: https://api.carsxe.com/docs/errors
   - type: Pricing
     url: https://api.carsxe.com/pricing
@@ -204,7 +204,7 @@ common:
     url: https://api.carsxe.com/terms-and-conditions
   - type: Login
     url: https://api.carsxe.com/login
-  - type: SignUp
+  - type: Signup
     url: https://api.carsxe.com/register
 maintainers:
   - FN: Kin Lane

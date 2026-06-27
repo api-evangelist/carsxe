@@ -3,19 +3,12 @@
   "feeds": [
     {
       "source": "https://api.carsxe.com/blog",
-      "feed_url": "https://api.carsxe.com/blog",
-      "title": "",
+      "feed_url": "",
       "saved": 0,
-      "method": "none"
-    },
-    {
-      "source": "https://api.carsxe.com/about",
-      "feed_url": "https://api.carsxe.com/about",
-      "title": "",
-      "saved": 0,
-      "method": "none"
+      "method": "agent-scrape"
     }
   ],
   "post_count": 0,
-  "fetched": "2026-06-14T20:42:17Z"
+  "fetched": "2026-06-27T12:32:00Z",
+  "agent_pulled": "2026-06-27"
 }
