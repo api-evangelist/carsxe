@@ -173,6 +173,12 @@ apis:
       - type: Documentation
         url: https://api.carsxe.com/obd-codes-decoder
 common:
+  - type: TrustCenter
+    url: security/carsxe-trust-center.yml
+  - type: DomainSecurity
+    url: security/carsxe-domain-security.yml
+  - type: Authentication
+    url: authentication/carsxe-authentication.yml
   - type: GitHubOrganization
     url: https://github.com/carsxe
   - type: LinkedIn

@@ -1,0 +1,16 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/carsxe-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - query
+schemes:
+- name: ApiKeyQuery
+  type: apiKey
+  in: query
+  parameter: key
+  description: CarsXE API key from https://api.carsxe.com/dashboard
+  sources:
+  - openapi/carsxe-openapi.yml
