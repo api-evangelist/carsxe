@@ -2,13 +2,14 @@
   "repo": "carsxe",
   "feeds": [
     {
-      "source": "https://api.carsxe.com/blog",
-      "feed_url": "",
+      "source": "https://api.carsxe.com/about",
+      "feed_url": "https://api.carsxe.com/about",
+      "title": "",
       "saved": 0,
-      "method": "agent-scrape"
+      "method": "none"
     }
   ],
   "post_count": 0,
-  "fetched": "2026-06-27T12:32:00Z",
+  "fetched": "2026-07-11T11:50:51Z",
   "agent_pulled": "2026-06-27"
 }
