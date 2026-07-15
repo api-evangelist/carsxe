@@ -173,6 +173,8 @@ apis:
       - type: Documentation
         url: https://api.carsxe.com/obd-codes-decoder
 common:
+  - type: AgenticAccess
+    url: agentic-access/carsxe-agentic-access.yml
   - type: TrustCenter
     url: security/carsxe-trust-center.yml
   - type: DomainSecurity
