@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: CarsXE Vehicle Data Auth Plate API
+  description: CarsXE is a vehicle data API platform offering VIN decoding, vehicle specifications, market value, license plate decoding, vehicle recalls and related lookups. All endpoints accept an API key as a query string parameter `key`.
+  version: '1'
+  contact:
+    name: CarsXE
+    url: https://api.carsxe.com
+servers:
+- url: https://api.carsxe.com
+  description: Production
+security:
+- ApiKeyQuery: []
+tags:
+- name: Plate
+paths:
+  /decodeplate:
+    get:
+      tags:
+      - Plate
+      summary: Decode a license plate to vehicle data
+      operationId: decodePlate
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - in: query
+        name: plate
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: country
+        schema:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+      - in: query
+        name: state
+        schema:
+          type: string
+          description: Required for US, AU, CA
+      - in: query
+        name: require_vin
+        schema:
+          type: boolean
+          description: Spain only; returns VIN with 2x billing
+      responses:
+        '200':
+          description: Decoded plate data
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  parameters:
+    ApiKey:
+      in: query
+      name: key
+      required: true
+      schema:
+        type: string
+      description: Your CarsXE API key
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: CarsXE API key from https://api.carsxe.com/dashboard
