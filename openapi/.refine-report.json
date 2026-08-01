@@ -1,0 +1,22 @@
+{
+  "provider": "carsxe",
+  "sources": [
+    "carsxe-auth-api-openapi.yml",
+    "carsxe-market-value-api-openapi.yml",
+    "carsxe-plate-api-openapi.yml",
+    "carsxe-recalls-api-openapi.yml",
+    "carsxe-specifications-api-openapi.yml"
+  ],
+  "outputs": [
+    "carsxe-auth-api-openapi.yml",
+    "carsxe-market-value-api-openapi.yml",
+    "carsxe-plate-api-openapi.yml",
+    "carsxe-recalls-api-openapi.yml",
+    "carsxe-specifications-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
