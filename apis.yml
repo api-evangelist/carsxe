@@ -36,7 +36,7 @@ created: '2025-02-24'
 modified: '2026-04-23'
 url: >-
   https://raw.githubusercontent.com/api-evangelist/carsxe/refs/heads/main/apis.yml
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: carsxe:vehicle-specifications-api
   name: CarsXE Vehicle Specifications API
