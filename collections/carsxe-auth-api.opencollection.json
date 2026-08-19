@@ -1,0 +1,45 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CarsXE Vehicle Data Auth API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "key",
+      "value": "{{key}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Validate the API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.carsxe.com/v1/auth/validate",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              }
+            ]
+          },
+          "docs": "Validate the API key"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

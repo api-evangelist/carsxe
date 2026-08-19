@@ -1,0 +1,50 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CarsXE Vehicle Data Auth Recalls API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "key",
+      "value": "{{key}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Recalls",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve recall information by VIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/v1/recalls",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "vin",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve recall information by VIN"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

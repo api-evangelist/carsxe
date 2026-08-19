@@ -1,0 +1,65 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CarsXE Vehicle Data Auth Plate API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "key",
+      "value": "{{key}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Plate",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Decode a license plate to vehicle data",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/decodeplate",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "plate",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "country",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "state",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "require_vin",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Decode a license plate to vehicle data"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

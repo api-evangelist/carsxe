@@ -1,0 +1,55 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CarsXE Vehicle Data Auth Specifications API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "key",
+      "value": "{{key}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Specifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Decode a VIN and return vehicle specifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.carsxe.com/specs",
+            "params": [
+              {
+                "name": "key",
+                "value": "",
+                "type": "query",
+                "description": "Your CarsXE API key"
+              },
+              {
+                "name": "vin",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Decode a VIN and return vehicle specifications"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
