@@ -74,6 +74,10 @@ apis:
   humanURL: https://api.carsxe.com/vehicle-images
   baseURL: https://api.carsxe.com
   tags:
+  - Image
+  - Media
+  - Vehicle Data
+  tags_raw:
   - Images
   - Media
   - Vehicle Data
@@ -88,6 +92,10 @@ apis:
   humanURL: https://api.carsxe.com/vin-ocr
   baseURL: https://api.carsxe.com
   tags:
+  - OCR
+  - VIN
+  - Artificial Intelligence
+  tags_raw:
   - OCR
   - VIN
   - AI
@@ -116,6 +124,10 @@ apis:
   humanURL: https://api.carsxe.com/vehicle-plate-recognition
   baseURL: https://api.carsxe.com
   tags:
+  - License Plate
+  - OCR
+  - Artificial Intelligence
+  tags_raw:
   - License Plate
   - OCR
   - AI
@@ -184,6 +196,8 @@ apis:
   humanURL: https://api.carsxe.com/vehicle-specifications
   baseURL: https://api.carsxe.com
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
