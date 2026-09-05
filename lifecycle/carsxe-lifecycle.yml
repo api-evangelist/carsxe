@@ -1,0 +1,76 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://carsxe.com/docs/versioning, https://carsxe.com/status, https://carsxe.com/trust,
+  https://carsxe.com/llms.txt
+versioning:
+  scheme: uri-path
+  current: v2
+  generations:
+    - {prefix: "(root)", example: "https://api.carsxe.com/specs", contains: "original v1 APIs"}
+    - {prefix: /v1, example: "https://api.carsxe.com/v1/recalls-batch/submit", contains: "later v1 additions"}
+    - {prefix: /v2, example: "https://api.carsxe.com/v2/platedecoder", contains: "current generation"}
+  side_by_side: true
+  additive_within_version: true
+  breaking_changes: only ever under a new version prefix
+  docs: https://carsxe.com/docs/versioning
+deprecation:
+  policy_url: https://carsxe.com/docs/versioning
+  sunset_header: false
+  deprecation_header: false
+  retirement_scheduled: false
+  statement: >-
+    "Versions run side by side. Shipping v2 does not turn off v1. There is currently no retirement
+    date for any v1 endpoint; if one is ever scheduled, it will be announced well in advance."
+  note: >-
+    A stated retirement posture and a migration guide exist, but there is no RFC 8594 Sunset or
+    Deprecation header, no dated deprecation schedule, and no `deprecated: true` flag on any of the
+    21 operations in the published OpenAPI. Migration guidance for the two superseded endpoints
+    (Plate Decoder v1 to v2, Market Value v1 to v2) is published field-by-field on the versioning
+    page. Recorded as a documented policy, not a machine-readable one.
+superseded_operations:
+  - operationId: decodePlate
+    superseded_by: decodePlateV2
+    still_served: true
+    migration: https://carsxe.com/docs/versioning
+  - operationId: getMarketValue
+    superseded_by: getMarketValueV2
+    still_served: true
+    migration: https://carsxe.com/docs/versioning
+deprecated_operations: []
+sla:
+  uptime_target: 99.9%
+  contractual: true
+  service_credits: true
+  source: https://carsxe.com/trust
+  note: >-
+    The Trust Center states a contractual 99.9% uptime SLA with service credits for eligible
+    customers below the commitment. No standalone SLA document URL is published; enterprise terms
+    are set per contract.
+status_page: https://carsxe.com/status
+status_page_verified:
+  url: https://carsxe.com/status
+  http_status: 200
+  checked: '2026-09-05'
+changelog:
+  published: false
+  probed:
+    - {url: "https://carsxe.com/changelog", status: 404}
+    - {url: "https://carsxe.com/docs/changelog", status: 200, verdict: soft-404 — HTML falls back to the docs index and Accept:text/markdown returns 404}
+  note: >-
+    CarsXE publishes no dated changelog or release-notes feed. The versioning page describes what
+    changed between v1 and v2 but carries no dates and is not an ongoing log. Recorded as an honest
+    absence — no changelog/ artifact is written and no ChangeLog pointer is emitted.
+roadmap:
+  published: false
+  probed:
+    - {url: "https://carsxe.com/roadmap", status: 404}
+performance_claims:
+  source: https://carsxe.com/llms.txt
+  median_response_time: ~120ms
+  daily_api_calls: 2M+
+  coverage: 275M+ vehicle records across 50+ countries
+  note: provider-published marketing figures, recorded as claims and not independently verified
+regions:
+  - {region: us-central1, host: https://api.carsxe.com, scope: all endpoints}
+  - {region: europe-west1, host: https://eu-api.carsxe.com, scope: "plate decoder, plate recognition, international VIN, VIN OCR, images"}

@@ -1,0 +1,145 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  npm registry, PyPI, RubyGems, Packagist, NuGet, proxy.golang.org and JitPack metadata endpoints,
+  cross-checked against https://carsxe.com/docs/integrations and the github.com/carsxe organization
+note: >-
+  CarsXE publishes first-party clients for eight languages. Every registry-hosted package was read
+  from its registry metadata endpoint on 2026-09-05. Java and Swift are distributed from git tags
+  (JitPack / Swift Package Manager) rather than a package registry, so no registry metadata endpoint
+  exists for them — their version fields are null with the distribution channel recorded. There is
+  no crate on crates.io. @carsxe/sdk, referenced in the Recalls Batch documentation code samples, is
+  NOT published on npm (404) — the shipping Node client is carsxe-api.
+packages:
+  - language: javascript
+    registry: npm
+    name: carsxe-api
+    url: https://www.npmjs.com/package/carsxe-api
+    install: npm install carsxe-api
+    repository: https://github.com/carsxe/carsxe-npm-package
+    official: true
+    version: 1.3.0
+    published: '2026-04-02'
+  - language: javascript
+    registry: npm
+    name: "@carsxe/cli"
+    url: https://www.npmjs.com/package/@carsxe/cli
+    install: npm install -g @carsxe/cli
+    repository: https://github.com/carsxe/cli
+    official: true
+    version: 1.1.0
+    published: '2026-04-21'
+    note: the CarsXE CLI binary; its command surface is catalogued in cli/carsxe-cli.yml
+  - language: python
+    registry: pypi
+    name: carsxe
+    url: https://pypi.org/project/carsxe/
+    install: pip install carsxe
+    official: true
+    version: 1.2.0
+    published: '2026-04-02'
+  - language: php
+    registry: packagist
+    name: carsxe/carsxe
+    url: https://packagist.org/packages/carsxe/carsxe
+    install: composer require carsxe/carsxe
+    repository: https://github.com/carsxe/carsxe-php-package
+    official: true
+    version: 1.2.0
+    published: '2026-04-03'
+  - language: ruby
+    registry: rubygems
+    name: carsxe
+    url: https://rubygems.org/gems/carsxe
+    install: gem install carsxe
+    repository: https://github.com/carsxe/carsxe-ruby-package
+    official: true
+    version: 1.2.0
+    published: '2026-04-03'
+  - language: dotnet
+    registry: nuget
+    name: CarsXE
+    url: https://www.nuget.org/packages/CarsXE
+    install: dotnet add package CarsXE
+    repository: https://github.com/carsxe/carsxe-dotnet-package
+    official: true
+    version: 1.3.0
+    published: '2026-04-03'
+  - language: go
+    registry: go-modules
+    name: github.com/carsxe/carsxe-go-package
+    url: https://pkg.go.dev/github.com/carsxe/carsxe-go-package
+    install: go get github.com/carsxe/carsxe-go-package
+    repository: https://github.com/carsxe/carsxe-go-package
+    official: true
+    version: v1.2.0
+    published: '2025-12-19'
+    note: version and date read from proxy.golang.org/github.com/carsxe/carsxe-go-package/@latest
+  - language: java
+    registry: jitpack
+    name: com.github.carsxe:carsxe-java-package
+    url: https://jitpack.io/#carsxe/carsxe-java-package
+    install: "implementation 'com.github.carsxe:carsxe-java-package:<tag>'"
+    repository: https://github.com/carsxe/carsxe-java-package
+    official: true
+    version: null
+    published: null
+    note: >-
+      Not on Maven Central (search.maven.org returns no artifact). Distributed via JitPack, which
+      builds on demand from a git tag and exposes no version metadata endpoint, so no published
+      version could be read. Checked 2026-09-05.
+  - language: swift
+    registry: swift-package-manager
+    name: carsxe-swift-package
+    url: https://github.com/carsxe/carsxe-swift-package
+    install: ".package(url: \"https://github.com/carsxe/carsxe-swift-package.git\", from: \"<tag>\")"
+    repository: https://github.com/carsxe/carsxe-swift-package
+    official: true
+    version: null
+    published: null
+    note: >-
+      Swift Package Manager resolves directly from the git repository; there is no package registry
+      metadata endpoint to read a published version from. Checked 2026-09-05.
+  - language: javascript
+    registry: npm
+    name: n8n-nodes-carsxe
+    url: https://www.npmjs.com/package/n8n-nodes-carsxe
+    install: npm install n8n-nodes-carsxe
+    repository: https://github.com/carsxe/n8n-nodes-carsxe
+    official: true
+    version: 1.2.0
+    published: '2026-04-02'
+    note: official n8n community node, not a general-purpose SDK
+  - language: javascript
+    registry: npm
+    name: "@carsxe/ui"
+    url: https://www.npmjs.com/package/@carsxe/ui
+    install: npm install @carsxe/ui
+    official: true
+    version: 0.1.1
+    published: '2026-08-03'
+    note: front-end component library — catalogued in components/carsxe-components.yml, not an API client
+  - language: javascript
+    registry: npm
+    name: "@carsxe/design-system"
+    url: https://www.npmjs.com/package/@carsxe/design-system
+    install: npm install @carsxe/design-system
+    repository: https://github.com/carsxe/design-system
+    official: true
+    version: 0.2.0
+    published: '2026-08-31'
+    note: brand design system — catalogued in components/carsxe-components.yml, not an API client
+absent:
+  - registry: crates.io
+    name: carsxe
+    status: 404
+    checked: '2026-09-05'
+  - registry: npm
+    name: "@carsxe/sdk"
+    status: 404
+    checked: '2026-09-05'
+    note: referenced in the Recalls Batch docs code samples but not published
+  - registry: maven-central
+    name: carsxe
+    status: no-results
+    checked: '2026-09-05'

@@ -1,0 +1,310 @@
+openapi: 3.1.0
+info:
+  title: CarsXE Images API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
+  contact:
+    name: CarsXE
+    url: https://api.carsxe.com
+servers:
+- url: https://api.carsxe.com
+security:
+- ApiKeyQuery: []
+tags:
+- name: Images
+  description: Vehicle images by make/model
+paths:
+  /images:
+    get:
+      operationId: getVehicleImages
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Images
+      summary: Vehicle Images
+      description: Retrieve images of a vehicle by make, model and other filters.
+      parameters:
+      - name: make
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The vehicle make.
+      - name: model
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The vehicle model.
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The vehicle year.
+      - name: trim
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The vehicle trim.
+      - name: color
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The vehicle color.
+      - name: transparent
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Prioritize images with transparent background. Defaults to `true`.
+      - name: angle
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - front
+          - side
+          - back
+        description: The angle to show the car in.
+      - name: photoType
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - interior
+          - exterior
+          - engine
+        description: Request images of the interior, exterior or engine. Can only be used in conjunction
+          with year, make, model and trim query params.
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Small
+          - Medium
+          - Large
+          - Wallpaper
+          - All
+        description: Request images of a given size. Defaults to all sizes.
+      - name: license
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Public
+          - Share
+          - ShareCommercially
+          - Modify
+          - ModifyCommercially
+        description: Filter images by license type. Leave blank to return all images.
+      - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Images retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  images:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        mime:
+                          type: string
+                        link:
+                          type: string
+                        contextLink:
+                          type: string
+                        height:
+                          type: integer
+                        width:
+                          type: integer
+                        byteSize:
+                          type: integer
+                        thumbnailLink:
+                          type: string
+                        accentColor:
+                          type: string
+                      additionalProperties: true
+                  query:
+                    type: object
+                    additionalProperties: true
+                additionalProperties: true
+              example:
+                success: true
+                images:
+                - mime: image/png
+                  link: https://bit.ly/34tpueu
+                  contextLink: https://www.mariettatoyota.com/toyota-tacoma/
+                  height: 272
+                  width: 1000
+                  byteSize: 56662
+                  thumbnailLink: https://bit.ly/34xewVr
+                  accentColor: B51617
+                query:
+                  year: '2018'
+                  make: toyota
+                  model: tacoma
+                  color: blue
+                  format: json
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No images found for this query.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No images found
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          description: Missing make/model, or the image search failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingMakeModel:
+                  value:
+                    success: false
+                    message: Please supply a make and model. Visit https://carsxe.com/docs for more information
+                cannotAccessInternet:
+                  value:
+                    success: false
+                    message: Cannot access the internet at this time
+components:
+  parameters:
+    format:
+      name: format
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
+  responses:
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

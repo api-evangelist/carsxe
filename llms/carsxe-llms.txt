@@ -1,0 +1,600 @@
+# CarsXE Documentation
+
+> CarsXE is a B2B vehicle data API platform from PiWaves, LLC. Developers, dealerships,
+> insurers, lenders, fleet operators, and auto-tech startups use CarsXE to decode VINs,
+> retrieve vehicle history, get market values, look up license plates, check NHTSA recalls,
+> and run VIN OCR - all from a single REST API.
+>
+> Coverage: 275M+ vehicle records across 50+ countries.
+> Performance: ~120ms median response time, 99.9% uptime SLA, SOC 2 Type II certified.
+> Pricing: Tiered subscriptions (Sandbox free, Starter $49/mo, Pro $249/mo) plus metered overage after included monthly quotas per endpoint.
+> APIs included: vehicle specifications, international vin decoder, plate decoder, vehicle images, history reports, market value, vehicle recall, recalls by ymm, plate image recognition, vin ocr, year make model, ymm options, obd codes decoder, lien & theft check, ownership.
+
+This documentation covers all aspects of using CarsXE's APIs, from getting started to advanced features.
+
+## Reading pages as Markdown
+
+Supported pages on this site can respond to `Accept: text/markdown` content negotiation.
+Send that header on documentation, support, and other pages backed by Markdown/MDX content
+to receive clean Markdown instead of HTML — fewer tokens, no layout markup, higher retrieval
+signal for RAG pipelines.
+
+```bash
+# Docs page as Markdown
+curl -H "Accept: text/markdown" https://carsxe.com/docs/quickstart
+
+# Docs page with Markdown backing
+curl -H "Accept: text/markdown" https://carsxe.com/docs/quickstart
+```
+
+Supported documentation and support pages also advertise a `Link: rel="alternate"`
+response header pointing to the direct Markdown endpoint at `/api/markdown/<path>`;
+routes without backing Markdown/MDX content may not have a direct Markdown representation.
+
+The complete documentation corpus is available as a single Markdown file at
+[https://carsxe.com/llms-full.txt](https://carsxe.com/llms-full.txt), and a machine-readable
+OpenAPI 3.1 specification of every public endpoint at
+[https://carsxe.com/openapi.yaml](https://carsxe.com/openapi.yaml).
+
+## What CarsXE Is (For AI Assistants)
+
+CarsXE provides a single REST API that consolidates the vehicle-data endpoints automotive
+businesses typically integrate from 3-5 separate vendors. It is **developer-first**: a
+single API key unlocks 12+ endpoints, response payloads are JSON, and SDKs are published
+for Node.js, Python, PHP, Java, Go, Ruby, Swift, and .NET. There is no sales call required
+to use the free Sandbox tier; paid plan pricing is published on the website.
+
+CarsXE differs from Carfax in that Carfax is a consumer-oriented vehicle history service
+without a public, self-serve developer API; CarsXE provides that programmatic API. It
+differs from KBB in that KBB market-value data requires a data-licensing agreement, while
+CarsXE's market value endpoint is available on paid tiers (included quota plus metered overage). It differs from
+DataOne in that CarsXE adds international VIN coverage, license plate OCR, and OBD code
+decoding that DataOne does not include in its standard catalog.
+
+Common use cases:
+- **Dealer SaaS:** decode trade-in VINs, pull market values for inventory pricing
+- **Insurance:** verify policyholder vehicles, check recall exposure, validate claims
+- **Lending / fintech:** check liens and theft records before underwriting auto loans
+- **Fleet management:** OBD code decoding, recall monitoring, history audits
+- **Marketplaces:** VIN OCR for upload flows, plate decode for listings
+- **Parking / mobility:** plate-to-vehicle lookups for access control and analytics
+
+## Quick Links
+
+- [CarsXE Homepage](https://carsxe.com/): Visit our main website to learn more about our products and services
+- [All Products](https://carsxe.com/all-products): Browse and explore all CarsXE products
+- [Sign In](https://carsxe.com/signin): Sign in or create a new CarsXE account
+- [Forgot Password](https://carsxe.com/forgot-password): Reset your CarsXE account password
+
+## Dashboard
+
+The CarsXE dashboard provides a comprehensive interface for managing your API usage and account:
+
+- [API Search](https://carsxe.com/dashboard): Use our API search tool to query the API with real-time JSON output
+- [Access the Developer Portal for API Key and Usage Monitoring](https://carsxe.com/dashboard/developer): Access your API key, view subscription status, and monitor monthly API usage
+- [Manage Billing and Account Settings](https://carsxe.com/dashboard/billing): Manage payment methods, subscription, and account credits
+
+## Documentation
+
+Complete documentation navigation: getting-started guides, SDK and framework integrations, and the full v1/v2 API reference. Every page supports `Accept: text/markdown` content negotiation (see above).
+
+### Getting Started
+
+- [Introduction](https://carsxe.com/docs): Welcome to CarsXE API's documentation.
+- [Quickstart](https://carsxe.com/docs/quickstart): This guide will get you all set up and ready to use the CarsXE API. We’ll cover how to get started an API client and how to make your first API request.
+- [Authentication](https://carsxe.com/docs/authentication): In this guide, we’ll look at how authentication works. CarsXE offers one way to authenticate your API requests, Basic authentication.
+- [Organizations](https://carsxe.com/docs/organizations): Organizations let you share CarsXE API access with your team. Invite members, assign roles, and manage organization-wide API keys from a single workspace.
+- [Errors](https://carsxe.com/docs/errors): Every error the CarsXE API returns — what it means, why it happened, and how to fix it. Includes the error envelope, status codes, and retry guidance.
+- [Rate Limits & Quotas](https://carsxe.com/docs/rate-limits): How CarsXE usage limits work — included monthly volume, the 429 response shape, overage billing, usage alerts, and how to handle limits in code.
+- [Versioning & Migration](https://carsxe.com/docs/versioning): How CarsXE versions its API, what changed between v1 and v2, and a step-by-step guide for migrating the Plate Decoder and Market Value endpoints.
+- [Latency & Regions](https://carsxe.com/docs/latency-and-regions): Lower request latency from Europe with the EU endpoint, plus connection-reuse and caching tips that apply globally.
+- [Agents & AI](https://carsxe.com/docs/agents): Everything you need to use CarsXE vehicle data APIs from AI coding agents, LLMs, and automated pipelines — including browser-based onboarding, machine-readable documentation, and content negotiation.
+
+### Industry Guides
+
+- [Industry Guides (overview)](https://carsxe.com/docs/industry-guides): Explore industry-specific implementation guides for parking, dealerships, insurance, and more.
+- [Car Parking and Valet](https://carsxe.com/docs/industry-guides/car-parking-and-valet): Learn how parking companies and applications can leverage CarsXE APIs to provide smart parking solutions based on vehicle dimensions, EV capabilities, and other key specifications.
+
+### Integrations
+
+- [Integrations (overview)](https://carsxe.com/docs/integrations): Explore our official SDKs and third-party integrations to accelerate your development with the CarsXE API.
+- [Go](https://carsxe.com/docs/integrations/go-quickstart): Get started with CarsXE's Go package to integrate comprehensive vehicle data into your Go applications.
+- [Java](https://carsxe.com/docs/integrations/java-quickstart): Get started with CarsXE's Java SDK to integrate comprehensive vehicle data into your Java applications.
+- [.NET](https://carsxe.com/docs/integrations/dotnet-quickstart): Get started with CarsXE's .NET SDK to integrate comprehensive vehicle data into your .NET applications.
+- [Node.js](https://carsxe.com/docs/integrations/nodejs-quickstart): Get started with CarsXE's Node.js SDK to integrate comprehensive vehicle data into your JavaScript and TypeScript applications.
+- [PHP](https://carsxe.com/docs/integrations/php-quickstart): Get started with CarsXE's PHP SDK to integrate comprehensive vehicle data into your PHP applications.
+- [Python](https://carsxe.com/docs/integrations/python-quickstart): Get started with CarsXE's Python SDK to integrate comprehensive vehicle data into your Python applications.
+- [Ruby](https://carsxe.com/docs/integrations/ruby-quickstart): Get started with CarsXE's Ruby gem to integrate comprehensive vehicle data into your Ruby applications.
+- [Swift](https://carsxe.com/docs/integrations/swift-quickstart): Get started with CarsXE's Swift package to integrate comprehensive vehicle data into your iOS, macOS, and other Swift applications.
+- [CLI](https://carsxe.com/docs/integrations/cli-quickstart): Query vehicle specs, market value, history, recalls, license plates, OBD codes, and more — directly from your terminal using the CarsXE CLI.
+- [MCP](https://carsxe.com/docs/integrations/mcp-quickstart): Get started with CarsXE's MCP server for AI-powered vehicle data integration in Claude, Cursor, VS Code, and other MCP-compatible tools.
+- [Claude Plugin](https://carsxe.com/docs/integrations/claude-quickstart): Access the full suite of CarsXE vehicle data APIs directly from Claude Code — decode VINs, look up license plates, get market values, check history, recalls, liens, OBD codes, and more.
+- [Codex Plugin](https://carsxe.com/docs/integrations/codex-quickstart): Access the full suite of CarsXE vehicle data APIs directly from OpenAI Codex — decode VINs, look up license plates, get market values, check history, recalls, liens, OBD codes, and more.
+- [Gemini Extension](https://carsxe.com/docs/integrations/gemini-quickstart): Access the full suite of CarsXE vehicle data APIs directly from Gemini CLI — decode VINs, look up license plates, get market values, check history, recalls, liens, OBD codes, and more.
+- [Google ADK](https://carsxe.com/docs/integrations/adk-quickstart): Connect the CarsXE MCP server to your Google Agent Development Kit (ADK) agents — decode VINs and plates, get market values, history, recalls, liens, images, and OBD codes with natural language.
+- [OpenClaw Skill](https://carsxe.com/docs/integrations/openclaw-quickstart): Access the full suite of CarsXE vehicle data APIs directly from OpenClaw — decode VINs, look up license plates, get market values, check history, recalls, liens, OBD codes, and more.
+- [Snowflake](https://carsxe.com/docs/integrations/snowflake-quickstart): Access comprehensive vehicle data directly in Snowflake through CarsXE's powerful API. This Native App provides an intuitive Streamlit interface and SQL callable procedures for seamless integration into your data workflows.
+- [n8n](https://carsxe.com/docs/integrations/n8n-quickstart): Connect CarsXE vehicle data APIs to your n8n workflows — decode VINs, look up license plates, check vehicle history, market values, recalls, and more using the official CarsXE node.
+- [Zapier](https://carsxe.com/docs/integrations#zapier)
+- [Make](https://carsxe.com/docs/integrations#make)
+
+### Vehicle APIs (v2)
+
+- [Vehicle APIs (v2) (overview)](https://carsxe.com/docs/v2): Below are the APIs available in version v2 with brief descriptions. Select one to view full documentation and examples.
+- [Plate Decoder](https://carsxe.com/docs/v2/plate-decoder): The Vehicle Plate Decoder API provides access to a library of vehicle's data based on the vehicle's registration/license plate number and state.
+- [Market Value](https://carsxe.com/docs/v2/market-value): Discover comprehensive vehicle market value including historical vehicle sale history. Learn more about above and below market pricing.
+
+### Vehicle APIs (v1)
+
+- [Vehicle APIs (v1) (overview)](https://carsxe.com/docs/v1): Below are the APIs available in version v1 with brief descriptions. Select one to view full documentation and examples.
+- [Specifications](https://carsxe.com/docs/v1/specifications): Discover comprehensive vehicle specifications and decode vehicle identification numbers (VINs) effortlessly with CarsXE API. Get detailed information about any vehicle by querying its VIN. Explore the different endpoints available to manage contacts programmatically. Start leveraging the power of CarsXE to access accurate and up-to-date vehicle data.
+- [International VIN Decoder](https://carsxe.com/docs/v1/international-vin-decoder): The International VIN Decoder API provides access to a library of vehicle's data based on the vehicle's VIN. Start leveraging the power of CarsXE to access accurate and up-to-date vehicle data.
+- [Recalls](https://carsxe.com/docs/v1/vehicle-recalls): Retrieve Vehicle Recall information using a VIN.
+- [Recalls Batch](https://carsxe.com/docs/v1/recalls-batch): Check thousands of vehicles for safety recalls in a single batch by submitting VINs and polling for results.
+- [Recalls by YMM](https://carsxe.com/docs/v1/recalls-ymm): Look up safety recalls by year, make, and model — no VIN needed.
+- [Plate Decoder](https://carsxe.com/docs/v1/plate-decoder): The Vehicle Plate Decoder API provides access to a library of vehicle's data based on the vehicle's registration/license plate number and state.
+- [Lien & Theft](https://carsxe.com/docs/v1/lien-theft): Check for active liens and theft records using a VIN.
+- [Images](https://carsxe.com/docs/v1/images): Access a library of vehicle images for your website or app.
+- [Market Value](https://carsxe.com/docs/v1/market-value): Discover comprehensive vehicle market value including historical vehicle sale history. Learn more about above and below market pricing.
+- [History](https://carsxe.com/docs/v1/history): CarsXE API reference to get comprehensive vehicle history through a quick search.
+- [Plate Image Recognition](https://carsxe.com/docs/v1/plate-image-recognition): High-accuracy, fast ALPR software via API Cloud for retrieving vehicle license plates or registration numbers from images.
+- [VIN Optical Character Recognition](https://carsxe.com/docs/v1/vin-ocr): Extract the Vehicle Identification Number (VIN) from an image using OCR
+- [Year Make Model](https://carsxe.com/docs/v1/year-make-model): Retrieve comprehensive vehicle information by specifying its year, make, and model. Get detailed specifications, trim levels, and features for vehicles across different regions with our Year Make Model (YMM) API.
+- [Year Make Model Options](https://carsxe.com/docs/v1/ymm-options): Populate Year, Make, Model, and Variant dropdown menus — one API call returns one layer so you build menus step by step.
+- [OBD Codes Decoder](https://carsxe.com/docs/v1/obd-codes-decoder): Decode OBD codes through a robust API for your applications needs
+- [Ownership](https://carsxe.com/docs/v1/ownership): Resolve vehicle owners, contact details, and address residents from CarsXE's identity graph — by VIN, name and address, address alone, or ZIP code. Enterprise only.
+
+## Available APIs
+
+
+### Vehicle Specifications
+
+The all-in-one VIN decoder for any vehicle
+
+- [Product Page](https://carsxe.com/vehicle-specifications)
+- [Documentation](https://carsxe.com/docs/v1/specifications)
+
+#### Features
+
+- Get everything from VIN to engine type with one call
+- Robust international support
+- Access to 8+ data points from just a plate number
+- 3 countries supported (Canada, Mexico, United States)
+- 99.9% uptime and 120ms response time
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.15, Pro $0.10.
+
+
+### International VIN Decoder
+
+Instantly decode any VIN worldwide
+
+- [Product Page](https://carsxe.com/international-vin-decoder)
+- [Documentation](https://carsxe.com/docs/v1/international-vin-decoder)
+
+#### Features
+
+- Decode VINs from multiple countries
+- Get detailed vehicle information
+- Support for international vehicle standards
+- Comprehensive vehicle data
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.40, Pro $0.35.
+
+
+### Plate Decoder
+
+Decode license plates and get vehicle information
+
+- [Product Page](https://carsxe.com/vehicle-plate-decoder)
+- [Documentation](https://carsxe.com/docs/v2/plate-decoder)
+
+#### Features
+
+- Decode license plates from multiple countries
+- Get vehicle information from plate numbers
+- International plate recognition
+- Detailed vehicle data from plates
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.50, Pro $0.45.
+
+
+### Vehicle Images
+
+Get images of any vehicle
+
+- [Product Page](https://carsxe.com/vehicle-images)
+- [Documentation](https://carsxe.com/docs/v1/images)
+
+#### Features
+
+- Search by year, make, model, color, and transparency
+- Retrieve image links with sources, dimensions, and thumbnails
+- Lookup beautiful photos of vehicles from their year, make, and model
+- Specify the color you're looking for
+- Option for transparent background images
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.15, Pro $0.10.
+
+
+### History Reports
+
+Get a detailed history report of any vehicle
+
+- [Product Page](https://carsxe.com/vehicle-history)
+- [Documentation](https://carsxe.com/docs/v1/history)
+
+#### Features
+
+- Complete vehicle history reports
+- Accident history
+- Service records
+- Ownership history
+
+#### Pricing
+
+- After included monthly quota, metered overage is $4.99 USD per successful call on Starter and Pro.
+
+
+### Market Value
+
+Get the market value of any vehicle
+
+- [Product Page](https://carsxe.com/vehicle-market-value)
+- [Documentation](https://carsxe.com/docs/v2/market-value)
+
+#### Features
+
+- Get accurate vehicle market values
+- Real-time pricing data
+- Historical value trends
+- Market analysis tools
+
+#### Pricing
+
+- After included monthly quota, metered overage is $1.50 USD per successful call on Starter and Pro.
+
+
+### Vehicle Recall
+
+Retrieve vehicle recall information using a VIN
+
+- [Product Page](https://carsxe.com/vehicle-recalls)
+- [Documentation](https://carsxe.com/docs/v1/vehicle-recalls)
+
+#### Features
+
+- Check for vehicle recalls
+- Safety-related information
+- Manufacturer recall data
+- Real-time recall updates
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.25, Pro $0.20.
+
+
+### Recalls by YMM
+
+Safety recall data for any YMM. No VIN.
+
+- [Product Page](https://carsxe.com/vehicle-recalls-ymm)
+- [Documentation](https://carsxe.com/docs/v1/recalls-ymm)
+
+#### Features
+
+- Check recalls without a VIN
+- Structured recall summaries
+- Consequence & remedy details
+- Redis-cached fast responses
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.25, Pro $0.20.
+
+
+### Plate Image Recognition
+
+Recognize license plates from images
+
+- [Product Page](https://carsxe.com/vehicle-plate-recognition)
+- [Documentation](https://carsxe.com/docs/v1/plate-image-recognition)
+
+#### Features
+
+- Recognize license plates from images
+- Extract plate numbers
+- Process multiple plate formats
+- High accuracy recognition
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.15, Pro $0.10.
+
+
+### VIN OCR
+
+Extract VINs from images using OCR technology
+
+- [Product Page](https://carsxe.com/vin-ocr)
+- [Documentation](https://carsxe.com/docs/v1/vin-ocr)
+
+#### Features
+
+- Extract VINs from images
+- Process multiple VIN formats
+- High accuracy OCR
+- Support for various image types
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.15, Pro $0.10.
+
+
+### Year Make Model
+
+Get vehicle data from its year, make, and model
+
+- [Product Page](https://carsxe.com/year-make-model)
+- [Documentation](https://carsxe.com/docs/v1/year-make-model)
+
+#### Features
+
+- Identify vehicles by year, make, and model
+- Comprehensive vehicle database
+- Accurate vehicle identification
+- Support for multiple formats
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.20, Pro $0.15.
+
+
+### YMM Options
+
+Populate Year, Make, Model, and Trim dropdowns.
+
+- [Product Page](https://carsxe.com/ymm-options)
+- [Documentation](https://carsxe.com/docs/v1/ymm-options)
+
+#### Features
+
+- Populate Year/Make/Model/Trim dropdowns
+- One layer per API call
+- Deduplicated Model+Trim variants
+- Fast, low-latency responses
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.02, Pro $0.01.
+
+
+### OBD Codes Decoder
+
+Get diagnosis message of your ODB code
+
+- [Product Page](https://carsxe.com/obd-codes-decoder)
+- [Documentation](https://carsxe.com/docs/v1/obd-codes-decoder)
+
+#### Features
+
+- Decode OBD diagnostic codes
+- Get detailed error descriptions
+- Troubleshooting information
+- Maintenance recommendations
+
+#### Pricing
+
+- After included monthly quota, metered overage (USD per successful call): Starter $0.15, Pro $0.10.
+
+
+### Lien & Theft Check
+
+Check for active liens and theft records via VIN
+
+- [Product Page](https://carsxe.com/lien-theft-check)
+- [Documentation](https://carsxe.com/docs/v1/lien-theft)
+
+#### Features
+
+- Check for active liens
+- Verify theft status
+- Real-time data
+- Comprehensive reporting
+
+#### Pricing
+
+- After included monthly quota, metered overage is $1.00 USD per successful call on Starter and Pro.
+
+
+### Ownership
+
+Look up vehicle owners and contact details by VIN, person, address, or ZIP
+
+- [Product Page](https://carsxe.com/ownership)
+- [Documentation](https://carsxe.com/docs/v1/ownership)
+
+#### Features
+
+- Look up registered owners by VIN, person, address, or ZIP
+- Contact details, including emails and phone numbers
+- Demographic and prior-ownership enrichment
+- Available on Enterprise plans only
+
+#### Pricing
+
+- After included monthly quota, metered overage is $0.20 USD per successful call on Starter and Pro.
+
+
+### Use Cases
+
+- [Car Dealership](https://carsxe.com/car-dealership): Streamlining Your Car Dealership with Vehicle Data Solutions
+- [Car Insurance](https://carsxe.com/car-insurance): Enhance Your Insurance Workflow with CarsXE's Vehicle APIs
+- [Car Rental](https://carsxe.com/car-rental): Elevate Your Car Rental Services with Advanced API Integration
+- [Car Finance](https://carsxe.com/car-finance): Simplified Car Financing with Advanced APIs
+- [Car Repair](https://carsxe.com/car-repair): Superior Maintenance and Automotive Repair Services with Vehicle APIs
+- [Car Warranty Services](https://carsxe.com/car-warranty-services): Elevate Car Warranty Services. Discover CarsXE's practical Vehicle APIs.
+- [Car Parking and Valet](https://carsxe.com/car-parking-and-valet): Transform Urban Mobility: CarsXE's Innovative Vehicle APIs for Effortless Parking Solutions
+- [Auto Tech Startup](https://carsxe.com/auto-tech-startup): Empower your automotive technology startup with comprehensive vehicle data APIs
+- [Fleet Management](https://carsxe.com/fleet-management): Empower your fleet management software with comprehensive vehicle data APIs
+
+## Performance
+
+- Average response time: 120ms
+- Daily API calls: 2M+
+- Uptime guarantee: 99.9%
+- Global CDN distribution
+- Automatic caching and optimization
+
+## Support
+
+- [API Status](https://carsxe.com/status): Real-time API status and uptime monitoring
+- [Support Center](https://carsxe.com/support): Get help from our support team
+- [Feedback](https://carsxe.com/feedback): Submit feedback and feature requests
+
+## Pricing
+
+## Subscription plans (USD)
+
+CarsXE uses tiered subscriptions with per-endpoint monthly quotas. Sandbox is free for integration testing; paid plans unlock production-scale quotas with metered overage after included usage.
+
+### Sandbox (USD 0)
+- Lifetime shared pool: 100 successful API calls (not monthly).
+- Premium endpoints are capped within the pool: market value 5, history 1, lien theft 5.
+
+### Starter - USD 49 / month (USD 490 / year if billed annually)
+- Included monthly quotas (successful calls): bulk recall batch 200; history 0; images 1,000; international vin decoder 10; lien theft 0; market value 0; obd codes decoder 500; ownership 0; ownership vin batch 0; plate decoder 10; plate image recognition 200; specifications 2,000; us plate decoder 20; vehicle recalls 50; vehicle recalls ymm 50; vin optical character recognition 200; year make model 2,000; year make model options 2,000.
+- market_value, history, and lien_theft are not included (0) on Starter; access is metered overage only.
+
+### Pro - USD 249 / month (USD 2,490 / year if billed annually)
+- Included monthly quotas (successful calls): bulk recall batch 1,000; history 0; images 15,000; international vin decoder 100; lien theft 0; market value 0; obd codes decoder 2,000; ownership 0; ownership vin batch 0; plate decoder 100; plate image recognition 1,000; specifications 25,000; us plate decoder 500; vehicle recalls 500; vehicle recalls ymm 500; vin optical character recognition 1,000; year make model 25,000; year make model options 25,000.
+- market_value, history, and lien_theft are not included (0) on Pro; access is metered overage only.
+
+There is no time-limited free trial on paid tiers; start with Sandbox, then upgrade to a paid plan when you are ready for production quotas.
+
+### Metered overage (USD per successful call after quota)
+
+Rates below use the same unit conversion as the live dashboard (raw document values scaled by base unit 1 / 100).
+
+- Vehicle Specifications (specifications): Starter $0.15, Pro $0.10
+- International VIN Decoder: Starter $0.40, Pro $0.35
+- Plate Decoder: Starter $0.50, Pro $0.45
+- US Plate Decoder: Starter $0.30, Pro $0.25
+- Market Value: Starter $1.50, Pro $1.50
+- History: Starter $4.99, Pro $4.99
+- Images: Starter $0.15, Pro $0.10
+- Vehicle Recalls: Starter $0.25, Pro $0.20
+- Recalls by YMM: Starter $0.25, Pro $0.20
+- Plate Image Recognition: Starter $0.15, Pro $0.10
+- VIN OCR: Starter $0.15, Pro $0.10
+- OBD Codes Decoder: Starter $0.15, Pro $0.10
+- Year Make Model: Starter $0.20, Pro $0.15
+- Year Make Model Options: Starter $0.02, Pro $0.01
+- Lien & Theft: Starter $1.00, Pro $1.00
+- Recalls Batch: Starter $0.12, Pro $0.08
+- Ownership: Starter $0.20, Pro $0.20
+- Ownership VIN Batch: Starter $0.20, Pro $0.20
+- vehicle recalls reports: Starter $0.25, Pro $0.20
+
+- [Pricing Plans](https://carsxe.com/pricing): Live plan cards, quota tables, and overage matrix
+- [Pricing Calculator](https://carsxe.com/pricing/calculator): Estimate monthly cost from expected usage
+
+
+_Pricing data: loaded from live /get-pricing (id ODgapw4jFHN1uVHjf7NY, updatedAt 2026-08-16T16:28:05.486Z)._
+
+## Blog
+
+- [The Driving Innovation Blog](https://carsxe.com/blog): Latest news, updates, and articles about CarsXE
+
+## Recent Articles
+
+- [Top 5 APIs for Vehicle Depreciation Analysis](https://carsxe.com/blog/best-vehicle-depreciation-apis): Compare five leading vehicle depreciation APIs by data sources, update cadence, coverage, and pricing for accurate valuations. (July 19, 2026)
+- [Vehicle Import Rules: Emissions Compliance by Region](https://carsxe.com/blog/vehicle-import-rules-emissions-compliance-by-region): Compare emissions import rules across the US, Canada, EU/UK, China, Japan and South Korea — required proof, age exemptions, and penalties. (July 11, 2026)
+- [Bluetooth OBD Security: FAQs](https://carsxe.com/blog/bluetooth-obd-security-faqs): Bluetooth OBD-II dongles often expose vehicles via weak pairing, poor firmware, and insecure apps—protect pairing, updates, and data flow. (July 7, 2026)
+- [49 CFR Part 565: VIN Compliance Rules](https://carsxe.com/blog/49-cfr-part-565-vin-compliance-rules): Compliant 17-character VINs: exclude I/O/Q, use Mod 11, avoid reuse 30 years, submit decoding 60 days before sale. (July 6, 2026)
+- [How Japan VIN Decoding Differs Globally](https://carsxe.com/blog/how-japan-vin-decoding-differs-globally): Explains why Japan's 9–12 character chassis numbers differ from 17-character VINs and how that affects U.S. registration, recalls, and imports. (July 1, 2026)
+- [VIN Decoding APIs: Global Standards Support](https://carsxe.com/blog/vin-decoding-apis-global-standards-support): Explains VIN validation, regional rule differences, check digits, data gaps, and how to evaluate global VIN decoding APIs. (June 28, 2026)
+- [Cloud LPR Integration Tips for Developers](https://carsxe.com/blog/cloud-lpr-integration-tips-for-developers): Practical steps to integrate cloud LPR: event schema, image filtering, confidence rules, retries, security, and regional validation. (June 24, 2026)
+- [Regional Vehicle Demand: Key Cultural Drivers](https://carsxe.com/blog/regional-vehicle-demand-key-cultural-drivers): Culture—not just income or policy—shapes regional vehicle choices, from pickups to EVs, and influences financing and brand preference. (June 19, 2026)
+- [Regional Economies Shaping Car Brand Popularity](https://carsxe.com/blog/regional-economies-shaping-car-brand-popularity): How regional economies shape car-brand demand: pickups in North America, hybrids in Europe, and Chinese brands rising in Asia-Pacific. (June 4, 2026)
+- [Electric Vehicle Tax Incentives in Thailand: 2026 Update](https://carsxe.com/blog/electric-vehicle-tax-incentives-thailand-2026): Thailand's 2026 EV tax overhaul favors locally made, safer BEVs while imposing strict production and ADAS requirements on manufacturers. (June 2, 2026)
+- [Ultimate Guide to License Plate Data Interoperability](https://carsxe.com/blog/ultimate-license-plate-data-interoperability-guide): How standards, APIs, and privacy controls enable accurate cross-border license plate data exchange and compliance. (May 21, 2026)
+- [Q&A: Multinational Compliance for Vehicle Data APIs](https://carsxe.com/blog/qa-multinational-compliance-vehicle-data-apis): Overview of cross-border rules, data classification, security controls, and region-aware API design for vehicle data. (May 14, 2026)
+- [US vs. EU VIN Decoding Standards](https://carsxe.com/blog/us-vs-eu-vin-decoding-standards): Overview of how US and EU 17-character VIN rules differ—check digit use, decoding accuracy, and cross-border impacts. (May 11, 2026)
+- [Best Practices for Contrast Adjustment in LPR](https://carsxe.com/blog/best-practices-contrast-adjustment-lpr): Consistent contrast tuning and proper camera placement are essential to reliable LPR across day, night, and glare conditions. (May 8, 2026)
+- [How to Choose an OCR Engine for Vehicle Data](https://carsxe.com/blog/how-to-choose-an-ocr-engine-for-vehicle-data): Learn how to choose the right OCR engine for vehicle data, focusing on accuracy, integration, and performance to enhance data processing. (May 1, 2026)
+- [Top APIs for EU VIN Decoding](https://carsxe.com/blog/top-apis-for-eu-vin-decoding): Explore top APIs for EU VIN decoding, focusing on accuracy, real-time updates, and seamless integration for automotive businesses. (April 21, 2026)
+- [Top 7 APIs for Multi-Country Plate Decoding](https://carsxe.com/blog/top-7-apis-for-multi-country-plate-decoding): Explore seven powerful APIs that simplify multi-country license plate decoding, enhancing vehicle identification across diverse regions. (April 21, 2026)
+- [AI-Powered VIN Decoding: What Developers Need](https://carsxe.com/blog/ai-powered-vin-decoding-what-developers-need): Explore how AI-driven VIN decoding revolutionizes vehicle data access for developers, enhancing speed, accuracy, and user experience. (March 13, 2026)
+- [Vehicle Maintenance Cost Calculator](https://carsxe.com/blog/vehicle-maintenance-cost-calculator): Estimate your vehicle maintenance costs with our free calculator! Input vehicle type, age, and mileage to get monthly and annual cost breakdowns. (February 7, 2026)
+- [Best Practices for Tiered VIN API Pricing](https://carsxe.com/blog/best-practices-for-tiered-vin-api-pricing): Explore tiered pricing strategies for VIN APIs that cater to diverse customer needs, enhance scalability, and maximize revenue potential. (December 30, 2025)
+- [Top 5 Freemium VIN Decoding APIs in 2025](https://carsxe.com/blog/top-5-freemium-vin-decoding-apis-in-2025): Explore the top freemium VIN decoding APIs of 2025, comparing features, pricing, and data coverage for automotive businesses. (December 26, 2025)
+- [Ultimate Guide to Automotive Data APIs](https://carsxe.com/blog/ultimate-guide-to-automotive-data-apis): Explore how automotive data APIs transform vehicle management and enhance decision-making across insurance, dealerships, and fleet operations. (December 6, 2025)
+- [Top APIs for Automated VIN Data Validation](https://carsxe.com/blog/top-apis-for-automated-vin-data-validation): Explore top APIs for automated VIN data validation, offering real-time vehicle insights, global coverage, and advanced features for various industries. (November 12, 2025)
+- [Steps to Calculate a VIN Check Digit](https://carsxe.com/blog/steps-to-calculate-a-vin-check-digit): Learn how to accurately calculate the check digit of a VIN, ensuring vehicle identification accuracy and compliance with regulations. (October 31, 2025)
+- [VIN Year Codes: Complete Chart](https://carsxe.com/blog/vin-year-codes-complete-chart): Learn how to decode VIN year codes effectively and discover the importance of the 10th digit for accurate vehicle identification. (October 27, 2025)
+- [Regional VIN Standards: What Developers Need to Know](https://carsxe.com/blog/regional-vin-standards-what-developers-need-to-know): Explore the complexities of regional VIN standards and how developers can leverage specialized tools for accurate vehicle data processing. (October 23, 2025)
+- [Vehicle Data API: The Complete Guide to Automotive Data Integration](https://carsxe.com/blog/vehicle-data-api-guide): This guide covers what a vehicle data API is, what data categories are available, how to evaluate providers, and how to architect an integration that scales. (October 22, 2025)
+- [Impact of Regional Standards on VIN APIs](https://carsxe.com/blog/impact-of-regional-standards-on-vin-apis): Explore how regional standards for VINs impact vehicle data management, decoding challenges, and the importance of flexible APIs. (October 20, 2025)
+- [Kia recalls 39,500 Sorento SUVs due to potential fire risks](https://carsxe.com/blog/kia-sorento-recall-fire-risk): Kia recalls more than 39,500 2021–23 Sorento SUVs over blower-motor fire risk; dealers will replace wiring and resistor free. (October 1, 2025)
+- [How Image Preprocessing Improves License Plate Recognition](https://carsxe.com/blog/how-image-preprocessing-improves-license-plate-recognition): Explore how image preprocessing techniques enhance the accuracy of license plate recognition systems, addressing challenges like poor lighting and noise. (September 28, 2025)
+- [How TLS Protects Vehicle Data in Transit](https://carsxe.com/blog/how-tls-protects-vehicle-data-in-transit): Learn how Transport Layer Security (TLS) protects vehicle data during transmission, ensuring confidentiality, integrity, and compliance in modern automotive systems. (September 26, 2025)
+- [How Brand Reputation Impacts Car Depreciation](https://carsxe.com/blog/how-brand-reputation-impacts-car-depreciation): Brand reputation significantly influences car depreciation rates, impacting resale value, market demand, and consumer trust in vehicles. (September 20, 2025)
+- [OBD Code Checker](https://carsxe.com/blog/obd-code-checker): Got a check engine light? Use our free OBD Code Checker to decode trouble codes like P0300, understand issues, and get troubleshooting tips! (September 20, 2025)
+- [Vehicle Specification Finder](https://carsxe.com/blog/vehicle-specification-finder): Find detailed vehicle specs with our easy-to-use tool! Enter make, model, and year to get engine size, horsepower, and more in seconds. (September 19, 2025)
+- [Vehicle Dimensions API: Key Features](https://carsxe.com/blog/vehicle-dimensions-api-key-features): Explore how Vehicle Dimensions APIs enhance logistics, insurance, and automotive sales with real-time data for better decision-making. (September 18, 2025)
+- [Car Market Value Calculator](https://carsxe.com/blog/car-market-value-calculator): Estimate your car's market value instantly with our free tool. Enter make, model, year, and more to get a reliable price range tailored to your area! (September 6, 2025)
+- [Car Dealership Software: Top 8 API Solutions](https://carsxe.com/blog/car-dealership-software-top-8-api-solutions): Explore the top 8 API solutions for car dealerships that enhance inventory management, sales processes, and customer experiences while ensuring compliance. (September 4, 2025)
+- [Top 7 APIs for Accident History Reports](https://carsxe.com/blog/top-7-apis-for-accident-history-reports): Explore the top APIs for accessing vehicle accident history, offering critical data for buyers, dealers, and insurers to make informed decisions. (September 4, 2025)
+- [AI Noise Reduction in License Plate OCR](https://carsxe.com/blog/ai-noise-reduction-in-license-plate-ocr): Explore how AI noise reduction enhances license plate OCR accuracy, tackling challenges like poor lighting and low resolution for reliable vehicle identification. (September 2, 2025)
+- [VIN Decoding for Emission Compliance Tracking](https://carsxe.com/blog/vin-decoding-for-emission-compliance-tracking): VIN decoding enables fleet managers to efficiently track emission compliance, ensuring adherence to regulations and avoiding penalties. (August 31, 2025)
+- [How VIN Decoding Powers Compliance Verification](https://carsxe.com/blog/how-vin-decoding-powers-compliance-verification): Learn how VIN decoding enhances compliance verification, streamlining regulatory processes and reducing errors across various industries. (August 26, 2025)
+- [CarsXE MCP Server: Revolutionizing AI-Powered Vehicle Data Integration](https://carsxe.com/blog/carsxe-mcp-server-revolutionizing-ai-powered-vehicle-data-integration): Learn how to set up CarsXE's MCP server for AI-powered vehicle data integration. Complete guide with step-by-step setup, code examples, and troubleshooting. (August 20, 2025)
+- [Ultimate Guide to API Performance Metrics](https://carsxe.com/blog/ultimate-guide-to-api-performance-metrics): Explore essential API performance metrics and best practices for monitoring response times, throughput, and error rates to ensure optimal application performance. (August 6, 2025)
+- [How Mileage Affects Car Depreciation](https://carsxe.com/blog/how-mileage-affects-car-depreciation): Learn how mileage impacts car depreciation, key thresholds, and strategies to maintain your vehicle's value over time. (August 5, 2025)
+- [Year, Make, Model Data: API Integration Guide](https://carsxe.com/blog/year-make-model-data-api-integration-guide): Integrating Year, Make, and Model data can optimize automotive operations and enhance user experiences through effective API usage. (August 4, 2025)
+- [Top Recall Data APIs for Global Compliance](https://carsxe.com/blog/top-recall-data-apis-for-global-compliance): Explore the essential features of global recall data APIs and how they enhance safety, compliance, and operational efficiency in the automotive industry. (August 3, 2025)
+- [Multi-Language OCR for Vehicle Data: How It Works](https://carsxe.com/blog/multi-language-ocr-for-vehicle-data-how-it-works): Explore how multi-language OCR is revolutionizing vehicle data processing by automating text extraction from multilingual documents with precision. (July 31, 2025)
+- [What Is a Vehicle Registration API?](https://carsxe.com/blog/what-is-a-vehicle-registration-api): Explore how vehicle registration APIs streamline access to vehicle data, enhance efficiency, and reduce costs across various industries. (July 30, 2025)
+- [License Plate API vs VIN API: Full Comparison](https://carsxe.com/blog/license-plate-api-vs-vin-api-full-comparison): Explore the differences between License Plate APIs and VIN APIs to determine the best option for your vehicle data needs. (July 26, 2025)
+- [Vehicle History API: Common Questions Answered](https://carsxe.com/blog/vehicle-history-api-common-questions-answered): Explore how Vehicle History APIs streamline access to crucial vehicle data for dealerships, insurers, and fleet managers, enhancing decision-making. (July 23, 2025)
+- [Vehicle API vs Manual Data Entry: Which Wins?](https://carsxe.com/blog/vehicle-api-vs-manual-data-entry-which-wins): Explore the advantages of Vehicle APIs over manual data entry in speed, accuracy, and scalability for managing vehicle data effectively. (July 21, 2025)
+- [How to Integrate Vehicle Data API in 5 Steps](https://carsxe.com/blog/how-to-integrate-vehicle-data-api-in-5-steps): Learn how to seamlessly integrate a vehicle data API into your application in five simple steps, ensuring efficient access to automotive information. (July 20, 2025)
+- [VIN Decoder API: 7 Key Features to Look For](https://carsxe.com/blog/vin-decoder-api-7-key-features-to-look-for): Explore essential features to consider when selecting a VIN Decoder API, ensuring accuracy, speed, scalability, and compliance for your business needs. (July 19, 2025)
+- [Auto Insurance API Integration Checklist](https://carsxe.com/blog/auto-insurance-api-integration-checklist): Explore essential strategies for integrating auto insurance APIs, focusing on security, data standardization, and compliance with U.S. regulations. (July 18, 2025)
+- [Why Car Dealers Need More Than a Basic VIN Decoder](https://carsxe.com/blog/why-car-dealers-need-more-than-a-basic-vin-decoder): A Vehicle Identification Number (VIN) is a treasure trove of information, but a basic VIN decoder often leaves car dealers with incomplete data. This article explores the critical limitations of standard VIN lookup tools and highlights why advanced VIN decoder software and automotive data solutions are essential for gaining a competitive edge in today's market.  Discover how comprehensive vehicle history access, market-based valuation tools, and seamless integration with dealership management systems can revolutionize your operations. Learn how utilizing enhanced vehicle data can optimize inventory management, refine pricing strategies, build customer trust through transparency, and ultimately drive business growth. Don't settle for partial insights; understand why investing in advanced VIN decoding is crucial for the modern dealership. (July 17, 2025)
+- [ Unlock Node.js Performance: The JSON.parse Trick You're Missing (And Why It Matters for Speed)](https://carsxe.com/blog/nodejs-fast-json-parse-stringify-npm):  In the world of Node.js, milliseconds matter. Find out how a simple npm package can be 3x faster than Node's native JSON.parse, saving CPU cycles and supercharging your application's speed. (July 17, 2025)
+- [Beyond the Hype: How to Read Car Specs Like a Pro (and Why Your VIN is the Key)](https://carsxe.com/blog/car-specs-decoded):  Don't just look at a car, understand it! Learn what essential car specifications really mean – from horsepower to safety ratings – and how they impact your driving, your wallet, and your overall satisfaction. (June 27, 2025)
+- [Buying a Car Without a Title? The Risky Business of Title Jumping and How to Protect Yourself](https://carsxe.com/blog/buying-car-without-title-risks): Don't get trapped! Discover the dangers of buying a car without a proper title, what "title jumping" means, and why a VIN check is your ultimate defense against a costly legal nightmare. (June 23, 2025)
+- [Why Every Logistics Company Should Use a Trailer VIN Decoder API](https://carsxe.com/blog/why-every-logistics-company-should-use-a-trailer-vin-decoder-api): Supercharge your logistics game with instant trailer insights using CarsXE’s Trailer VIN Decoder API. From compliance to maintenance, automate data, reduce errors, and manage your fleet smarter—no paperwork, no guesswork, just precision at scale. (June 12, 2025)
+- [How to Use Vehicle Specs API JSON for Fast and Accurate Car Data](https://carsxe.com/blog/how-to-use-vehicle-specs-api-json-for-fast-and-accurate-car-data): Supercharge your automotive apps with structured, real-time vehicle data. Whether you're building for dealerships, insurance, or fleet tech, Vehicle Specs API JSON delivers clean, reliable specs instantly. Easy to integrate, built for scale—and even better with CarsXE’s enterprise-ready API. Speed meets accuracy in every call. (June 10, 2025)
+- [Kelley Blue Book vs. Black Book: Choosing the Right Tool for Real-World Pricing](https://carsxe.com/blog/kelley-blue-book-vs-black-book-choosing-the-right-tool-for-real-world-pricing): Discover the key differences between Kelley Blue Book and Black Book — two powerful tools with very different goals. Whether you're buying, selling, or trading in a vehicle, learn how to use both to get the best deal and avoid costly mistakes. (June 5, 2025)
+- [Why Every Used Car Buyer Needs a Vehicle History Report](https://carsxe.com/blog/why-every-used-car-buyer-needs-a-vehicle-history-report): What you don't know about a used car can cost you dearly. Discover how a Vehicle History Report (VHR) acts as your car's autobiography, revealing hidden accidents, mileage discrepancies, and title issues, empowering you to make a smart, informed, and confident purchase. (May 22, 2025)
+- [How VIN Decoding Works: A Deep Dive into Vehicle Identification Numbers](https://carsxe.com/blog/how-vin-decoding-works-a-deep-dive-into-vehicle-identification-numbers): What if the real story of a car is hidden in plain sight? Dive into the world of VIN decoding and learn how this powerful tool transforms a 17-character code into a wealth of knowledge, helping you verify specs, avoid mismatched parts, and spot potential fraud. (May 20, 2025)
+- [Estimate Car Value Using an API: A Simple Guide](https://carsxe.com/blog/estimate-car-value-using-an-api-a-simple-guide):  (May 8, 2025)
+- [Build Your Own VIN Decoder with CarsXE](https://carsxe.com/blog/build-your-own-vin-decoder-with-carsxe):  (May 7, 2025)
+- [Unlock Powerful Vehicle Data with CarsXE API](https://carsxe.com/blog/unlock-powerful-vehicle-data-with-carsxe-api):  (April 30, 2025)
+- [Unlock Accurate Used Car Pricing with CarsXE API](https://carsxe.com/blog/unlock-accurate-used-car-pricing-with-carsxe-api):  (April 11, 2025)
+- [Uncover Your Car's History with CarsXE](https://carsxe.com/blog/uncover-your-car-s-history-with-carsxe):  (April 9, 2025)
+- [API vs Database: Choosing the Right Solution for Your Needs](https://carsxe.com/blog/api-vs-database-choosing-the-right-solution-for-your-needs):  (April 4, 2025)
+- [VIN OCR X CarsXE: Unlock Vehicle Data Insights](https://carsxe.com/blog/vin-ocr-x-carsxe-unlock-vehicle-data-insights):  (April 1, 2025)
+- [Unlock Vehicle History Data: CarsXE Provides Reliable Access](https://carsxe.com/blog/unlock-vehicle-history-data-carsxe-provides-reliable-access):  (March 27, 2025)
+- [The Guide to a Plate Decoder API - Decode any VIN using a vehicle API](https://carsxe.com/blog/the-guide-to-a-plate-decoder-api-decode-any-vin-using-a-vehicle-api): This article explains how a VIN Decoder API allows developers to retrieve detailed vehicle information using a VIN, outlining the API's features, benefits, and steps for integration, while emphasizing its utility for accessing essential car data efficiently (September 24, 2024)
+- [National Insurance Crime Bureau (NICB) Leading the Fight Against Insurance Crime](https://carsxe.com/blog/national-insurance-crime-bureau-nicb-leading-the-fight-against-insurance-crime): This article discusses the National Insurance Crime Bureau (NICB) and its efforts in combating insurance fraud through partnerships with law enforcement and insurance companies to protect consumers and maintain industry integrity (September 24, 2024)
+- [Innovative Car Sharing API Solutions for Theft Prevention](https://carsxe.com/blog/innovative-car-sharing-api-solutions-for-theft-prevention): This article explores how cutting-edge API solutions can revolutionize theft prevention in car sharing, ultimately helping businesses maximize their market share (September 23, 2024)
+- [NMVTIS: Your Key to National Motor Vehicle Title Information](https://carsxe.com/blog/nmvtis-your-key-to-national-motor-vehicle-title-information): NMVTIS (National Motor Vehicle Title Information System) helps consumers, businesses, and law enforcement access reliable vehicle history information to prevent fraud, ensure safety, and verify a car's condition before purchase. This article covers the system's benefits, how to access its data, and its legal framework (September 18, 2024)
+- [Top 4 Different Types of Fuel for Vehicles: Discover The Most Common Types Of Fuel](https://carsxe.com/blog/top-4-different-types-of-fuel-for-vehicles-discover-the-most-common-types-of-fuel): Explore the top four vehicle fuels—gasoline, diesel, ethanol, and natural gas—and their effects on performance, efficiency, and environmental impact to make informed fuel choices. (September 18, 2024)
+- [The Ultimate Guide to a Vehicle History API: Get a Detailed Vehicle History Data Report](https://carsxe.com/blog/the-ultimate-guide-to-a-vehicle-history-api-get-a-detailed-vehicle-history-data-report): This article explores Vehicle History APIs, which provide developers with detailed vehicle data like ownership records and accident history. These APIs are crucial for making informed vehicle transactions by offering accurate, real-time information and enhancing trust in the data. (September 13, 2024)
+- [Old School Vehicle Data Providers vs Car API Data Tech](https://carsxe.com/blog/old-school-vehicle-data-providers-vs-car-api-data-tech): This article compares traditional vehicle data methods with modern Car API technology. Old-school providers used manual processes and physical records, which were slow and error-prone. In contrast, Car APIs offer real-time, accurate data, transforming how vehicle information is managed and utilized. (September 13, 2024)
+- [A Guide To Understanding APIs In The Automotive World](https://carsxe.com/blog/a-guide-to-understanding-apis-in-the-automotive-world): This article will provide a comprehensive overview of Car APIs, tracing their evolution from early electronic components to today's sophisticated data access tools. It explains how Car APIs enable seamless connectivity and innovation in the automotive world, detailing their historical development, current applications, and key considerations for selecting and integrating these APIs into your business. (September 12, 2024)
+- [Revolutionizing Auto Insurance: Cutting-edge APIs for Insurance Companies](https://carsxe.com/blog/revolutionizing-auto-insurance-cutting-edge-apis-for-insurance-companies): Discover how cutting-edge APIs for insurance companies are revolutionizing the auto insurance industry. Access data and build experiences with ease using our insurance API. (July 26, 2024)
+- [Motortango](https://carsxe.com/blog/motortango): How Motortango is innovating the Auto Sales Industry with CarsXE (March 18, 2024)
+

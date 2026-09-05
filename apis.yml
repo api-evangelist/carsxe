@@ -1,12 +1,16 @@
 aid: carsxe
 name: CarsXE
 description: >-
-  CarsXE is a comprehensive vehicle data API platform offering VIN decoding,
-  vehicle specifications, market value estimates, vehicle history, vehicle
-  imagery, license plate recognition, OBD fault-code decoding, international
-  VIN decoding, and recall lookups. Designed for automotive marketplaces,
-  dealerships, insurance, lending, fleet, and claims platforms that need
-  programmatic access to rich, current vehicle data.
+  CarsXE is a B2B vehicle data API platform operated by PiWaves, LLC, offering VIN
+  decoding, vehicle specifications, market value estimates, vehicle history, vehicle
+  imagery, license plate decoding and recognition, VIN OCR, OBD fault-code decoding,
+  international VIN decoding, lien and theft screening, year/make/model lookup and
+  single-VIN or 10,000-VIN batch recall checks. A single OpenAPI 3.1 contract covering
+  21 operations is published at api.carsxe.com/openapi.json, alongside a remote MCP
+  server, an RFC 9727 api-catalog, an llms.txt index, first-party SDKs for eight
+  languages, and a CLI. Designed for automotive marketplaces, dealerships, insurance,
+  lending, fleet, parking and claims platforms that need programmatic access to rich,
+  current vehicle data.
 type: Index
 deliveryModel:
   model: saas
@@ -45,8 +49,13 @@ tags:
   - License Plate
   - OCR
   - Automobiles
+  - Recalls
+  - Market Value
+  - Vehicle History
+  - Model Context Protocol
+  - Agents
 created: '2025-02-24'
-modified: '2026-04-23'
+modified: '2026-09-05'
 url: >-
   https://raw.githubusercontent.com/api-evangelist/carsxe/refs/heads/main/apis.yml
 specificationVersion: '0.23'
@@ -203,100 +212,309 @@ apis:
   properties:
   - type: Documentation
     url: https://api.carsxe.com/obd-codes-decoder
-- aid: carsxe:carsxe-auth-api
-  name: CarsXE Auth API
-  description: The Auth API from CarsXE — 1 operation(s) for auth.
-  humanURL: https://api.carsxe.com/vehicle-specifications
-  baseURL: https://api.carsxe.com
-  tags:
-  - Authentication
-  tags_raw:
-  - Auth
-  properties:
-  - type: OpenAPI
-    url: openapi/carsxe-auth-api-openapi.yml
-- aid: carsxe:carsxe-market-value-api
-  name: CarsXE Market Value API
-  description: The Market Value API from CarsXE — 1 operation(s) for market value.
-  humanURL: https://api.carsxe.com/vehicle-specifications
-  baseURL: https://api.carsxe.com
-  tags:
-  - Market Value
-  properties:
-  - type: OpenAPI
-    url: openapi/carsxe-market-value-api-openapi.yml
-- aid: carsxe:carsxe-plate-api
-  name: CarsXE Plate API
-  description: The Plate API from CarsXE — 1 operation(s) for plate.
-  humanURL: https://api.carsxe.com/vehicle-specifications
-  baseURL: https://api.carsxe.com
-  tags:
-  - Plate
-  properties:
-  - type: OpenAPI
-    url: openapi/carsxe-plate-api-openapi.yml
-- aid: carsxe:carsxe-recalls-api
-  name: CarsXE Recalls API
-  description: The Recalls API from CarsXE — 1 operation(s) for recalls.
-  humanURL: https://api.carsxe.com/vehicle-specifications
-  baseURL: https://api.carsxe.com
-  tags:
-  - Recalls
-  properties:
-  - type: OpenAPI
-    url: openapi/carsxe-recalls-api-openapi.yml
 - aid: carsxe:carsxe-specifications-api
   name: CarsXE Specifications API
-  description: The Specifications API from CarsXE — 1 operation(s) for specifications.
-  humanURL: https://api.carsxe.com/vehicle-specifications
+  description: >-
+    VIN decoding for North American and international vehicles — 2 operations (getVehicleSpecs,
+    getInternationalVinDecoder) returning year, make, model, trim, engine, drivetrain, body style,
+    dimensions, equipment and option data from a 17-character VIN.
+  humanURL: https://carsxe.com/docs/v1/specifications
   baseURL: https://api.carsxe.com
   tags:
   - Specifications
+  - VIN Decoder
   properties:
   - type: OpenAPI
     url: openapi/carsxe-specifications-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-specifications-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/specifications
+- aid: carsxe:carsxe-market-value-api
+  name: CarsXE Market Value API
+  description: >-
+    Vehicle market valuation — 2 operations (getMarketValue v1, getMarketValueV2) returning wholesale,
+    retail and trade-in figures by VIN, with optional state, mileage and condition adjustment on v2.
+  humanURL: https://carsxe.com/docs/v2/market-value
+  baseURL: https://api.carsxe.com
+  tags:
+  - Market Value
+  - Valuation
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-market-value-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-market-value-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v2/market-value
+- aid: carsxe:carsxe-plate-api
+  name: CarsXE Plate Decoder API
+  description: >-
+    License plate decoding — 3 operations (decodePlate, decodeUsPlate, decodePlateV2) resolving a
+    registration plate plus country/state to vehicle make, model, year and (where available) VIN,
+    across 50+ countries on the v2 endpoint.
+  humanURL: https://carsxe.com/docs/v2/plate-decoder
+  baseURL: https://api.carsxe.com
+  tags:
+  - License Plate
+  - Plate Decoder
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-plate-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-plate-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v2/plate-decoder
+- aid: carsxe:carsxe-recalls-api
+  name: CarsXE Recalls API
+  description: >-
+    Safety recall lookup — 6 operations covering single-VIN recalls, recalls by year/make/model, and
+    the asynchronous Recalls Batch surface (submit up to 10,000 VINs, poll status, retrieve or
+    download results, with an optional completion webhook).
+  humanURL: https://carsxe.com/docs/v1/vehicle-recalls
+  baseURL: https://api.carsxe.com
+  tags:
+  - Recalls
+  - Safety
+  - Batch
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-recalls-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-recalls-api-overlay.yaml
+  - type: Webhooks
+    url: asyncapi/carsxe-recalls-batch-webhooks.yml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/recalls-batch
+- aid: carsxe:carsxe-history-api
+  name: CarsXE History API
+  description: >-
+    Vehicle history reporting — 1 operation (getVehicleHistory) returning title records, junk and
+    salvage events, insurance records, odometer readings and brand history for a VIN.
+  humanURL: https://carsxe.com/docs/v1/history
+  baseURL: https://api.carsxe.com
+  tags:
+  - History
+  - Title
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-history-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-history-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/history
+- aid: carsxe:carsxe-images-api
+  name: CarsXE Images API
+  description: >-
+    Vehicle imagery search — 1 operation (getVehicleImages) returning photo links, thumbnails,
+    sources and dimensions filtered by make, model, year, trim, colour, angle, photo type and
+    transparent-background option.
+  humanURL: https://carsxe.com/docs/v1/images
+  baseURL: https://api.carsxe.com
+  tags:
+  - Images
+  - Media
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-images-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-images-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/images
+- aid: carsxe:carsxe-recognition-api
+  name: CarsXE Recognition API
+  description: >-
+    Image recognition — 2 operations (recognizePlate, vinOcr) that read a license plate or a VIN out
+    of a supplied image URL or base64 payload, returning detected text, confidence scores and
+    bounding boxes for mobile capture and inspection workflows.
+  humanURL: https://carsxe.com/docs/v1/plate-image-recognition
+  baseURL: https://api.carsxe.com
+  tags:
+  - OCR
+  - Recognition
+  - Artificial Intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-recognition-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-recognition-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/vin-ocr
+- aid: carsxe:carsxe-year-make-model-api
+  name: CarsXE Year Make Model API
+  description: >-
+    Vehicle lookup without a VIN — 3 operations (getYearMakeModel, getYearMakeModelOptions,
+    decodeObdCode) returning trims, features and option packages by year/make/model, dropdown
+    population data, and OBD-II diagnostic trouble code descriptions.
+  humanURL: https://carsxe.com/docs/v1/year-make-model
+  baseURL: https://api.carsxe.com
+  tags:
+  - Year Make Model
+  - OBD
+  - Diagnostics
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-year-make-model-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-year-make-model-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/year-make-model
+- aid: carsxe:carsxe-lien-theft-api
+  name: CarsXE Lien & Theft API
+  description: >-
+    Encumbrance and theft screening — 1 operation (getLienTheft) returning active lien holders,
+    theft reports and recovery status for a VIN, for lenders and pre-purchase due diligence.
+  humanURL: https://carsxe.com/docs/v1/lien-theft
+  baseURL: https://api.carsxe.com
+  tags:
+  - Lien
+  - Theft
+  - Lending
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-lien-theft-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-lien-theft-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/v1/lien-theft
+- aid: carsxe:carsxe-auth-api
+  name: CarsXE Auth API
+  description: >-
+    API key validation — 1 operation (validateKey) against /v1/auth/validate, the endpoint the CarsXE
+    authentication guide documents for confirming that a key is present, valid and active before
+    issuing product calls.
+  humanURL: https://carsxe.com/docs/authentication
+  baseURL: https://api.carsxe.com
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-auth-api-openapi.yml
+  - type: Overlay
+    url: overlays/carsxe-auth-api-overlay.yaml
+  - type: APIReference
+    url: https://carsxe.com/docs/authentication
+- aid: carsxe:carsxe-mcp-server
+  name: CarsXE MCP Server
+  description: >-
+    Remote Model Context Protocol server exposing the CarsXE vehicle-data endpoints as 12 named agent
+    tools over streamable HTTP, authenticated with an X-API-Key header or an OAuth 2.1 authorization
+    code + PKCE flow whose discovery documents are served from the same host.
+  humanURL: https://carsxe.com/docs/integrations/mcp-quickstart
+  baseURL: https://mcp.carsxe.com/mcp
+  tags:
+  - MCP
+  - Agents
+  - Artificial Intelligence
+  properties:
+  - type: MCPServer
+    url: mcp/carsxe-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/carsxe-tool-crosswalk.yml
+  - type: Documentation
+    url: https://carsxe.com/docs/integrations/mcp-quickstart
+
 common:
   - type: AgenticAccess
     url: agentic-access/carsxe-agentic-access.yml
+  - type: Packages
+    url: packages/carsxe-packages.yml
+  - type: SDKs
+    url: packages/carsxe-packages.yml
+  - type: CLI
+    url: cli/carsxe-cli.yml
+  - type: MCPServer
+    url: mcp/carsxe-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/carsxe-tool-crosswalk.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: LLMsTxt
+    url: llms/carsxe-llms.txt
+  - type: WellKnown
+    url: well-known/carsxe-well-known.yml
+  - type: APICatalog
+    url: https://carsxe.com/.well-known/api-catalog
+  - type: Conventions
+    url: conventions/carsxe-conventions.yml
+  - type: Idempotency
+    url: conventions/carsxe-conventions.yml
+  - type: Conformance
+    url: conformance/carsxe-conformance.yml
+  - type: Compliance
+    url: https://carsxe.com/trust
   - type: TrustCenter
     url: security/carsxe-trust-center.yml
   - type: DomainSecurity
     url: security/carsxe-domain-security.yml
   - type: Authentication
     url: authentication/carsxe-authentication.yml
+  - type: ErrorCatalog
+    url: errors/carsxe-problem-types.yml
+  - type: ErrorCodes
+    url: https://carsxe.com/docs/errors
+  - type: DataModel
+    url: data-model/carsxe-data-model.yml
+  - type: Examples
+    url: examples/carsxe-examples.yml
+  - type: Lifecycle
+    url: lifecycle/carsxe-lifecycle.yml
+  - type: StatusPage
+    url: https://carsxe.com/status
+  - type: Deprecation
+    url: https://carsxe.com/docs/versioning
+  - type: Webhooks
+    url: asyncapi/carsxe-recalls-batch-webhooks.yml
+  - type: Sandbox
+    url: sandbox/carsxe-sandbox.yml
+  - type: RateLimits
+    url: rate-limits/carsxe-rate-limits.yml
+  - type: Plans
+    url: plans/carsxe-plans-pricing.yml
+  - type: FinOps
+    url: finops/carsxe-finops.yml
+  - type: Vocabulary
+    url: vocabulary.yml
   - type: GitHubOrganization
     url: https://github.com/carsxe
   - type: LinkedIn
     url: https://www.linkedin.com/company/carsxe
   - type: Website
-    url: https://api.carsxe.com/
+    url: https://carsxe.com/
   - type: Portal
     name: Vehicle Data API | CarsXE
-    url: https://api.carsxe.com/
+    url: https://carsxe.com/
   - type: Documentation
-    url: https://api.carsxe.com/docs
+    url: https://carsxe.com/docs
+  - type: APIReference
+    url: https://carsxe.com/docs/v1
   - type: GettingStarted
-    url: https://api.carsxe.com/docs/quickstart
+    url: https://carsxe.com/docs/quickstart
   - type: Authentication
-    url: https://api.carsxe.com/docs/authentication
-  - type: ErrorCodes
-    url: https://api.carsxe.com/docs/errors
+    url: https://carsxe.com/docs/authentication
   - type: Pricing
-    url: https://api.carsxe.com/pricing
+    url: https://carsxe.com/pricing
   - type: About
-    url: https://api.carsxe.com/about
+    url: https://carsxe.com/about
   - type: Blog
-    url: https://api.carsxe.com/blog
+    url: https://carsxe.com/blog
   - type: Support
-    url: https://api.carsxe.com/support
+    url: https://carsxe.com/support
   - type: Contact
-    url: https://api.carsxe.com/contact-us
+    url: https://carsxe.com/contact-us
   - type: TermsOfService
-    url: https://api.carsxe.com/terms-and-conditions
+    url: https://carsxe.com/terms-and-conditions
+  - type: PrivacyPolicy
+    url: https://carsxe.com/privacy-policy
   - type: Login
-    url: https://api.carsxe.com/login
-  - type: Signup
-    url: https://api.carsxe.com/register
+    url: https://carsxe.com/signin
+  - type: SignUp
+    url: https://carsxe.com/register
 maintainers:
   - FN: Kin Lane
     email: info@apievangelist.com
+x-enrichment:
+  date: '2026-09-05'
+  status: enriched
+  artifacts_added: 41
+  pass: local-v3

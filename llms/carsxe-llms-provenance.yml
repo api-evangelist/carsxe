@@ -1,0 +1,12 @@
+generated: '2026-09-05'
+method: searched
+source: https://carsxe.com/llms.txt
+note: >-
+  Saved verbatim. https://api.carsxe.com/llms.txt 301s to this URL. CarsXE also publishes a
+  full-text corpus at https://carsxe.com/llms-full.txt, which is deliberately NOT committed here —
+  *-llms-full.txt is gitignored network-wide because verbatim docs dumps embed vendor example
+  tokens that trip GitHub push protection.
+file: carsxe-llms.txt
+bytes: 50836
+http_status: 200
+content_type: text/plain

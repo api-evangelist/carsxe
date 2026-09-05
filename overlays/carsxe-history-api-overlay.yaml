@@ -1,0 +1,28 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for CarsXE History API
+  version: 1.0.0
+extends: openapi/carsxe-history-api-openapi.yml
+x-generated: '2026-09-05'
+x-method: generated
+actions:
+- target: $.info
+  update:
+    x-apievangelist-profile: https://apis.io/provider/carsxe/
+    x-apievangelist-source: https://api.carsxe.com/openapi.yaml
+    x-apievangelist-harvested: '2026-09-05'
+- target: $.info
+  update:
+    x-api-catalog: https://carsxe.com/.well-known/api-catalog
+- target: $
+  update:
+    x-mcp-server:
+      url: https://mcp.carsxe.com/mcp
+      transport: streamable-http
+      crosswalk: mcp/carsxe-tool-crosswalk.yml
+- target: $.paths['/history'].get
+  update:
+    x-apievangelist-artifacts:
+      errors: errors/carsxe-problem-types.yml
+      conventions: conventions/carsxe-conventions.yml
+      rate-limits: rate-limits/carsxe-rate-limits.yml

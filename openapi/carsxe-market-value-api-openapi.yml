@@ -1,61 +1,412 @@
 openapi: 3.1.0
 info:
-  title: CarsXE Vehicle Data Auth Market Value API
-  description: CarsXE is a vehicle data API platform offering VIN decoding, vehicle specifications, market value, license plate decoding, vehicle recalls and related lookups. All endpoints accept an API key as a query string parameter `key`.
-  version: '1'
+  title: CarsXE Market Value API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
   contact:
     name: CarsXE
     url: https://api.carsxe.com
 servers:
 - url: https://api.carsxe.com
-  description: Production
 security:
 - ApiKeyQuery: []
 tags:
 - name: Market Value
+  description: Vehicle market value by VIN
 paths:
   /marketvalue:
     get:
+      operationId: getMarketValue
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
       tags:
       - Market Value
-      summary: Retrieve market value data for a vehicle by VIN
-      operationId: getMarketValue
+      summary: Vehicle Market Value (v1)
+      description: Get the market value of a vehicle by VIN, including retail, trade-in and auction values.
       parameters:
-      - $ref: '#/components/parameters/ApiKey'
-      - in: query
-        name: vin
-        required: true
-        schema:
-          type: string
-          minLength: 17
-          maxLength: 17
-      - in: query
-        name: format
-        schema:
-          type: string
-          enum:
-          - json
-          - xml
-          default: json
+      - $ref: '#/components/parameters/vin'
+      - $ref: '#/components/parameters/format'
       responses:
         '200':
-          description: Market value response
+          description: Market value retrieved.
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  success:
+                    type: boolean
+                  vin:
+                    type: string
+                  retail:
+                    type: string
+                    description: Retail price of the vehicle.
+                  tradeIn:
+                    type: string
+                    description: The trade in price of the vehicle.
+                  roughTradeIn:
+                    type: string
+                  averageTradeIn:
+                    type: string
+                  loanValue:
+                    type: string
+                  msrp:
+                    type: string
+                  tradeInValues:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                        value:
+                          type: string
+                      additionalProperties: true
+                  auctionValues:
+                    type: object
+                    additionalProperties: true
+                additionalProperties: true
+              example:
+                retail: '16075'
+                tradeIn: '13575'
+                roughTradeIn: '10250'
+                averageTradeIn: '12050'
+                loanValue: '12225'
+                uid: 1172227
+                msrp: '52250'
+                tradeInValues:
+                - date: '2018-08-01T00:00:00.000Z'
+                  value: '13575'
+                - date: '2018-07-01T00:00:00.000Z'
+                  value: '13600'
+                auctionValues:
+                  lowAuctionValue: 9050
+                  averageAuctionValue: 11925
+                  highAuctionValue: 14825
+                  dateRange: 8/6/2018 - 8/12/2018
+        '400':
+          description: Missing VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing vin (vehicle identification number)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No data found for this VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No data found for this VIN
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v2/marketvalue:
+    get:
+      operationId: getMarketValueV2
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Market Value
+      summary: Vehicle Market Value (v2)
+      description: Get detailed market values for a VIN, including wholesale, retail and trade-in values
+        across condition tiers, with optional adjustments for US state, mileage and condition.
+      parameters:
+      - $ref: '#/components/parameters/vin'
+      - name: state
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The US state of the vehicle to get the market value for.
+      - name: mileage
+        in: query
+        required: false
+        schema:
+          type: number
+        description: The current mileage of the vehicle used to adjust the market value. Must be a valid
+          numeric value.
+      - name: condition
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - excellent
+          - clean
+          - average
+          - rough
+        description: The overall condition of the vehicle.
+      responses:
+        '200':
+          description: Market value retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                  input:
+                    type: object
+                    additionalProperties: true
+                  publish_date:
+                    type: string
+                  state:
+                    type: string
+                  country:
+                    type: string
+                  model_year:
+                    type: string
+                  make:
+                    type: string
+                  model:
+                    type: string
+                  series:
+                    type: string
+                  style:
+                    type: string
+                  class_name:
+                    type: string
+                  whole_xclean:
+                    type: object
+                    additionalProperties: true
+                  whole_clean:
+                    type: object
+                    additionalProperties: true
+                  whole_avg:
+                    type: object
+                    additionalProperties: true
+                  whole_rough:
+                    type: object
+                    additionalProperties: true
+                  retail_xclean:
+                    type: object
+                    additionalProperties: true
+                  retail_clean:
+                    type: object
+                    additionalProperties: true
+                  retail_avg:
+                    type: object
+                    additionalProperties: true
+                  retail_rough:
+                    type: object
+                    additionalProperties: true
+                additionalProperties: true
+              example:
+                uid: FDE60872
+                input:
+                  vin: WBAFR7C57CC811956
+                  country: US
+                publish_date: 4/8/2025
+                state: NT
+                country: US
+                model_year: '2012'
+                make: BMW
+                model: 5-Series
+                series: 535i
+                style: 4D Sedan
+                class_name: Luxury Car
+                whole_clean:
+                  base_whole_clean: 5300
+                  mileage_whole_clean: 0
+                  add_deduct_whole_clean: 0
+                  regional_whole_clean: 0
+                retail_clean:
+                  base_retail_clean: 9325
+                  mileage_retail_clean: 0
+                  add_deduct_retail_clean: 0
+                  regional_retail_clean: 0
+        '400':
+          description: Missing/invalid VIN, mileage or condition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingVin:
+                  value:
+                    success: false
+                    message: Missing vin (vehicle identification number)
+                wrongLength:
+                  value:
+                    success: false
+                    message: Wrong VIN length, must be 17 characters
+                invalidCondition:
+                  value:
+                    success: false
+                    message: 'Invalid condition. Available conditions: excellent, clean, average, rough'
+                invalidMileage:
+                  value:
+                    success: false
+                    message: Invalid mileage. Must be a number
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No data found for this VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No data found for this VIN
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          description: Upstream market value provider is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Cannot access the internet at this time
 components:
   parameters:
-    ApiKey:
+    format:
+      name: format
       in: query
-      name: key
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
+    vin:
+      name: vin
+      in: query
       required: true
       schema:
         type: string
-      description: Your CarsXE API key
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+  responses:
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
       in: query
       name: key
-      description: CarsXE API key from https://api.carsxe.com/dashboard
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

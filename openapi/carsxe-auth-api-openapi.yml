@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: CarsXE Vehicle Data Auth API
   description: CarsXE is a vehicle data API platform offering VIN decoding, vehicle specifications, market value, license plate decoding, vehicle recalls and related lookups. All endpoints accept an API key as a query string parameter `key`.

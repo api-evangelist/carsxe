@@ -17,6 +17,13 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
+  "notes": [
+    "carsxe-auth-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "carsxe-market-value-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "carsxe-plate-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "carsxe-recalls-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "carsxe-specifications-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
   "skipped": []
 }

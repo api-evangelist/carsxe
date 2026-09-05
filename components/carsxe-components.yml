@@ -1,0 +1,31 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://www.npmjs.com/package/@carsxe/ui, https://www.npmjs.com/package/@carsxe/design-system,
+  https://github.com/carsxe/design-system
+note: >-
+  CarsXE publishes two first-party front-end libraries on npm. They are brand and UI building
+  blocks rather than embedded API surfaces — there is no hosted widget, prebuilt checkout, or
+  drop-in element that renders CarsXE data for a customer the way a payments provider ships an
+  embedded field. Recorded as what they are, with no claim that they are an embedded API product.
+families:
+  - family: ui
+    name: "@carsxe/ui"
+    registry: npm
+    url: https://www.npmjs.com/package/@carsxe/ui
+    version: 0.1.1
+    published: '2026-08-03'
+    frameworks: [React, Vue, Svelte, Solid]
+    description: CarsXE UI components for React, Vue, Svelte, and Solid
+    official: true
+  - family: design-system
+    name: "@carsxe/design-system"
+    registry: npm
+    url: https://www.npmjs.com/package/@carsxe/design-system
+    repository: https://github.com/carsxe/design-system
+    version: 0.2.0
+    published: '2026-08-31'
+    description: shadcn/ui components themed to the CarsXE brand
+    official: true
+loaders: []
+embedded_surfaces: []

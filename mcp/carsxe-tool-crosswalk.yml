@@ -1,0 +1,138 @@
+generated: '2026-09-05'
+method: derived
+source: >-
+  mcp/carsxe-mcp.yml (tool list published verbatim by the provider at
+  https://raw.githubusercontent.com/carsxe/carsxe-mcp-server/main/README.md) bound to the
+  operationIds in openapi/_original/carsxe-openapi.yml, harvested from
+  https://api.carsxe.com/openapi.yaml
+note: >-
+  The live MCP tools/list is auth-gated (HTTP 401), so no tool inputSchema could be introspected.
+  Each binding below is made by name and by the documented parameter set against the OpenAPI
+  operation, and every confidence value reflects that. Where a tool name is ambiguous between a v1
+  and a v2 operation, the version the provider's own MCP docs demonstrate is chosen and the other is
+  recorded as a fan-out in the note.
+surfaces:
+  openapi:
+    file: openapi/_original/carsxe-openapi.yml
+    source: https://api.carsxe.com/openapi.yaml
+    operations: 21
+    gated: false
+  mcp:
+    url: https://mcp.carsxe.com/mcp
+    transport: streamable-http
+    tools: 12
+    gated: true
+    gate: 401 unauthorized — X-API-Key header, key query parameter, or OAuth bearer token required
+  graphql: null
+coverage:
+  tools_named: 12
+  tools_bound: 12
+  mcp_only: 0
+  rest_operations_total: 21
+  rest_operations_with_a_tool: 12
+  rest_only: 9
+crosswalk:
+  - tool: get_vehicle_specs
+    category: specifications
+    rest: [getVehicleSpecs]
+    binding: rest
+    confidence: high
+  - tool: decode_international_vin
+    category: specifications
+    rest: [getInternationalVinDecoder]
+    binding: rest
+    confidence: high
+  - tool: decode_license_plate
+    category: plate-decoder
+    rest: [decodePlateV2, decodePlate]
+    binding: rest
+    confidence: medium
+    note: >-
+      Tool parameters are plate/state/country, which matches both the v1 /platedecoder and the v2
+      /v2/platedecoder operation. The MCP docs demonstrate country-qualified lookups, which is the
+      v2 contract, so decodePlateV2 is listed first. Not resolvable without an authenticated
+      tools/list.
+  - tool: get_market_value
+    category: market-value
+    rest: [getMarketValueV2, getMarketValue]
+    binding: rest
+    confidence: high
+    note: >-
+      The tool exposes mileage and condition, which only exist on /v2/marketvalue, so the binding is
+      to getMarketValueV2; getMarketValue (v1) is the legacy fallback.
+  - tool: get_vehicle_history
+    category: history
+    rest: [getVehicleHistory]
+    binding: rest
+    confidence: high
+  - tool: get_vehicle_images
+    category: images
+    rest: [getVehicleImages]
+    binding: rest
+    confidence: high
+  - tool: get_vehicle_recalls
+    category: recalls
+    rest: [getVehicleRecalls]
+    binding: rest
+    confidence: high
+  - tool: read_license_plate_from_image
+    category: recognition
+    rest: [recognizePlate]
+    binding: rest
+    confidence: high
+    note: >-
+      The tool takes imageUrl; the REST operation takes a JSON body whose image field accepts a URL
+      or a base64 payload. The tool exposes only the URL half.
+  - tool: extract_vin_from_image
+    category: recognition
+    rest: [vinOcr]
+    binding: rest
+    confidence: high
+    note: same URL-only narrowing as read_license_plate_from_image
+  - tool: get_year_make_model
+    category: year-make-model
+    rest: [getYearMakeModel]
+    binding: rest
+    confidence: high
+  - tool: decode_obd_code
+    category: diagnostics
+    rest: [decodeObdCode]
+    binding: rest
+    confidence: high
+  - tool: check_lien_and_theft
+    category: lien-theft
+    rest: [getLienTheft]
+    binding: rest
+    confidence: high
+mcp_only: []
+rest_only:
+  - capability: recalls-batch
+    operations:
+      - submitRecallsBatch
+      - getRecallsBatchStatus
+      - getRecallsBatchResults
+      - downloadRecallsBatchResults
+    reason: >-
+      The asynchronous 10,000-VIN batch surface — submit, poll, retrieve, download — has no MCP
+      tool. This is the only write-and-poll workflow CarsXE exposes and it is REST-only, so an agent
+      driving CarsXE through MCP alone cannot run a bulk recall job.
+  - capability: recalls-by-ymm
+    operations: [getRecallsByYmm]
+    reason: >-
+      VIN-less recall lookup by year/make/model has no MCP tool; get_vehicle_recalls requires a VIN.
+  - capability: plate-decoder-variants
+    operations: [decodeUsPlate]
+    reason: >-
+      The US-specific plate decoder (/v1/us-platedecoder, with its decodeVIN flag) has no dedicated
+      tool; decode_license_plate covers the general path only.
+  - capability: year-make-model-options
+    operations: [getYearMakeModelOptions]
+    reason: >-
+      The dropdown-population endpoint (one layer per call) has no MCP tool — it is a UI-building
+      primitive rather than a question an agent asks.
+  - capability: market-value-v1
+    operations: [getMarketValue]
+    reason: superseded by getMarketValueV2, which is what get_market_value binds to
+  - capability: plate-decoder-v1
+    operations: [decodePlate]
+    reason: superseded by decodePlateV2, which is what decode_license_plate binds to

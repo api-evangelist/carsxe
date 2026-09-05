@@ -1,22 +1,41 @@
-generated: '2026-07-15'
+generated: '2026-09-05'
 method: generated
-source: openapi/carsxe-openapi.yml
+source: openapi/carsxe-auth-api-openapi.yml, openapi/carsxe-history-api-openapi.yml, openapi/carsxe-images-api-openapi.yml,
+  openapi/carsxe-lien-theft-api-openapi.yml, openapi/carsxe-market-value-api-openapi.yml, openapi/carsxe-plate-api-openapi.yml,
+  openapi/carsxe-recalls-api-openapi.yml, openapi/carsxe-recognition-api-openapi.yml, openapi/carsxe-specifications-api-openapi.yml,
+  openapi/carsxe-year-make-model-api-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
 summary:
-  operations: 5
+  operations: 22
   by_action_class:
-    connected: 4
-    acting: 1
+    acting: 4
+    connected: 18
   by_consequence:
-    read: 4
-    write: 1
+    write: 4
+    read: 18
   human_in_the_loop_required: 0
 operations:
-- path: /specs
+- path: /v1/auth/validate
+  method: post
+  operationId: validateKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /history
   method: get
-  operationId: getSpecifications
+  operationId: getVehicleHistory
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -24,9 +43,19 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /decodeplate
+- path: /images
   method: get
-  operationId: decodePlate
+  operationId: getVehicleImages
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/lien-theft
+  method: get
+  operationId: getLienTheft
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -44,9 +73,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /v1/recalls
+- path: /v2/marketvalue
   method: get
-  operationId: getRecalls
+  operationId: getMarketValueV2
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -54,9 +83,59 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /v1/auth/validate
+- path: /platedecoder
+  method: get
+  operationId: decodePlate
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/us-platedecoder
+  method: get
+  operationId: decodeUsPlate
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v2/platedecoder
+  method: get
+  operationId: decodePlateV2
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/recalls
+  method: get
+  operationId: getVehicleRecalls
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/recalls-ymm
+  method: get
+  operationId: getRecallsByYmm
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/recalls-batch/submit
   method: post
-  operationId: validateKey
+  operationId: submitRecallsBatch
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -70,3 +149,115 @@ operations:
       - abnormal
       - high-value
     audit: required
+- path: /v1/recalls-batch/status
+  method: get
+  operationId: getRecallsBatchStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/recalls-batch/results
+  method: get
+  operationId: getRecallsBatchResults
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/recalls-batch/download
+  method: get
+  operationId: downloadRecallsBatchResults
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /platerecognition
+  method: post
+  operationId: recognizePlate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/vinocr
+  method: post
+  operationId: vinOcr
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /specs
+  method: get
+  operationId: getVehicleSpecs
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/international-vin-decoder
+  method: get
+  operationId: getInternationalVinDecoder
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/ymm
+  method: get
+  operationId: getYearMakeModel
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/ymm-options
+  method: get
+  operationId: getYearMakeModelOptions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /obdcodesdecoder
+  method: get
+  operationId: decodeObdCode
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none

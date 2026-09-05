@@ -1,0 +1,26 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://api.carsxe.com/.well-known/api-catalog",
+      "item": [
+        { "href": "https://api.carsxe.com", "title": "CarsXE REST API" },
+        { "href": "https://mcp.carsxe.com/mcp", "title": "CarsXE MCP server" }
+      ]
+    },
+    {
+      "anchor": "https://api.carsxe.com",
+      "service-desc": [
+        { "href": "https://api.carsxe.com/openapi.json", "type": "application/json", "title": "CarsXE OpenAPI 3.1 specification" }
+      ],
+      "service-doc": [
+        { "href": "https://carsxe.com/docs", "type": "text/html", "title": "CarsXE API documentation" }
+      ]
+    },
+    {
+      "anchor": "https://mcp.carsxe.com/mcp",
+      "service-doc": [
+        { "href": "https://carsxe.com/docs/integrations/mcp-quickstart", "type": "text/html", "title": "CarsXE MCP quickstart" }
+      ]
+    }
+  ]
+}

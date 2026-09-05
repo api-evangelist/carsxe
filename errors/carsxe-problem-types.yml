@@ -1,0 +1,195 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://carsxe.com/docs/errors and https://carsxe.com/docs/v1/recalls-batch, cross-checked against
+  the 4xx/5xx responses in openapi/_original/carsxe-openapi.yml
+format: proprietary
+rfc9457: false
+envelope:
+  success: boolean — false on every error
+  message: human-readable, stable string
+  usage: "{current, limit, remaining} — present only on 429"
+note: >-
+  CarsXE does not use application/problem+json. Its error contract is a flat {success, message}
+  envelope plus a `usage` object on quota errors, documented exhaustively at /docs/errors with a
+  cause and a remediation for every message. The Recalls Batch surface additionally returns machine
+  codes (BULK_RECALL_BATCH_*, MISSING_API_KEY, USER_NOT_FOUND, …) — the only symbolic error codes
+  CarsXE publishes; every other endpoint identifies the failure by status code plus message text.
+retry_policy:
+  retryable: [500, 502, 503, 504]
+  not_retryable: [400, 401, 403, 404, 405, 429]
+  note: >-
+    A 429 here is a monthly quota exhaustion, not a throttle — it persists until the tier is
+    upgraded, overage billing is enabled, or the billing period resets. Backoff never clears it.
+problems:
+  - status: 401
+    title: Missing API key
+    message: Missing API key
+    code: MISSING_API_KEY
+    cause: the request did not include the `key` parameter
+    remediation: pass the API key as the `key` query parameter on every request
+  - status: 401
+    title: Unknown or disabled API key
+    message: User with this API key was not found or the API key is disabled
+    code: USER_NOT_FOUND
+    cause: typo, revoked key, or disabled key
+    remediation: re-copy the key from the dashboard; check for whitespace or truncation
+  - status: 401
+    title: Inactive account
+    message: >-
+      User with this API key is not active. To activate update your billing on
+      https://carsxe.com/dashboard/billing
+    code: USER_NOT_ACTIVE
+    cause: a payment failed, so API access was suspended
+    remediation: update the payment method on the billing page; access resumes immediately
+  - status: 403
+    title: Blocked API key
+    message: This API key has been blocked, please contact support if you believe this is an error.
+    cause: the key was flagged for abuse
+    remediation: contact support with the account email
+  - status: 403
+    title: Endpoint not in subscription tier
+    message: >-
+      This API is not available for your current subscription tier. Visit
+      https://carsxe.com/pricing to review upgrade options.
+    cause: the plan does not include this endpoint
+    remediation: upgrade the tier or remove the call
+    source_operation: openapi/carsxe-history-api-openapi.yml#getVehicleHistory
+  - status: 400
+    title: Missing VIN
+    message: Missing vin (vehicle identification number)
+    remediation: pass the `vin` parameter
+    free: true
+  - status: 400
+    title: Wrong VIN length
+    message: Wrong VIN length, must be 17 characters
+    remediation: VINs are exactly 17 characters; strip whitespace, check O/0 and I/1 transcription
+    free: true
+  - status: 400
+    title: Missing plate
+    message: Missing vehicle registration number or license plate number
+    remediation: pass the `plate` parameter
+    free: true
+  - status: 400
+    title: Missing state code
+    message: Missing 2 letter state code
+    remediation: pass `state` as a 2-letter code; required for US plate lookups
+    free: true
+  - status: 404
+    title: Invalid state or country code
+    message: Invalid state or country code.
+    remediation: use ISO-style 2-letter codes; see the supported-country list on the v2 plate decoder page
+  - status: 400
+    title: Invalid condition
+    message: "Invalid condition. Available conditions: excellent, clean, average, rough"
+    remediation: the `condition` parameter on Market Value v2 accepts only those four values
+    source_operation: openapi/carsxe-market-value-api-openapi.yml#getMarketValueV2
+  - status: 400
+    title: Invalid mileage
+    message: Invalid mileage. Must be a number
+    remediation: pass `mileage` as digits only
+    source_operation: openapi/carsxe-market-value-api-openapi.yml#getMarketValueV2
+  - status: 400
+    title: Missing image data
+    message: Missing image data
+    remediation: VIN OCR and Plate Recognition require an image URL or base64 string
+    source_operation: openapi/carsxe-recognition-api-openapi.yml#vinOcr
+  - status: 400
+    title: Invalid image data format
+    message: Invalid image data format. Must be a valid URL or base64 encoded string.
+    remediation: check the URL is publicly reachable or that the base64 payload is complete
+    source_operation: openapi/carsxe-recognition-api-openapi.yml#recognizePlate
+  - status: 500
+    title: Missing make/model on Images (legacy status)
+    message: Please supply a make and model. Visit https://carsxe.com/docs for more information
+    cause: a validation failure on a legacy v1 route that reports as 500
+    remediation: supply both `make` and `model`; check `success` rather than the status code
+    source_operation: openapi/carsxe-images-api-openapi.yml#getVehicleImages
+  - status: 404
+    title: No data for VIN
+    message: No data found for this VIN
+    remediation: verify the VIN; coverage varies by market and model year. Cached ~1 day.
+  - status: 404
+    title: No data for VIN — deep search available
+    message: No data found for this VIN. Try a deep search by setting deepdata=1 in your request
+    remediation: retry with deepdata=1 on the Specifications API
+    source_operation: openapi/carsxe-specifications-api-openapi.yml#getVehicleSpecs
+  - status: 404
+    title: Plate country disabled or no data
+    message: Plate searches for this country have been disabled, or No data found for this plate
+    remediation: check the plate and region against the coverage list on the plate decoder page
+  - status: 404
+    title: No lien or theft data
+    message: No lien or theft data found for this VIN
+    remediation: no records exist — for many use cases this is the intended answer
+    source_operation: openapi/carsxe-lien-theft-api-openapi.yml#getLienTheft
+  - status: 404
+    title: No images found
+    message: No images found
+    remediation: try a less specific query — drop trim or color
+    source_operation: openapi/carsxe-images-api-openapi.yml#getVehicleImages
+  - status: 404
+    title: No plates detected
+    message: No plates detected in image
+    remediation: use a sharper, better-lit image where the plate is clearly visible
+    source_operation: openapi/carsxe-recognition-api-openapi.yml#recognizePlate
+  - status: 404
+    title: No VIN candidates in image
+    message: No valid VIN candidates found in the image / No text detected in the image
+    remediation: use a higher-resolution image of the VIN plate or windshield etching
+    source_operation: openapi/carsxe-recognition-api-openapi.yml#vinOcr
+  - status: 429
+    title: Usage quota exceeded
+    message: "API limit exceeded for {api} ({m}/{yyyy}). Subscription tier: {tier}. Current usage: {n}, Limit: {n}."
+    envelope_extra: usage {current, limit, remaining}
+    remediation: >-
+      upgrade the tier, enable overage billing, shrink a bulk request to fit usage.remaining, or wait
+      for the period to reset. Retrying unchanged never succeeds.
+  - status: 500
+    title: Internal server error
+    message: Internal server error
+    remediation: retry once with backoff; contact support with endpoint, parameters and timestamp
+  - status: 500
+    title: Internal provider credential failure (CV-001)
+    message: Unable to authenticate internal request (code CV-001). Please try again later
+    code: CV-001
+    remediation: retry later; quote CV-001 to support if it persists
+  - status: 500
+    title: Internal provider credential failure (CV-002)
+    message: Unable to authenticate internal request (code CV-002). Please try again later
+    code: CV-002
+    remediation: retry later; quote CV-002 to support. Specific to the History API.
+    source_operation: openapi/carsxe-history-api-openapi.yml#getVehicleHistory
+  - status: 502
+    title: Upstream unreachable
+    message: Could not fetch data
+    remediation: retry with exponential backoff
+  - status: 503
+    title: Upstream temporarily down
+    message: Cannot access the internet at this time
+    remediation: retry with backoff
+  - status: 504
+    title: Upstream timeout
+    message: Request timed out. Please try again.
+    remediation: retry with backoff — usually transient
+recalls_batch_codes:
+  note: >-
+    Symbolic codes returned only by the Recalls Batch surface. Source:
+    https://carsxe.com/docs/v1/recalls-batch
+  codes:
+    - {status: 400, code: BULK_RECALL_BATCH_MISSING_VINS, meaning: "no VINs provided — supply vins, csv or csvUrl"}
+    - {status: 400, code: BULK_RECALL_BATCH_TOO_MANY_VINS, meaning: combined VIN count exceeds 10,000}
+    - {status: 400, code: BULK_RECALL_BATCH_INVALID_VIN, meaning: one or more VINs are not 17 valid characters}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_INVALID, meaning: csvUrl is not a valid HTTPS URL}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_HOST_NOT_ALLOWED, meaning: the csvUrl host is not on the allowlist}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_TOO_LARGE, meaning: the CSV exceeds the 5 MB limit}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_NOT_TEXT, meaning: the URL did not return a plain text CSV}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_HTTP_ERROR, meaning: "the storage server returned an HTTP error, e.g. an expired signed URL"}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_REDIRECT_ERROR, meaning: too many or invalid redirects fetching csvUrl}
+    - {status: 400, code: BULK_RECALL_BATCH_CSV_URL_TIMEOUT, meaning: downloading the CSV timed out}
+    - {status: 400, code: BULK_RECALL_BATCH_INVALID_WEBHOOK_URL, meaning: webhookUrl is not a valid allowed HTTPS URL}
+    - {status: 404, code: BULK_RECALL_BATCH_NOT_FOUND, meaning: batch not found or not accessible to this key}
+    - {status: 405, code: ONLY_POST_ALLOWED, meaning: the submit endpoint requires POST}
+    - {status: 409, code: BULK_RECALL_BATCH_NOT_COMPLETE, meaning: batch still processing — results/download only}
+    - {status: 500, code: BULK_RECALL_BATCH_STORAGE_ERROR, meaning: internal storage or batch handoff error — retry later}
+    - {status: 502, code: BULK_RECALL_BATCH_CSV_URL_FETCH_FAILED, meaning: the server could not fetch the CSV from csvUrl}

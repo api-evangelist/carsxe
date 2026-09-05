@@ -1,0 +1,39 @@
+generated: '2026-09-05'
+method: generated
+note: >-
+  One provider-published skill saved verbatim, plus four packaged skills generated from the CarsXE
+  OpenAPI harvested at https://api.carsxe.com/openapi.yaml. Every operationId referenced in a
+  generated skill exists verbatim in that contract — none is invented — and the conventions, error
+  and quota rules in each come from conventions/carsxe-conventions.yml and
+  errors/carsxe-problem-types.yml.
+skills:
+  - file: carsxe-agent-onboarding.md
+    name: CarsXE agent onboarding
+    method: searched
+    source: https://carsxe.com/agent-onboarding/SKILL.md
+    api: null
+    operations: []
+    note: >-
+      Published by CarsXE and saved verbatim. Describes the browser PKCE flow an agent uses to obtain
+      an API key with no CLI install, and the two call paths (raw HTTP for chat agents, @carsxe/cli
+      for coding agents).
+  - file: carsxe-vin-due-diligence.md
+    name: Pre-purchase due diligence from a VIN
+    method: generated
+    api: openapi/_original/carsxe-openapi.yml
+    operations: [getVehicleSpecs, getVehicleHistory, getLienTheft, getVehicleRecalls, getMarketValueV2]
+  - file: carsxe-plate-photo-to-vehicle.md
+    name: Plate photo to vehicle record
+    method: generated
+    api: openapi/_original/carsxe-openapi.yml
+    operations: [recognizePlate, decodePlateV2, getVehicleSpecs, getVehicleImages]
+  - file: carsxe-bulk-recall-sweep.md
+    name: Bulk recall sweep across a fleet
+    method: generated
+    api: openapi/carsxe-recalls-api-openapi.yml
+    operations: [submitRecallsBatch, getRecallsBatchStatus, getRecallsBatchResults, downloadRecallsBatchResults, getRecallsByYmm]
+  - file: carsxe-vin-ocr-intake.md
+    name: VIN OCR vehicle intake
+    method: generated
+    api: openapi/_original/carsxe-openapi.yml
+    operations: [vinOcr, getVehicleSpecs, getInternationalVinDecoder, getVehicleImages, decodeObdCode]

@@ -4,136 +4,106 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: CarsXE
 providerId: carsxe
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Automotive
-  - Vehicles
-  - VIN
-  - Vehicle Data
-  - License Plate
-  - OCR
-  - Automobiles
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the CarsXE API surface. Captures per-tier quotas,
-  burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to be replaced
-  with published provider limits.
+modified: '2026-09-05'
+generated: '2026-09-05'
+method: searched
+source: https://carsxe.com/docs/rate-limits
+sources:
+  - https://carsxe.com/docs/rate-limits
+  - https://carsxe.com/docs/errors
+  - https://carsxe.com/pricing
+  - https://carsxe.com/llms.txt
+description: >-
+  CarsXE limits are volume-based monthly quotas tied to the subscription, not per-second throttles.
+  Replaces the 2026-05-04 scaffold, which asserted invented X-RateLimit-* headers and a 10 rpm free
+  tier that CarsXE does not publish.
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
+  limit: null
+  remaining: null
+  reset: null
+  retryAfter: null
+  policy: null
+header_note: >-
+  CarsXE publishes NO rate-limit response headers. There is no X-RateLimit-*, no RateLimit-*, and no
+  Retry-After. The only runtime signal a caller gets is the `usage` object inside the 429 body. This
+  is the material gap for an agent: it cannot see how close it is to a quota until the call that
+  crosses it fails, and the docs' own advice is to track usage.remaining and to watch the dashboard.
+runtime_signal:
+  location: response body on 429
+  shape:
+    usage.current: units consumed so far this billing period (or in total for Sandbox lifetime allowances)
+    usage.limit: included volume for this API on the current tier
+    usage.remaining: units left before the limit; 0 when the request was rejected
+  example: |
+    {
+      "success": false,
+      "message": "API limit exceeded for market_value (6/2026). Subscription tier: starter. Current usage: 5000, Limit: 5000.",
+      "usage": { "current": 5000, "limit": 5000, "remaining": 0 }
+    }
 responseCodes:
-  throttled: 429
   quotaExceeded: 429
+  planNotIncluded: 403
   serviceUnavailable: 503
+throttling:
+  per_second: false
+  note: >-
+    "There are no per-second request throttles on standard plans, but keep burst concurrency
+    reasonable — extremely aggressive parallel traffic can still be rejected upstream before it
+    reaches your quota."
+retry_semantics:
+  retryable_on_429: false
+  reason: >-
+    A quota 429 is not transient. Retrying with backoff never succeeds. The fix is to upgrade the
+    tier, enable overage billing, wait for the period reset, or — for a bulk request — shrink the
+    batch to fit usage.remaining.
+  message_variants:
+    - "This request requires N units. — a bulk request would exceed the limit even though current < limit; reduce the batch size"
+    - "Please upgrade your tier to continue using the API. — a one-time Sandbox allowance that never resets"
+    - "Enable overage billing in your dashboard billing preferences to continue with overage charges — overage was opted out"
+alerts:
+  channel: email to the account owner
+  thresholds: [80%, 90%, 100%]
+  scope: per API, against that API's included volume
+limit_count: 39
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - CarsXE Vehicle Specifications API
-      - CarsXE Vehicle Market Value API
-      - CarsXE Vehicle Images API
-      - CarsXE VIN OCR API
-      - CarsXE Vehicle Plate Decoder API
-      - CarsXE Vehicle Plate Recognition API
-      - CarsXE Vehicle History API
-      - CarsXE Vehicle Recalls API
-      - CarsXE International VIN Decoder API
-      - CarsXE OBD Codes Decoder API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - CarsXE Vehicle Specifications API
-      - CarsXE Vehicle Market Value API
-      - CarsXE Vehicle Images API
-      - CarsXE VIN OCR API
-      - CarsXE Vehicle Plate Decoder API
-      - CarsXE Vehicle Plate Recognition API
-      - CarsXE Vehicle History API
-      - CarsXE Vehicle Recalls API
-      - CarsXE International VIN Decoder API
-      - CarsXE OBD Codes Decoder API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - CarsXE Vehicle Specifications API
-      - CarsXE Vehicle Market Value API
-      - CarsXE Vehicle Images API
-      - CarsXE VIN OCR API
-      - CarsXE Vehicle Plate Decoder API
-      - CarsXE Vehicle Plate Recognition API
-      - CarsXE Vehicle History API
-      - CarsXE Vehicle Recalls API
-      - CarsXE International VIN Decoder API
-      - CarsXE OBD Codes Decoder API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - CarsXE Vehicle Specifications API
-      - CarsXE Vehicle Market Value API
-      - CarsXE Vehicle Images API
-      - CarsXE VIN OCR API
-      - CarsXE Vehicle Plate Decoder API
-      - CarsXE Vehicle Plate Recognition API
-      - CarsXE Vehicle History API
-      - CarsXE Vehicle Recalls API
-      - CarsXE International VIN Decoder API
-      - CarsXE OBD Codes Decoder API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - CarsXE Vehicle Specifications API
-      - CarsXE Vehicle Market Value API
-      - CarsXE Vehicle Images API
-      - CarsXE VIN OCR API
-      - CarsXE Vehicle Plate Decoder API
-      - CarsXE Vehicle Plate Recognition API
-      - CarsXE Vehicle History API
-      - CarsXE Vehicle Recalls API
-      - CarsXE International VIN Decoder API
-      - CarsXE OBD Codes Decoder API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
-maintainers:
-  - FN: Kin Lane
-    email: info@apievangelist.com
+  - {tier: sandbox, scope: account, metric: successful_calls, window: lifetime, limit: 100, endpoint: all, note: shared pool, does not reset}
+  - {tier: sandbox, scope: account, metric: successful_calls, window: lifetime, limit: 5, endpoint: market_value}
+  - {tier: sandbox, scope: account, metric: successful_calls, window: lifetime, limit: 1, endpoint: history}
+  - {tier: sandbox, scope: account, metric: successful_calls, window: lifetime, limit: 5, endpoint: lien_theft}
+  - {tier: sandbox, scope: account, metric: successful_calls, window: lifetime, limit: 5, endpoint: recalls_batch}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 2000, endpoint: specifications}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 10, endpoint: international_vin_decoder}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 10, endpoint: plate_decoder}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 20, endpoint: us_plate_decoder}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 1000, endpoint: images}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 50, endpoint: vehicle_recalls}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 50, endpoint: vehicle_recalls_ymm}
+  - {tier: starter, scope: account, metric: units, window: month, limit: 200, endpoint: bulk_recall_batch, note: 1 unit per VIN}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 200, endpoint: plate_image_recognition}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 200, endpoint: vin_optical_character_recognition}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 500, endpoint: obd_codes_decoder}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 2000, endpoint: year_make_model}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 2000, endpoint: year_make_model_options}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: market_value, note: overage-only}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: history, note: overage-only}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: lien_theft, note: overage-only}
+  - {tier: starter, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: ownership, note: Enterprise product; overage-only elsewhere}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 25000, endpoint: specifications}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 100, endpoint: international_vin_decoder}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 100, endpoint: plate_decoder}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 500, endpoint: us_plate_decoder}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 15000, endpoint: images}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 500, endpoint: vehicle_recalls}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 500, endpoint: vehicle_recalls_ymm}
+  - {tier: pro, scope: account, metric: units, window: month, limit: 1000, endpoint: bulk_recall_batch, note: 1 unit per VIN}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 1000, endpoint: plate_image_recognition}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 1000, endpoint: vin_optical_character_recognition}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 2000, endpoint: obd_codes_decoder}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 25000, endpoint: year_make_model}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 25000, endpoint: year_make_model_options}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: market_value, note: overage-only}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: history, note: overage-only}
+  - {tier: pro, scope: account, metric: successful_calls, window: month, limit: 0, endpoint: lien_theft, note: overage-only}
+  - {tier: enterprise, scope: account, metric: successful_calls, window: month, limit: null, endpoint: all, note: custom quotas set in contract}
+free_requests:
+  note: requests rejected with a 400 validation error are blocked before any lookup and do not count against quota

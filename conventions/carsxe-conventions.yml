@@ -1,0 +1,183 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://carsxe.com/docs/authentication, https://carsxe.com/docs/errors,
+  https://carsxe.com/docs/rate-limits, https://carsxe.com/docs/versioning,
+  https://carsxe.com/docs/latency-and-regions, https://carsxe.com/docs/v1/recalls-batch,
+  https://carsxe.com/docs/agents, and openapi/_original/carsxe-openapi.yml
+authentication:
+  style: api-key
+  transport: query parameter `key` on every request
+  alternatives:
+    - name: x402
+      scheme: X402Payment
+      header: PAYMENT-SIGNATURE
+      legacy_header: X-PAYMENT
+      description: >-
+        Supported operations can be called with no CarsXE key at all. Call without a key to receive
+        an HTTP 402 carrying the payment requirements, then retry the identical request with the
+        payment header produced by an x402 client. Declared in the OpenAPI securitySchemes and in
+        info.description.
+    - name: recalls-batch-token
+      header: X-CarsXE-Batch-Token
+      description: Batch-scoped token returned by an x402 Recalls Batch submission
+    - name: mcp-oauth
+      description: >-
+        The MCP surface additionally accepts an OAuth 2.1 authorization-code + PKCE bearer token
+        (issuer https://mcp.carsxe.com, dynamic client registration, scope `mcp`).
+  docs: https://carsxe.com/docs/authentication
+  bearer_supported: false
+  note: >-
+    No OAuth scope surface exists on the REST API — a single API key grants every endpoint the
+    subscription tier includes. Plan gating, not scopes, is the authorization model.
+idempotency:
+  supported: true
+  coverage: partial
+  scope:
+    - submitRecallsBatch
+  header: Idempotency-Key
+  applies_to: wallet/credit deduction on retried requests, most importantly batch submits
+  retention: not published
+  docs: https://carsxe.com/docs/rate-limits
+  quote: >-
+    "Credit-wallet accounts should send an `Idempotency-Key` header on retried requests. An API key
+    authenticates a request but does not deduplicate it. CarsXE deduplicates wallet deductions only
+    when the same `Idempotency-Key` is reused for the same logical request; requests without that
+    header are billed independently. This is especially important for batch submits."
+  note: >-
+    Coverage is partial and deliberately recorded as such. The mechanism is documented in prose on
+    the rate-limits page, it is scoped to credit-wallet accounts, and it deduplicates BILLING rather
+    than the effect of the call. No Idempotency-Key parameter appears on any of the 21 operations in
+    the published OpenAPI, so a client reading the contract alone would never send it. The only
+    named beneficiary is the batch submit. 18 of the 21 operations are GET reads and are naturally
+    idempotent; of the three POSTs (submitRecallsBatch, recognizePlate, vinOcr) only the batch
+    submit creates durable server-side state.
+pagination:
+  supported: false
+  note: >-
+    No operation in the published contract paginates. Result-set size is bounded by the request
+    instead — the Images API returns a capped set per query, YMM Options returns one dropdown layer
+    per call, and Recalls Batch caps a job at 10,000 VINs and hands back a downloadable CSV rather
+    than a page cursor.
+field_expansion:
+  supported: partial
+  mechanism: per-operation boolean widening flags rather than a general expand/fields syntax
+  examples:
+    - "getVehicleSpecs: deepdata=1 runs an extended-source lookup when the primary source misses"
+    - "getVehicleSpecs: disableIntVINDecoding suppresses the international fallback"
+    - "decodeUsPlate: decodeVIN additionally decodes the resolved VIN"
+    - "getYearMakeModel: allTrimOptions returns every trim rather than the best match"
+    - "decodePlateV2: require_vin=true guarantees a VIN on Spanish plates, billed and counted 2x"
+metadata:
+  supported: false
+  note: no customer-defined metadata field is accepted on any request
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id or trace header is documented or returned. The error guidance instead asks callers
+    to quote the endpoint, parameters and timestamp when contacting support, and internal upstream
+    failures carry their own codes (CV-001, CV-002) inside the message string.
+versioning:
+  scheme: uri-path
+  patterns:
+    - "root paths — the original v1 generation, e.g. /specs, /marketvalue, /history, /images"
+    - "/v1/... — later v1 additions, e.g. /v1/recalls, /v1/lien-theft, /v1/vinocr, /v1/ymm"
+    - "/v2/... — the current generation, e.g. /v2/platedecoder, /v2/marketvalue"
+  current: v2
+  side_by_side: true
+  breaking_change_policy: >-
+    "Breaking changes get a new path" — changed parameter semantics or response shapes only ever
+    ship under a new version prefix. Within a version, responses may gain fields, so clients must
+    ignore unknown properties.
+  docs: https://carsxe.com/docs/versioning
+error_envelope:
+  format: proprietary
+  rfc9457: false
+  shape:
+    success: boolean — always false on an error, true on success
+    message: human-readable string; stable enough to match on, but match the status code first
+    usage: object present only on 429 — {current, limit, remaining}
+  status_codes: [200, 202, 400, 401, 403, 404, 405, 429, 500, 502, 503, 504]
+  caveat: >-
+    Some legacy v1 routes return 500 for what is really a validation error (a missing make/model on
+    the Images API is the documented example), so v1 clients must check the `success` field rather
+    than trusting the status code alone. v2 endpoints use precise status codes throughout.
+  docs: https://carsxe.com/docs/errors
+  catalog: errors/carsxe-problem-types.yml
+rate_limit_signaling:
+  response_headers: []
+  note: >-
+    CarsXE publishes NO X-RateLimit-*, RateLimit-* or Retry-After response headers. Limits are
+    monthly volume quotas rather than per-second throttles, and the runtime signal an agent gets is
+    the `usage` object {current, limit, remaining} inside the 429 body — not a header. A 429 here is
+    not transient: retrying with backoff never succeeds; the caller must upgrade the tier, enable
+    overage billing, or shrink a bulk request to fit `usage.remaining`.
+  status_on_exhaustion: 429
+  detail: rate-limits/carsxe-rate-limits.yml
+caching:
+  documented: true
+  note: >-
+    Many endpoints cache upstream results; a cached response may carry the message "The response is
+    from the cache". Not-found VIN lookups are cached for about one day, so re-querying the same VIN
+    immediately returns the same miss.
+  markdown_docs_cache: "Cache-Control: s-maxage=300, stale-while-revalidate=86400 on /api/markdown/*"
+regions:
+  us: https://api.carsxe.com
+  eu: https://eu-api.carsxe.com
+  note: >-
+    The EU deployment (GCP europe-west1, Belgium) serves only the internationally meaningful
+    endpoints — /platedecoder, /v2/platedecoder, /platerecognition, /v1/international-vin-decoder,
+    /v1/vinocr and /images. A US-only path on eu-api.carsxe.com returns 404.
+  docs: https://carsxe.com/docs/latency-and-regions
+content_negotiation:
+  documented: true
+  accept_markdown: true
+  direct_markdown_route: https://carsxe.com/api/markdown/{path}
+  vary_header: "Vary: Accept"
+  alternate_link_header: 'Link: </api/markdown/...>; rel="alternate"; type="text/markdown"'
+  unsupported_accept: 406 with a plain-text list of the available types
+  note: >-
+    Documentation, support and guide pages answer `Accept: text/markdown` with clean Markdown.
+    Verified 2026-09-05: /docs/errors, /docs/rate-limits, /docs/versioning, /docs/authentication,
+    /docs/agents and /docs/v1/recalls-batch all returned text/markdown; /trust and /status returned
+    404 to the same request, so the negotiation is scoped to Markdown-backed routes, exactly as the
+    docs say.
+dry_run_mode:
+  supported: false
+  note: >-
+    No dry-run, preview or validate-only mode exists on any operation. The nearest equivalent is the
+    free Sandbox tier (sandbox/carsxe-sandbox.yml), which is a real-call allowance rather than a
+    rehearsal mode.
+reversibility:
+  grade: na
+  applies: false
+  note: >-
+    CarsXE is a read-only data API. Of 21 published operations, 18 are GET lookups and the three
+    POSTs create nothing on the caller's behalf that could need taking back — recognizePlate and
+    vinOcr are stateless image-to-text calls, and submitRecallsBatch queues a read-only lookup job.
+    Nothing is created, charged back, transferred, published or deleted, so there is no reversal
+    operation to document and no window to state. The only irreversible consequence of a call is
+    that it consumes quota or bills overage, and CarsXE explicitly does not charge for requests
+    rejected by 400 validation. reversibility, dry_run_mode and a full idempotency contract are all
+    `na`/`partial` here for the same reason: there is effectively no write surface. Recorded as an
+    honest not-applicable rather than a zero.
+  write_surface:
+    - operationId: submitRecallsBatch
+      creates: an asynchronous batch job (batchId) that reads recall data for up to 10,000 VINs
+      reversal: none published
+      note: >-
+        No cancel or delete operation exists for a submitted batch. The job is read-only and expires
+        on its own; the docs publish no cancellation path and none is asserted here.
+    - operationId: recognizePlate
+      creates: nothing — returns detected plates for a supplied image
+      reversal: not applicable
+    - operationId: vinOcr
+      creates: nothing — returns a detected VIN for a supplied image
+      reversal: not applicable
+cross_links:
+  errors: errors/carsxe-problem-types.yml
+  lifecycle: lifecycle/carsxe-lifecycle.yml
+  authentication: authentication/carsxe-authentication.yml
+  rate_limits: rate-limits/carsxe-rate-limits.yml
+  sandbox: sandbox/carsxe-sandbox.yml
+  webhooks: asyncapi/carsxe-recalls-batch-webhooks.yml

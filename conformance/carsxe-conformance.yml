@@ -1,0 +1,148 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  openapi/_original/carsxe-openapi.yml (harvested from https://api.carsxe.com/openapi.yaml),
+  https://carsxe.com/.well-known/api-catalog, https://mcp.carsxe.com/.well-known/*,
+  https://carsxe.com/trust, https://carsxe.com/docs/errors, https://carsxe.com/docs/agents
+standards:
+  - id: openapi-3.1
+    conforms: true
+    evidence: "openapi: 3.1.0 served first-party at https://api.carsxe.com/openapi.json and /openapi.yaml, 21 operations"
+  - id: rfc9727-api-catalog
+    conforms: true
+    evidence: >-
+      https://carsxe.com/.well-known/api-catalog returns HTTP 200 with
+      Content-Type application/linkset+json and a linkset[] carrying item, service-desc and
+      service-doc relations for the REST API, its OpenAPI, the docs and the MCP endpoint
+  - id: mcp
+    conforms: true
+    evidence: >-
+      Remote streamable-HTTP MCP server at https://mcp.carsxe.com/mcp, registered active in the
+      official MCP registry as io.github.carsxe/carsxe-mcp
+  - id: rfc9728-oauth-protected-resource
+    conforms: true
+    evidence: "https://mcp.carsxe.com/.well-known/oauth-protected-resource — 200, declares resource, authorization_servers, bearer_methods_supported, scopes_supported"
+  - id: rfc8414-oauth-authorization-server
+    conforms: true
+    evidence: "https://mcp.carsxe.com/.well-known/oauth-authorization-server — 200, issuer + authorization/token/registration endpoints"
+  - id: oauth2
+    conforms: true
+    scope: mcp-surface-only
+    evidence: >-
+      OAuth 2.1 authorization_code + refresh_token with S256 PKCE and dynamic client registration on
+      the MCP host. The REST API itself is API-key only and declares no oauth2 securityScheme.
+  - id: rfc7636-pkce
+    conforms: true
+    evidence: 'code_challenge_methods_supported: ["S256"] in the authorization-server metadata'
+  - id: rfc7591-dynamic-client-registration
+    conforms: true
+    evidence: "registration_endpoint https://mcp.carsxe.com/oauth/register"
+  - id: oidc
+    conforms: false
+    evidence: "/.well-known/openid-configuration returns 404 on carsxe.com, api.carsxe.com and mcp.carsxe.com"
+  - id: x402
+    conforms: true
+    evidence: >-
+      The OpenAPI declares an X402Payment securityScheme (PAYMENT-SIGNATURE header, legacy X-PAYMENT
+      accepted) applied as an alternative to the API key on 18 of 21 operations, and info.description
+      documents the 402-then-retry handshake. The Recalls Batch surface issues a scoped
+      X-CarsXE-Batch-Token for x402 follow-up requests.
+  - id: llms-txt
+    conforms: true
+    evidence: "https://carsxe.com/llms.txt — 200, 50,836 bytes, generated per request with live pricing"
+  - id: agent-skills
+    conforms: true
+    evidence: "https://carsxe.com/agent-onboarding/SKILL.md — 200 text/markdown, frontmatter name + description, PKCE onboarding flow"
+  - id: rfc9116-security-txt
+    conforms: false
+    evidence: "/.well-known/security.txt returns 404 on carsxe.com, api.carsxe.com and mcp.carsxe.com"
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors use a proprietary {success, message, usage} envelope; no application/problem+json media
+      type appears in any response in the contract
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: no Sunset or Deprecation header is documented or returned; see lifecycle/carsxe-lifecycle.yml
+  - id: ratelimit-headers
+    conforms: false
+    evidence: >-
+      No X-RateLimit-*, RateLimit-* or Retry-After header is published; the quota signal is a
+      `usage` object inside the 429 body
+  - id: idempotency-key
+    conforms: partial
+    evidence: >-
+      An Idempotency-Key header is documented on https://carsxe.com/docs/rate-limits for
+      credit-wallet accounts and named for batch submits, but it appears on no operation in the
+      OpenAPI. See conventions/carsxe-conventions.yml idempotency.coverage = partial.
+  - id: asyncapi
+    conforms: false
+    evidence: >-
+      No AsyncAPI document is published. A real webhook does exist (bulk_recall_batch_complete on
+      the Recalls Batch surface) and is captured in asyncapi/carsxe-recalls-batch-webhooks.yml.
+  - id: a2a
+    conforms: false
+    evidence: >-
+      /.well-known/agent-card.json and /.well-known/agent.json both 404 on carsxe.com,
+      api.carsxe.com, eu-api.carsxe.com and mcp.carsxe.com
+  - id: aauth
+    conforms: false
+    evidence: /.well-known/aauth-resource.json 404 on every host probed
+  - id: apis-json
+    conforms: false
+    evidence: >-
+      /apis.json and /apis.yml return the site's HTML catch-all shell rather than an index; no
+      apis or specificationVersion key is present
+  - id: graphql
+    conforms: false
+    evidence: no GraphQL endpoint is documented or discoverable
+  - id: soap-wsdl
+    conforms: false
+    evidence: "no ?wsdl or ?singleWsdl surface on api.carsxe.com; CarsXE is REST/JSON only"
+  - id: grpc-protobuf
+    conforms: false
+    evidence: no .proto is published in the github.com/carsxe organization or on buf.build
+domain_standards:
+  note: >-
+    Vehicle data has no dominant machine-readable interchange standard the way healthcare has FHIR
+    or finance has ISO 20022, so most of this section is correctly empty — a reward-only slot, not a
+    penalty. What CarsXE does declare is the identifier standards its own contract is built on.
+  standards:
+    - id: iso-3779-vin
+      conforms: true
+      evidence: >-
+        The contract enforces the 17-character VIN as a first-class type — components.parameters.vin
+        carries minLength 17 / maxLength 17, and the documented error catalog includes "Wrong VIN
+        length, must be 17 characters" and check-digit guidance
+    - id: iso-3166-1-alpha-2
+      conforms: true
+      evidence: >-
+        decodePlateV2 requires `country` as an ISO 3166-1 alpha-2 code; the error catalog rejects
+        non-ISO codes with "Invalid state or country code."
+    - id: obd-ii-dtc
+      conforms: true
+      evidence: >-
+        decodeObdCode accepts SAE J2012-shaped diagnostic trouble codes (P/B/C/U prefix, e.g. P0115,
+        P0300, C1234) and returns a decoded fault description
+    - id: nhtsa-recalls
+      conforms: true
+      evidence: >-
+        Recalls and Recalls-by-YMM are sourced from NHTSA and manufacturer campaign data
+        (https://carsxe.com/docs/v1/vehicle-recalls); the batch surface returns NHTSA-shaped recall
+        rows with consequence and remedy fields
+    - id: nmvtis
+      conforms: unverified
+      evidence: >-
+        CarsXE writes about NMVTIS on its own blog and its History/Lien-and-Theft products cover
+        title, junk, salvage and theft records, but neither the contract nor the docs declare NMVTIS
+        as the source of record. Recorded as unverified rather than claimed.
+compliance:
+  published: true
+  url: https://carsxe.com/trust
+  certifications:
+    - {name: SOC 2 Type II, status: certified, auditor: GreenHat Assurance, opinion: clean, cadence: annual, criteria: [Security, Availability, Confidentiality]}
+    - {name: ISO 27001, status: in-progress}
+  controls: 75 controls across five domains (infrastructure, organizational, product, internal procedures, data and privacy)
+  encryption: {at_rest: AES-256, in_transit: TLS 1.3, key_management: cloud-native KMS with automatic rotation}
+  hosting: Google Cloud Platform, multi-region, data primarily in the United States
+  report_access: SOC 2 Type II report available under NDA on request

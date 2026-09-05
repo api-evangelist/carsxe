@@ -1,10 +1,14 @@
-generated: '2026-07-11'
+generated: '2026-09-05'
 method: derived
-source: openapi/carsxe-openapi.yml
+source: openapi/carsxe-auth-api-openapi.yml, openapi/carsxe-history-api-openapi.yml, openapi/carsxe-images-api-openapi.yml,
+  openapi/carsxe-lien-theft-api-openapi.yml, openapi/carsxe-market-value-api-openapi.yml, openapi/carsxe-plate-api-openapi.yml,
+  openapi/carsxe-recalls-api-openapi.yml, openapi/carsxe-recognition-api-openapi.yml, openapi/carsxe-specifications-api-openapi.yml,
+  openapi/carsxe-year-make-model-api-openapi.yml
 summary:
   types:
   - apiKey
   api_key_in:
+  - header
   - query
 schemes:
 - name: ApiKeyQuery
@@ -13,4 +17,37 @@ schemes:
   parameter: key
   description: CarsXE API key from https://api.carsxe.com/dashboard
   sources:
-  - openapi/carsxe-openapi.yml
+  - openapi/carsxe-auth-api-openapi.yml
+  - openapi/carsxe-history-api-openapi.yml
+  - openapi/carsxe-images-api-openapi.yml
+  - openapi/carsxe-lien-theft-api-openapi.yml
+  - openapi/carsxe-market-value-api-openapi.yml
+  - openapi/carsxe-plate-api-openapi.yml
+  - openapi/carsxe-recalls-api-openapi.yml
+  - openapi/carsxe-recognition-api-openapi.yml
+  - openapi/carsxe-specifications-api-openapi.yml
+  - openapi/carsxe-year-make-model-api-openapi.yml
+- name: X402Payment
+  type: apiKey
+  in: header
+  parameter: PAYMENT-SIGNATURE
+  description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+    HTTP 402 payment requirements, then retry the identical request with the payment header
+    produced by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+  sources:
+  - openapi/carsxe-history-api-openapi.yml
+  - openapi/carsxe-images-api-openapi.yml
+  - openapi/carsxe-lien-theft-api-openapi.yml
+  - openapi/carsxe-market-value-api-openapi.yml
+  - openapi/carsxe-plate-api-openapi.yml
+  - openapi/carsxe-recalls-api-openapi.yml
+  - openapi/carsxe-recognition-api-openapi.yml
+  - openapi/carsxe-specifications-api-openapi.yml
+  - openapi/carsxe-year-make-model-api-openapi.yml
+- name: RecallsBatchToken
+  type: apiKey
+  in: header
+  parameter: X-CarsXE-Batch-Token
+  description: Batch-scoped token returned by an x402 Recalls Batch submission.
+  sources:
+  - openapi/carsxe-recalls-api-openapi.yml

@@ -1,0 +1,128 @@
+generated: '2026-09-05'
+method: probed
+status: published
+source: >-
+  https://carsxe.com/.well-known/api-catalog (linkset naming the MCP endpoint),
+  https://carsxe.com/docs/integrations/mcp-quickstart,
+  https://raw.githubusercontent.com/carsxe/carsxe-mcp-server/main/README.md,
+  https://registry.modelcontextprotocol.io/v0/servers?search=carsxe
+deployment:
+  mode: remote
+  endpoint: https://mcp.carsxe.com/mcp
+  auth: api-key
+  auth_alternatives:
+    - api-key
+    - oauth
+  verified: probed
+server:
+  name: carsxe
+  registry_name: io.github.carsxe/carsxe-mcp
+  transport: http
+  transport_detail: streamable-http
+  url: https://mcp.carsxe.com/mcp
+  repository: https://github.com/carsxe/carsxe-mcp-server
+  registry: https://registry.modelcontextprotocol.io/?q=carsxe
+  registry_status: active
+  registry_version: 1.0.0
+  registry_published: '2026-03-02'
+  docs: https://carsxe.com/docs/integrations/mcp-quickstart
+x-evidence:
+  fetched: '2026-09-05'
+  tools_list:
+    url: https://mcp.carsxe.com/mcp
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    http_status: 401
+    body_returned: >-
+      {"error":"unauthorized","error_description":"Missing credentials. Provide an OAuth Bearer
+      token, X-API-Key header, or 'key' query parameter"}
+    verdict: >-
+      The server is live and reachable but tools/list is auth-gated, so the real inputSchema per
+      tool could not be introspected anonymously. The tool names, descriptions and parameters below
+      are taken verbatim from the provider's own published README for carsxe-mcp-server, not guessed.
+  oauth_discovery:
+    protected_resource: https://mcp.carsxe.com/.well-known/oauth-protected-resource
+    authorization_server: https://mcp.carsxe.com/.well-known/oauth-authorization-server
+    http_status: 200
+authentication:
+  api_key:
+    header: X-API-Key
+    query_param: key
+    docs: https://carsxe.com/dashboard/developer
+  oauth:
+    issuer: https://mcp.carsxe.com
+    authorization_endpoint: https://mcp.carsxe.com/oauth/authorize
+    token_endpoint: https://mcp.carsxe.com/oauth/token
+    registration_endpoint: https://mcp.carsxe.com/oauth/register
+    grant_types: [authorization_code, refresh_token]
+    code_challenge_methods: [S256]
+    dynamic_client_registration: true
+    scopes: [mcp]
+    note: >-
+      Used by the Claude.ai custom-connector flow, where the end user signs in with a CarsXE account
+      and no API key is copied by hand.
+clients_documented:
+  - Claude.ai (custom connector, OAuth)
+  - Claude Desktop (npx mcp-remote@latest)
+  - Claude CLI (claude mcp add --transport http)
+  - Cursor (streamableHttp)
+  - VS Code / GitHub Copilot (http)
+  - Windsurf (npx mcp-remote@latest)
+  - Gemini CLI
+  - Kiro CLI
+  - Codex CLI
+marketplaces:
+  - https://mcp.so/server/carsxe/carsxe
+  - https://mcpmarket.com/server/carsxe
+  - https://glama.ai/mcp/servers/carsxe/cars-xe
+  - https://registry.modelcontextprotocol.io/?q=carsxe
+  - https://mcpservers.org/servers/carsxe/carsxe-mcp-server
+tools:
+  - name: get_vehicle_specs
+    description: Get comprehensive vehicle specifications by VIN
+    parameters: [vin]
+    source_operation: openapi/carsxe-specifications-api-openapi.yml#getVehicleSpecs
+  - name: decode_license_plate
+    description: Decode a vehicle's license plate to get VIN and basic info
+    parameters: [plate, state, country]
+    source_operation: openapi/carsxe-plate-api-openapi.yml#decodePlateV2
+  - name: decode_international_vin
+    description: Decode an international VIN for detailed info
+    parameters: [vin]
+    source_operation: openapi/carsxe-specifications-api-openapi.yml#getInternationalVinDecoder
+  - name: get_market_value
+    description: Get estimated market value for a vehicle by VIN
+    parameters: [vin, state, mileage, condition]
+    source_operation: openapi/carsxe-market-value-api-openapi.yml#getMarketValueV2
+  - name: get_vehicle_history
+    description: Get a comprehensive vehicle history report by VIN
+    parameters: [vin, format]
+    source_operation: openapi/carsxe-history-api-openapi.yml#getVehicleHistory
+  - name: get_vehicle_images
+    description: Get vehicle images by make, model, and filters
+    parameters: [make, model, year, trim, color, transparent, angle, photoType, size, license, format]
+    source_operation: openapi/carsxe-images-api-openapi.yml#getVehicleImages
+  - name: get_vehicle_recalls
+    description: Get vehicle recall information by VIN
+    parameters: [vin]
+    source_operation: openapi/carsxe-recalls-api-openapi.yml#getVehicleRecalls
+  - name: read_license_plate_from_image
+    description: Recognize and extract license plate(s) from a vehicle image URL
+    parameters: [imageUrl]
+    source_operation: openapi/carsxe-recognition-api-openapi.yml#recognizePlate
+  - name: extract_vin_from_image
+    description: Extract the VIN from a vehicle image using OCR
+    parameters: [imageUrl]
+    source_operation: openapi/carsxe-recognition-api-openapi.yml#vinOcr
+  - name: get_year_make_model
+    description: Get comprehensive vehicle info by year, make, model, and optional trim
+    parameters: [year, make, model, trim]
+    source_operation: openapi/carsxe-year-make-model-api-openapi.yml#getYearMakeModel
+  - name: decode_obd_code
+    description: Decode an OBD code and get diagnosis information
+    parameters: [code]
+    source_operation: openapi/carsxe-year-make-model-api-openapi.yml#decodeObdCode
+  - name: check_lien_and_theft
+    description: Get lien and theft information for a vehicle by VIN
+    parameters: [vin]
+    source_operation: openapi/carsxe-lien-theft-api-openapi.yml#getLienTheft

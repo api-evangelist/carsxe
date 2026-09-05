@@ -1,0 +1,66 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://carsxe.com/pricing, https://carsxe.com/llms.txt, https://carsxe.com/docs/quickstart,
+  https://carsxe.com/docs/agents, https://carsxe.com/docs/v1/recalls-batch,
+  https://raw.githubusercontent.com/carsxe/carsxe-mcp-server/main/README.md
+model: free-tier
+note: >-
+  CarsXE has no separate test-mode host, no test/live key prefix split and no fixture or simulation
+  tooling. What it publishes instead is a free Sandbox subscription tier: a real key calling the
+  real production endpoints against a small lifetime allowance. Every value below is published by
+  CarsXE — no test values are invented here. Because Sandbox calls hit production data, there is no
+  way to rehearse a call without consuming allowance; see conventions/carsxe-conventions.yml
+  dry_run_mode = false.
+test_live_separation:
+  separate_host: false
+  key_prefix_split: false
+  mode_flag: false
+  note: the same key and the same https://api.carsxe.com host serve every tier
+sandbox_tier:
+  name: Sandbox
+  price_usd: 0
+  quota_type: lifetime shared pool
+  quota: 100 successful API calls (not monthly, does not reset)
+  premium_caps_within_pool:
+    market_value: 5
+    history: 1
+    lien_theft: 5
+    recalls_batch: 5
+  signup: https://carsxe.com/register
+  trial_on_paid_tiers: false
+  note: >-
+    "There is no time-limited free trial on paid tiers; start with Sandbox, then upgrade to a paid
+    plan when you are ready for production quotas."
+published_example_values:
+  note: >-
+    Example identifiers CarsXE uses in its own documentation and MCP examples. They are real
+    vehicles and real hosted images, not synthetic test fixtures, and they consume quota when
+    called. Recorded verbatim so a first call can be made without inventing an input.
+  vins:
+    - {vin: WBAFR7C57CC811956, used_for: specs, market value, history, recalls, lien and theft}
+    - {vin: 1HGBH41JXMN109186, used_for: specs, recalls batch}
+    - {vin: SHHFK7H47LU419620, used_for: recalls}
+    - {vin: 1C4JJXR64PW696340, used_for: recalls, recalls batch}
+    - {vin: 5YJSA1E26HF000001, used_for: recalls batch}
+    - {vin: 1HGCM82633A004352, used_for: error-handling code samples}
+    - {vin: WF0MXXGBWM8R43240, used_for: international VIN decoder (EU)}
+    - {vin: WAUZZZ8K9AA123456, used_for: international VIN decoder (German)}
+  plates:
+    - {plate: 7XER187, state: CA, country: US, used_for: plate decoder}
+    - {plate: ABC123, state: CA, country: US, used_for: plate decoder}
+  ymm:
+    - {year: 2012, make: BMW, model: 5-Series, used_for: year make model, images}
+  obd_codes: [P0115, P0300, C1234]
+  images:
+    - {url: "https://api.carsxe.com/img/apis/plate_recognition.JPG", used_for: plate image recognition}
+    - {url: "https://res.cloudinary.com/carsxe/image/upload/q_auto/f_auto/v1713204144/base/images/vin-ocr/vin.jpg", used_for: VIN OCR}
+console:
+  dashboard_search: https://carsxe.com/dashboard
+  note: >-
+    The dashboard carries an API search tool that runs live queries with real-time JSON output — the
+    closest thing CarsXE ships to a console or playground. It requires an account.
+onboarding:
+  browser_login_cli: "carsxe login — opens https://carsxe.com/cli-auth, stores the key in ~/.carsxe/config.json"
+  agent_pkce_flow: https://carsxe.com/agent-onboarding/SKILL.md
+  env_var: CARSXE_API_KEY

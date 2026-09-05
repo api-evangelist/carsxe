@@ -1,0 +1,48 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://carsxe.com/docs/integrations/cli-quickstart and
+  https://raw.githubusercontent.com/carsxe/cli/main/README.md
+name: carsxe
+package: "@carsxe/cli"
+registry: npm
+version: 1.1.0
+published: '2026-04-21'
+repository: https://github.com/carsxe/cli
+docs: https://carsxe.com/docs/integrations/cli-quickstart
+requirements: Node.js 22 or higher
+install:
+  - npm install -g "@carsxe/cli"
+authentication:
+  methods:
+    - {name: browser login, command: carsxe login, detail: "opens https://carsxe.com/cli-auth, stores the key in ~/.carsxe/config.json"}
+    - {name: manual, command: carsxe config set-key YOUR_API_KEY}
+    - {name: environment, variable: CARSXE_API_KEY, detail: takes precedence over the saved config file}
+global_options:
+  - {flag: "--table", description: output a formatted table instead of JSON}
+  - {flag: "--raw", description: output compact single-line JSON}
+  - {flag: "-v, --version", description: print version number}
+  - {flag: "-h, --help", description: display help}
+commands:
+  - {command: login, group: auth, description: authorize via browser and save the API key automatically}
+  - {command: config, group: auth, description: "manage the saved key — set-key, get-key, remove-key"}
+  - {command: specs, group: vehicle, description: decode a VIN and get full vehicle specifications, operation: getVehicleSpecs}
+  - {command: market-value, group: vehicle, description: retail, trade-in and wholesale valuation for a VIN, operation: getMarketValueV2}
+  - {command: history, group: vehicle, description: vehicle history report for a VIN, operation: getVehicleHistory}
+  - {command: recalls, group: vehicle, description: open safety recalls for a VIN, operation: getVehicleRecalls}
+  - {command: lien-theft, group: vehicle, description: active liens and theft records for a VIN, operation: getLienTheft}
+  - {command: international-vin, group: vehicle, description: decode a non-US VIN, operation: getInternationalVinDecoder}
+  - {command: plate-decoder, group: plate, description: decode a license plate to vehicle data, operation: decodePlateV2}
+  - {command: plate-image, group: plate, description: recognize a plate from an image, operation: recognizePlate}
+  - {command: vin-ocr, group: plate, description: extract a VIN from an image, operation: vinOcr}
+  - {command: ymm, group: vehicle, description: look up a vehicle by year, make and model, operation: getYearMakeModel}
+  - {command: images, group: vehicle, description: vehicle image search, operation: getVehicleImages}
+  - {command: obd, group: diagnostics, description: decode an OBD-II trouble code, operation: decodeObdCode}
+exit_codes:
+  0: success
+  1: error (message on stderr)
+note: >-
+  The CLI is positioned as the agent-facing shell surface — the provider's own agent-onboarding
+  skill names @carsxe/cli as the recommended path for coding agents and the raw HTTP API as the
+  path for chat agents. It covers 12 of the 21 published operations; the Recalls Batch surface,
+  Recalls by YMM, the US plate decoder and YMM Options have no CLI command.

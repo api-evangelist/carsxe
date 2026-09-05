@@ -1,66 +1,603 @@
 openapi: 3.1.0
 info:
-  title: CarsXE Vehicle Data Auth Plate API
-  description: CarsXE is a vehicle data API platform offering VIN decoding, vehicle specifications, market value, license plate decoding, vehicle recalls and related lookups. All endpoints accept an API key as a query string parameter `key`.
-  version: '1'
+  title: CarsXE Plate Decoder API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
   contact:
     name: CarsXE
     url: https://api.carsxe.com
 servers:
 - url: https://api.carsxe.com
-  description: Production
 security:
 - ApiKeyQuery: []
 tags:
-- name: Plate
+- name: Plate Decoder
+  description: Decode license plates into vehicle data
 paths:
-  /decodeplate:
+  /platedecoder:
     get:
-      tags:
-      - Plate
-      summary: Decode a license plate to vehicle data
       operationId: decodePlate
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Plate Decoder
+      summary: License Plate Decoder (v1)
+      description: 'Decode a license plate into vehicle data. Internally proxies to the v2
+
+        plate decoder. The `state` parameter accepts a two-letter US state
+
+        code, Australian state, or one of the legacy country codes `BR`, `UK`,
+
+        `IR`, `IT`, `ES`, `IND`, `MX`, `NZ`.
+
+        '
       parameters:
-      - $ref: '#/components/parameters/ApiKey'
-      - in: query
-        name: plate
+      - name: plate
+        in: query
         required: true
         schema:
           type: string
-      - in: query
-        name: country
+        description: The vehicle registration number or license plate number.
+      - name: state
+        in: query
+        required: true
         schema:
           type: string
-          description: ISO 3166-1 alpha-2 country code
-      - in: query
-        name: state
+        description: The two letter state code (US) such as `CA` or `NY`, Australian state, or Brazil
+          `BR`, United Kingdom `UK`, Ireland `IR`, Italy `IT`, Spain `ES`, India `IND`, Mexico `MX`, New
+          Zealand `NZ`.
+      - name: country
+        in: query
+        required: false
         schema:
           type: string
-          description: Required for US, AU, CA
-      - in: query
-        name: require_vin
-        schema:
-          type: boolean
-          description: Spain only; returns VIN with 2x billing
+        description: Country code, e.g. Australia `AU`. Optional for `US`.
+      - $ref: '#/components/parameters/format'
       responses:
         '200':
-          description: Decoded plate data
+          description: Plate decoded.
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    additionalProperties: true
+                  vin:
+                    type: string
+                additionalProperties: true
+              example:
+                success: true
+                input:
+                  plate: 7XER187
+                  state: CA
+                  country: US
+                vin: 3KPFK4A78HE103497
+                assembly: Mexico
+                Description: Kia Forte LX
+                BodyStyle: Sedan
+                RegistrationYear: '2017'
+                EngineSize: 2.0L I4 MPI
+                CarMake: Kia
+                CarModel: Forte
+        '400':
+          description: Missing plate or state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingPlate:
+                  value:
+                    success: false
+                    message: Missing vehicle registration number or license plate number
+                missingState:
+                  value:
+                    success: false
+                    message: Missing 2 letter state code
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No data found for this plate (passed through from the v2 decoder).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not fetch data
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '502':
+          description: Upstream plate decoder request failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not fetch data
+        '504':
+          description: Upstream plate decoder request timed out.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Request timed out. Please try again.
+  /v1/us-platedecoder:
+    get:
+      operationId: decodeUsPlate
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Plate Decoder
+      summary: US Vehicle Plate Decoder
+      description: 'Look up a US vehicle by license plate number and state. Returns the
+
+        VIN, year, make, model, trim, engine, body style, transmission, drive
+
+        type, fuel type and exterior color. Optionally decodes the VIN to
+
+        include the full vehicle specifications object. Accepts plates from all
+
+        50 US states, the District of Columbia (DC) and Puerto Rico (PR).
+
+
+        This endpoint is **not** available on the free Sandbox tier.
+
+        '
+      parameters:
+      - name: plate
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The vehicle registration number or license plate number.
+      - name: state
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Two-letter abbreviation for one of the 50 US states, the District of Columbia (`DC`),
+          or Puerto Rico (`PR`).
+      - name: decodeVIN
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - '1'
+        description: Set to `true` or `1` to decode the resolved VIN and include a `vehicle_specs` object
+          in the response (identical in shape to the Specifications endpoint response).
+      responses:
+        '200':
+          description: Plate decoded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    properties:
+                      plate:
+                        type: string
+                      state:
+                        type: string
+                    additionalProperties: true
+                  vin:
+                    type: string
+                  year:
+                    type: string
+                  make:
+                    type: string
+                  model:
+                    type: string
+                  trim:
+                    type: string
+                  description:
+                    type: string
+                  engine_size:
+                    type: string
+                  body_style:
+                    type: string
+                  transmission:
+                    type: string
+                  drive_type:
+                    type: string
+                  fuel_type:
+                    type: string
+                  color:
+                    type: string
+                  vehicle_specs:
+                    $ref: '#/components/schemas/SpecsResponse'
+                    description: Full vehicle specifications (only present when `decodeVIN=true`).
+                additionalProperties: true
+              example:
+                success: true
+                input:
+                  plate: H37SFS
+                  state: NJ
+                vin: 1GNSCGKC0JR318026
+                year: '2018'
+                make: Chevrolet
+                model: Suburban
+                trim: LS
+                description: 2018 Chevrolet Suburban
+                engine_size: 5.3L V8 OHV 16V
+                body_style: SUV
+                transmission: Automatic
+                drive_type: RWD
+                fuel_type: Flexible-Fuel
+                color: Black
+        '400':
+          description: Missing plate, state, or API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingPlate:
+                  value:
+                    success: false
+                    message: Missing vehicle registration number or license plate number
+                missingState:
+                  value:
+                    success: false
+                    message: Missing 2 letter state code
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No data found for this plate/state combination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not fetch data
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v2/platedecoder:
+    get:
+      operationId: decodePlateV2
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Plate Decoder
+      summary: License Plate Decoder (v2)
+      description: 'Decode a license plate into vehicle data across 60+ supported
+
+        countries. `country` is an ISO 3166-1 alpha-2 code (optional for `US`).
+
+        `state` is required for `US`, `AU` and `CA`. For Pakistan (`PK`) a
+
+        `district` is also required for the Khyber-Pakhtunkhwa province.
+
+
+        For Spain (`ES`), set `require_vin=true` to always include a VIN.
+
+        Additional charges apply: when `require_vin=true`, the request is
+
+        billed 2x and usage counts 2x.
+
+        '
+      parameters:
+      - name: plate
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The vehicle registration number or license plate number.
+      - name: country
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ISO 3166-1 alpha-2 country code such as `AU` for Australia or `ZA` for South Africa.
+          Optional for `US`.
+      - name: state
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The two letter state code (US) such as `CA` or `NY`, an Australian state (e.g. `NSW`,
+          `VIC`), or a Canadian province (e.g. `ON`). Required only for `US`, `AU` and `CA`.
+      - name: district
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The district of the vehicle registration number. Required for Pakistan (`PK`) plates
+          registered in the Khyber-Pakhtunkhwa province.
+      - name: require_vin
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Only supported when `country=ES`. Set to `true` to always include a VIN. The request
+          is billed 2x and usage counts 2x.
+      responses:
+        '200':
+          description: Plate decoded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    additionalProperties: true
+                  description:
+                    type: string
+                  make:
+                    type: string
+                  model:
+                    type: string
+                  trim:
+                    type: string
+                  vin:
+                    type: string
+                  year:
+                    type: string
+                additionalProperties: true
+              example:
+                success: true
+                input:
+                  plate: 7XER187
+                  state: CA
+                  country: US
+                description: Kia Forte LX
+                make: Kia
+                model: Forte
+                trim: LX
+                vin: 3KPFK4A78HE103497
+                style: Sedan 4D
+                year: '2017'
+                assembly: Mexico
+                fuel_type: Gasoline
+                color: White
+                body_style: Sedan
+                engine_size: 2.0L I4 MPI
+                drive_type: FWD
+                transmission: Automatic
+        '400':
+          description: Missing plate, or `require_vin` used with a country other than ES.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingPlate:
+                  value:
+                    success: false
+                    message: Missing vehicle registration number or license plate number
+                requireVin:
+                  value:
+                    success: false
+                    message: The require_vin parameter is only supported when country=ES.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Invalid state/country/district, or no data found for this plate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidState:
+                  value:
+                    success: false
+                    message: Invalid state or country code.
+                invalidDistrict:
+                  value:
+                    success: false
+                    message: Invalid district
+                notFound:
+                  value:
+                    success: false
+                    message: Plate searches for this country have been disabled, or No data found for
+                      this plate
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
 components:
   parameters:
-    ApiKey:
+    format:
+      name: format
       in: query
-      name: key
-      required: true
+      required: false
       schema:
         type: string
-      description: Your CarsXE API key
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
+  responses:
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    SpecsResponse:
+      allOf:
+      - $ref: '#/components/schemas/SuccessEnvelope'
+      - type: object
+        properties:
+          attributes:
+            type: object
+            description: A map of specifications about the VIN (year, make, model, trim, style, type,
+              size, category, made_in, doors, fuel_type, engine, transmission, drivetrain, dimensions,
+              pricing and more).
+            additionalProperties: true
+          colors:
+            type: array
+            description: Available color options based on the vehicle's year, make and model.
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                name:
+                  type: string
+              additionalProperties: true
+          equipment:
+            type: object
+            description: Equipment details based on the vehicle's year, make and model.
+            additionalProperties: true
+          warranties:
+            type: array
+            description: Standard vehicle warranties by type, miles and months.
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                miles:
+                  type: string
+                months:
+                  type: string
+              additionalProperties: true
+          deepdata:
+            type: object
+            description: More information on the vehicle from the deep data search (present when `deepdata=1`).
+            additionalProperties: true
+    SuccessEnvelope:
+      type: object
+      description: Generic success envelope. Endpoint-specific payload fields appear at the top level
+        alongside these common fields.
+      properties:
+        success:
+          type: boolean
+        input:
+          type: object
+          description: Echo of the input parameters specified by the query.
+          additionalProperties: true
+        timestamp:
+          type: string
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
       in: query
       name: key
-      description: CarsXE API key from https://api.carsxe.com/dashboard
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

@@ -1,0 +1,218 @@
+openapi: 3.1.0
+info:
+  title: CarsXE Lien & Theft API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
+  contact:
+    name: CarsXE
+    url: https://api.carsxe.com
+servers:
+- url: https://api.carsxe.com
+security:
+- ApiKeyQuery: []
+tags:
+- name: Lien & Theft
+  description: Lien and theft records by VIN
+paths:
+  /v1/lien-theft:
+    get:
+      operationId: getLienTheft
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Lien & Theft
+      summary: Lien & Theft records
+      description: Check a VIN for active lien and theft records (US).
+      parameters:
+      - $ref: '#/components/parameters/vin'
+      responses:
+        '200':
+          description: Lien/theft data retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    additionalProperties: true
+                  timestamp:
+                    type: string
+                  year:
+                    type: integer
+                  make:
+                    type: string
+                  model:
+                    type: string
+                  type:
+                    type: string
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+                  trim_data:
+                    type: object
+                    additionalProperties: true
+                additionalProperties: true
+              example:
+                success: true
+                input:
+                  vin: 2C3CDXFG1FH762860
+                timestamp: '2025-12-07T20:32:11.027Z'
+                year: 2015
+                make: DODGE
+                model: Charger
+                type: CAR
+                events:
+                - event: Recovered Theft
+                  location: OH
+                  details_list:
+                  - The vehicle is reported to be an Recovered Theft.
+        '400':
+          description: Missing or invalid VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingVin:
+                  value:
+                    success: false
+                    message: Missing vin (vehicle identification number)
+                wrongLength:
+                  value:
+                    success: false
+                    message: Wrong VIN length, must be 17 characters
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No lien or theft data found for this VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No lien or theft data found for this VIN
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+components:
+  parameters:
+    vin:
+      name: vin
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+  responses:
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

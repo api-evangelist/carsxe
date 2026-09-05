@@ -1,61 +1,378 @@
 openapi: 3.1.0
 info:
-  title: CarsXE Vehicle Data Auth Specifications API
-  description: CarsXE is a vehicle data API platform offering VIN decoding, vehicle specifications, market value, license plate decoding, vehicle recalls and related lookups. All endpoints accept an API key as a query string parameter `key`.
-  version: '1'
+  title: CarsXE Specifications API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
   contact:
     name: CarsXE
     url: https://api.carsxe.com
 servers:
 - url: https://api.carsxe.com
-  description: Production
 security:
 - ApiKeyQuery: []
 tags:
 - name: Specifications
+  description: VIN decoding and vehicle specifications
 paths:
   /specs:
     get:
+      operationId: getVehicleSpecs
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
       tags:
       - Specifications
-      summary: Decode a VIN and return vehicle specifications
-      operationId: getSpecifications
+      summary: Vehicle Specifications (VIN decoder)
+      description: 'Decode a 17-character VIN and return detailed vehicle specifications,
+
+        including attributes, colors, equipment and warranties. If the VIN
+
+        cannot be decoded, an International VIN decoding check is run as a
+
+        fallback unless `disableIntVINDecoding=1` is set.
+
+        '
       parameters:
-      - $ref: '#/components/parameters/ApiKey'
-      - in: query
-        name: vin
-        required: true
-        schema:
-          type: string
-          minLength: 17
-          maxLength: 17
-      - in: query
-        name: format
+      - $ref: '#/components/parameters/vin'
+      - $ref: '#/components/parameters/format'
+      - name: deepdata
+        in: query
+        required: false
         schema:
           type: string
           enum:
-          - json
-          - xml
-          default: json
+          - '1'
+        description: Request extra data. Set to `1` to use. Significantly slower than the regular request
+          but retrieves additional data.
+      - name: disableIntVINDecoding
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+        description: Set to `1` to disable the International VIN decoding fallback and return an error
+          instead of a potential partial response.
       responses:
         '200':
-          description: Vehicle specifications
+          description: Vehicle specifications retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecsResponse'
+              example:
+                success: true
+                input:
+                  key: API_KEY
+                  vin: WBAFR7C57CC811956
+                attributes:
+                  year: '2012'
+                  make: BMW
+                  model: 5-Series
+                  trim: 535i
+                  style: SEDAN 4-DR
+                  type: Sedan/Saloon
+                  made_in: GERMANY
+                  doors: '4'
+                  fuel_type: Gasoline
+                  engine: 3.0L L6 DOHC 24V
+                  engine_cylinders: '6'
+                  transmission: 6-Speed Manual | 8-Speed Automatic
+                  drivetrain: RWD
+                colors:
+                - category: Interior
+                  name: Black Dakota Leather Interior
+                - category: Exterior
+                  name: Alpine White
+                equipment:
+                  abs_brakes: Std.
+                  air_conditioning: Std.
+                warranties:
+                - type: Basic
+                  miles: 50,000 mile
+                  months: 48 month
+                timestamp: '2025-10-01T22:40:36.374Z'
+        '400':
+          description: Missing or invalid VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing vin (vehicle identification number)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No data found for this VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No data found for this VIN. Try a deep search by setting deepdata=1 in your request
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/international-vin-decoder:
+    get:
+      operationId: getInternationalVinDecoder
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Specifications
+      summary: International VIN Decoder
+      description: Decode a non-US (international) VIN into vehicle attributes.
+      parameters:
+      - $ref: '#/components/parameters/vin'
+      responses:
+        '200':
+          description: International VIN decoded.
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    additionalProperties: true
+                  attributes:
+                    type: object
+                    description: Decoded vehicle attributes.
+                    additionalProperties: true
+                  timestamp:
+                    type: string
+                additionalProperties: true
+              example:
+                success: true
+                input:
+                  vin: WF0MXXGBWM8R43240
+                attributes:
+                  vin: WF0MXXGBWM8R43240
+                  vid: '1623'
+                  make: Ford
+                  model: Galaxy
+                timestamp: '2025-04-11T00:05:36.457Z'
+        '400':
+          description: Missing VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing vin (vehicle identification number)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No data found for this VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No data found for this VIN
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   parameters:
-    ApiKey:
+    format:
+      name: format
       in: query
-      name: key
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
+    vin:
+      name: vin
+      in: query
       required: true
       schema:
         type: string
-      description: Your CarsXE API key
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+  responses:
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    SpecsResponse:
+      allOf:
+      - $ref: '#/components/schemas/SuccessEnvelope'
+      - type: object
+        properties:
+          attributes:
+            type: object
+            description: A map of specifications about the VIN (year, make, model, trim, style, type,
+              size, category, made_in, doors, fuel_type, engine, transmission, drivetrain, dimensions,
+              pricing and more).
+            additionalProperties: true
+          colors:
+            type: array
+            description: Available color options based on the vehicle's year, make and model.
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                name:
+                  type: string
+              additionalProperties: true
+          equipment:
+            type: object
+            description: Equipment details based on the vehicle's year, make and model.
+            additionalProperties: true
+          warranties:
+            type: array
+            description: Standard vehicle warranties by type, miles and months.
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                miles:
+                  type: string
+                months:
+                  type: string
+              additionalProperties: true
+          deepdata:
+            type: object
+            description: More information on the vehicle from the deep data search (present when `deepdata=1`).
+            additionalProperties: true
+    SuccessEnvelope:
+      type: object
+      description: Generic success envelope. Endpoint-specific payload fields appear at the top level
+        alongside these common fields.
+      properties:
+        success:
+          type: boolean
+        input:
+          type: object
+          description: Echo of the input parameters specified by the query.
+          additionalProperties: true
+        timestamp:
+          type: string
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
       in: query
       name: key
-      description: CarsXE API key from https://api.carsxe.com/dashboard
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

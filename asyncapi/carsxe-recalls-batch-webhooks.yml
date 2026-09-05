@@ -1,0 +1,58 @@
+generated: '2026-09-05'
+method: searched
+source: https://carsxe.com/docs/v1/recalls-batch
+spec_type: Webhooks
+asyncapi_published: false
+note: >-
+  CarsXE publishes no AsyncAPI document — /asyncapi.yaml is absent and no event catalog exists. It
+  does ship exactly one real outbound event, on the asynchronous Recalls Batch surface, captured
+  here as a webhook catalog. Nothing is fabricated: the payload below is the provider's own
+  published example, field for field.
+subscription:
+  mechanism: per-request
+  parameter: webhookUrl
+  set_on: "POST /v1/recalls-batch/submit (operationId submitRecallsBatch)"
+  transport: HTTPS POST with Content-Type application/json
+  requirements:
+    - must be a valid HTTPS URL allowed by CarsXE validation rules
+    - redirects are not followed
+    - CarsXE times out after about 30 seconds — respond quickly
+  no_signature: true
+  signature_note: >-
+    No webhook signing secret, HMAC header or replay-protection mechanism is documented. The
+    downloadUrl in the payload embeds the account API key in its query string, so the delivery
+    endpoint must be treated as credential-bearing.
+  rejection_code: BULK_RECALL_BATCH_INVALID_WEBHOOK_URL (400)
+  alternative: polling GET /v1/recalls-batch/status until status is completed, partial or failed
+events:
+  - name: bulk_recall_batch_complete
+    trigger: the batch reaches a terminal state (completed or partial)
+    payload_fields:
+      event: string — always "bulk_recall_batch_complete"
+      batchId: string — e.g. brb_mnablbn7_wvbaqv
+      status: string — completed | partial
+      totalVins: integer
+      processedVins: integer
+      hitCount: integer — VINs with at least one open safety recall row
+      hitRate: number — percentage
+      downloadUrl: string — CSV download URL with the API key embedded in the query string
+      timestamp: string — ISO 8601
+    example: |
+      {
+        "event": "bulk_recall_batch_complete",
+        "batchId": "brb_mnablbn7_wvbaqv",
+        "status": "completed",
+        "totalVins": 100,
+        "processedVins": 100,
+        "hitCount": 25,
+        "hitRate": 25,
+        "downloadUrl": "https://api.carsxe.com/v1/recalls-batch/download?key=…&batchId=…",
+        "timestamp": "2026-03-24T10:16:43.000Z"
+      }
+    related_operations:
+      - submitRecallsBatch
+      - getRecallsBatchStatus
+      - getRecallsBatchResults
+      - downloadRecallsBatchResults
+job_states: [processing, uploading, completed, partial, failed]
+turnaround: typically 30-60 minutes; fully cached batches can return completed immediately on submit

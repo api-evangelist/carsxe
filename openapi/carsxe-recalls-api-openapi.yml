@@ -1,53 +1,666 @@
 openapi: 3.1.0
 info:
-  title: CarsXE Vehicle Data Auth Recalls API
-  description: CarsXE is a vehicle data API platform offering VIN decoding, vehicle specifications, market value, license plate decoding, vehicle recalls and related lookups. All endpoints accept an API key as a query string parameter `key`.
-  version: '1'
+  title: CarsXE Recalls API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
   contact:
     name: CarsXE
     url: https://api.carsxe.com
 servers:
 - url: https://api.carsxe.com
-  description: Production
 security:
 - ApiKeyQuery: []
 tags:
 - name: Recalls
+  description: Safety recalls by VIN, including bulk batches
 paths:
   /v1/recalls:
     get:
+      operationId: getVehicleRecalls
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
       tags:
       - Recalls
-      summary: Retrieve recall information by VIN
-      operationId: getRecalls
+      summary: Vehicle Recalls
+      description: Retrieve open safety recalls for a vehicle by VIN.
       parameters:
-      - $ref: '#/components/parameters/ApiKey'
-      - in: query
-        name: vin
-        required: true
-        schema:
-          type: string
-          minLength: 17
-          maxLength: 17
+      - $ref: '#/components/parameters/vin'
       responses:
         '200':
-          description: Recall data
+          description: Recall data retrieved.
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    additionalProperties: true
+                  data:
+                    type: object
+                    description: Recall report for the VIN.
+                    additionalProperties: true
+                  timestamp:
+                    type: string
+                additionalProperties: true
+              example:
+                success: true
+                input:
+                  key: API_KEY
+                  vin: 1C4JJXR64PW696340
+                data:
+                  uuid: d1269d6b-54a2-4bf3-8119-1c8fdb4f0563
+                  vin: 1C4JJXR64PW696340
+                  manufacturer: FCA US LLC
+                  model_year: '2023'
+                timestamp: '2025-10-03T08:46:03.701Z'
+        '400':
+          description: Missing VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing vin (vehicle identification number)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No recall data found for this VIN.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No data found for this VIN
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/recalls-ymm:
+    get:
+      operationId: getRecallsByYmm
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Recalls
+      summary: Recalls by Year, Make & Model
+      description: Retrieve open safety recalls for a vehicle by year, make, and model — no VIN required.
+      parameters:
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The 4-digit model year (e.g. `2019`).
+      - name: make
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The vehicle manufacturer name (e.g. `Toyota`). Case-insensitive.
+      - name: model
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The vehicle model name (e.g. `Camry`). Case-insensitive.
+      responses:
+        '200':
+          description: Recall data retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    properties:
+                      year:
+                        type: string
+                      make:
+                        type: string
+                      model:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      make:
+                        type: string
+                      model:
+                        type: string
+                      model_year:
+                        type: string
+                      recall_count:
+                        type: integer
+                      has_recalls:
+                        type: boolean
+                      recalls:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: true
+                  timestamp:
+                    type: string
+              example:
+                success: true
+                input:
+                  year: '2026'
+                  make: TOYOTA
+                  model: COROLLA
+                data:
+                  make: TOYOTA
+                  model: COROLLA
+                  model_year: '2026'
+                  recall_count: 1
+                  has_recalls: true
+                  recalls:
+                  - nhtsa_campaign_number: 26V110000
+                    manufacturer: Toyota Motor Engineering & Manufacturing
+                    park_it: false
+                    park_outside: false
+                    over_the_air_update: false
+                    report_received_date: 25/02/2026
+                    component: EXTERIOR LIGHTING:HEADLIGHTS
+                    summary: Toyota is recalling certain 2026 Corolla vehicles.
+                    consequence: Incorrectly aimed headlights can reduce driver visibility.
+                    remedy: Dealers will replace both front headlight assemblies, free of charge.
+                    notes: null
+                timestamp: '2026-06-29T12:00:45.786Z'
+        '400':
+          description: Missing or invalid year, make, or model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing required parameters
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Feature not available on this plan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: This feature is not enabled for your account
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/recalls-batch/submit:
+    post:
+      operationId: submitRecallsBatch
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Recalls
+      summary: Submit a bulk recalls batch
+      description: 'Submit up to 10,000 VINs for asynchronous recall processing. Provide
+
+        VINs as a JSON array (`vins`), inline CSV text (`csv`), or an HTTPS
+
+        link to a CSV file (`csvUrl`). Optionally provide a `webhookUrl` that
+
+        CarsXE will POST to when the batch finishes. Poll the status endpoint
+
+        or wait for the webhook, then fetch results.
+
+
+        x402 submissions must use the JSON `vins` array. The `csv` and `csvUrl`
+
+        forms require CarsXE API-key authentication.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vins:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of 17-character VINs (max 10,000 per batch).
+                csv:
+                  type: string
+                  description: Inline CSV text containing VINs. Available with CarsXE API-key authentication
+                    only; x402 does not accept this form.
+                csvUrl:
+                  type: string
+                  description: HTTPS link to a CSV file of VINs (max 5 MB) hosted on a supported storage
+                    provider (e.g. S3, GCS, Firebase, Dropbox). Available with CarsXE API-key authentication
+                    only; x402 does not accept this form.
+                webhookUrl:
+                  type: string
+                  description: HTTPS URL for a customer webhook. CarsXE POSTs a JSON payload when the
+                    batch finishes. Must be a valid HTTPS URL allowed by CarsXE validation rules.
+            example:
+              vins:
+              - 1HGBH41JXMN109186
+              - 5YJSA1E26HF000001
+              webhookUrl: https://example.com/webhooks/carsxe-recalls
+      responses:
+        '202':
+          description: Batch accepted and queued for processing.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      batchId:
+                        type: string
+                      status:
+                        type: string
+                      totalVins:
+                        type: integer
+                      processedVins:
+                        type: integer
+                      batchToken:
+                        type: string
+                        description: Opaque batch-scoped credential returned only for x402 submissions.
+                          Send it in X-CarsXE-Batch-Token on follow-up requests.
+                    additionalProperties: true
+                  message:
+                    type: string
+                additionalProperties: true
+              example:
+                success: true
+                data:
+                  batchId: brb_mnablbn7_wvbaqv
+                  status: uploading
+                  totalVins: 3
+                  processedVins: 0
+                message: Batch submitted and queued for processing. Poll the status endpoint or wait for
+                  the webhook.
+        '400':
+          description: Invalid request body — missing VINs, invalid VINs, more than 10,000 VINs, invalid
+            `webhookUrl`, or a `csvUrl` that is invalid / not allowed / too large.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingVins:
+                  value:
+                    success: false
+                    message: 'Request body must include at least one of: "vins" (non-empty array), "csv"
+                      (text), or "csvUrl" (https link to a CSV) with valid 17-character VINs.'
+                invalidVin:
+                  value:
+                    success: false
+                    message: One or more VINs are invalid. Each VIN must be exactly 17 characters.
+                tooManyVins:
+                  value:
+                    success: false
+                    message: Maximum 10,000 VINs per batch. Split your request into multiple batches.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          description: Method not allowed (only POST is accepted).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Only POST allowed. Send JSON body with "vehicles" array.
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          description: Could not download the CSV from `csvUrl`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not download the CSV from csvUrl. Check the link and try again.
+  /v1/recalls-batch/status:
+    get:
+      security:
+      - ApiKeyQuery: []
+      - RecallsBatchToken: []
+      operationId: getRecallsBatchStatus
+      tags:
+      - Recalls
+      summary: Get bulk recalls batch status
+      description: Check the processing status of a previously submitted batch.
+      parameters:
+      - $ref: '#/components/parameters/batchId'
+      - $ref: '#/components/parameters/recallsBatchToken'
+      responses:
+        '200':
+          description: Batch status retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      batchId:
+                        type: string
+                      numericBatchId:
+                        type: integer
+                      status:
+                        type: string
+                      totalVins:
+                        type: integer
+                    additionalProperties: true
+                additionalProperties: true
+              example:
+                success: true
+                data:
+                  batchId: brb_mnablbn7_wvbaqv
+                  numericBatchId: 200426
+                  status: completed
+                  totalVins: 3
+        '400':
+          description: Missing batchId parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing batchId parameter
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Batch not found or not accessible with this API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Batch not found or you do not have access to this batch.
+  /v1/recalls-batch/results:
+    get:
+      security:
+      - ApiKeyQuery: []
+      - RecallsBatchToken: []
+      operationId: getRecallsBatchResults
+      tags:
+      - Recalls
+      summary: Get bulk recalls batch results
+      description: Fetch the per-VIN recall results of a completed batch as JSON.
+      parameters:
+      - $ref: '#/components/parameters/batchId'
+      - $ref: '#/components/parameters/recallsBatchToken'
+      responses:
+        '200':
+          description: Batch results retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      job:
+                        type: object
+                        additionalProperties: true
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            vin:
+                              type: string
+                            hasRecalls:
+                              type: boolean
+                            recallCount:
+                              type: integer
+                            recalls:
+                              type: array
+                              items:
+                                type: object
+                                additionalProperties: true
+                          additionalProperties: true
+                additionalProperties: true
+              example:
+                success: true
+                data:
+                  job:
+                    batchId: brb_mnablbn7_wvbaqv
+                    numericBatchId: 200426
+                    status: completed
+                  results:
+                  - vin: 1HGBH41JXMN109186
+                    hasRecalls: true
+                    recallCount: 1
+                  - vin: 5YJSA1E26HF000001
+                    hasRecalls: false
+                    recallCount: 0
+        '400':
+          description: Missing batchId parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing batchId parameter
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Batch not found or not accessible with this API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Batch not found or you do not have access to this batch.
+        '409':
+          description: Batch processing is not yet complete.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Batch processing is not yet complete. Check status and try again later.
+  /v1/recalls-batch/download:
+    get:
+      security:
+      - ApiKeyQuery: []
+      - RecallsBatchToken: []
+      operationId: downloadRecallsBatchResults
+      tags:
+      - Recalls
+      summary: Download bulk recalls batch results
+      description: Download the results of a completed batch as CSV.
+      parameters:
+      - $ref: '#/components/parameters/batchId'
+      - $ref: '#/components/parameters/recallsBatchToken'
+      responses:
+        '200':
+          description: CSV results file.
+          content:
+            text/csv:
+              schema:
+                type: string
+        '400':
+          description: Missing batchId parameter.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Batch not found or not accessible with these credentials.
+        '409':
+          description: Batch processing is not yet complete.
 components:
   parameters:
-    ApiKey:
+    batchId:
+      name: batchId
       in: query
-      name: key
       required: true
       schema:
         type: string
-      description: Your CarsXE API key
+      description: The batch ID returned from the submit endpoint.
+    recallsBatchToken:
+      name: X-CarsXE-Batch-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Batch-scoped token returned by an x402 submit call. Use this instead of the key query
+        parameter for status, results, and download requests.
+    vin:
+      name: vin
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+  responses:
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
       in: query
       name: key
-      description: CarsXE API key from https://api.carsxe.com/dashboard
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+    RecallsBatchToken:
+      type: apiKey
+      in: header
+      name: X-CarsXE-Batch-Token
+      description: Batch-scoped token returned by an x402 Recalls Batch submission.

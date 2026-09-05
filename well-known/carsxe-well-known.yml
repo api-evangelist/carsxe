@@ -1,0 +1,127 @@
+generated: '2026-09-05'
+method: probed
+source: live GET of the named /.well-known/ path list on every host this record knows
+note: >-
+  Four hosts probed — the registrable domain carsxe.com, the API host api.carsxe.com, the EU
+  regional API host eu-api.carsxe.com named in https://carsxe.com/docs/latency-and-regions, and
+  the MCP host mcp.carsxe.com named in the api-catalog linkset. carsxe.com serves a real RFC 9727
+  API catalog (Content-Type application/linkset+json) that points at the REST API, its OpenAPI, the
+  docs, and the remote MCP endpoint; api.carsxe.com 301s the same path to it. mcp.carsxe.com serves
+  RFC 9728 protected-resource metadata and RFC 8414 authorization-server metadata for its MCP OAuth
+  flow. No security.txt, OIDC discovery, ai-plugin, AAuth or apis.json document is served anywhere.
+  The site's Next.js catch-all answers 200 with an HTML shell for unknown ROOT paths (/apis.json,
+  /apis.yml, /swagger.json all return the same ~1MB page with the requested path echoed into the
+  html lang attribute) — those are recorded as soft-200 misses, not documents. Paths under
+  /.well-known/ correctly return 404, and the negative control confirms no path echoing.
+path_echo_control: passed
+hit_count: 3
+hosts:
+  - host: https://carsxe.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 200
+        content_type: application/linkset+json
+        file: carsxe-api-catalog.json
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/apis.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/ucp.json
+        status: 404
+      - path: /apis.json
+        status: 200
+        note: soft-200 HTML SPA shell (1,049,251 bytes), not an APIs.json index — no apis/specificationVersion key
+      - path: /apis.yml
+        status: 200
+        note: soft-200 HTML SPA shell, not an APIs.json index
+      - path: /.well-known/carsxe-negative-control-7f3ab91c.json
+        status: 404
+        note: path_echo negative control — correctly 404, so hits on this host are real
+  - host: https://api.carsxe.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 301
+        note: 301 to https://carsxe.com/.well-known/api-catalog, where the linkset is served
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/apis.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/ucp.json
+        status: 404
+      - path: /apis.json
+        status: 200
+        note: soft-200 HTML SPA shell, not an APIs.json index
+      - path: /apis.yml
+        status: 200
+        note: soft-200 HTML SPA shell, not an APIs.json index
+      - path: /.well-known/carsxe-negative-control-7f3ab91c.json
+        status: 404
+        note: path_echo negative control — correctly 404
+  - host: https://mcp.carsxe.com
+    documents:
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        content_type: application/json
+        file: carsxe-mcp-oauth-protected-resource.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        content_type: application/json
+        file: carsxe-mcp-oauth-authorization-server.json
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/carsxe-negative-control-7f3ab91c.json
+        status: 404
+        note: path_echo negative control — correctly 404
+  - host: https://eu-api.carsxe.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/carsxe-negative-control-7f3ab91c.json
+        status: 404
+        note: path_echo negative control

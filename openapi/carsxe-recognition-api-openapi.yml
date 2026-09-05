@@ -1,0 +1,331 @@
+openapi: 3.1.0
+info:
+  title: CarsXE Recognition API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
+  contact:
+    name: CarsXE
+    url: https://api.carsxe.com
+servers:
+- url: https://api.carsxe.com
+security:
+- ApiKeyQuery: []
+tags:
+- name: Recognition
+  description: Plate and VIN recognition from images
+paths:
+  /platerecognition:
+    post:
+      operationId: recognizePlate
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Recognition
+      summary: Plate Image Recognition
+      description: Extract a license plate number from an image of a vehicle. Send a JSON body containing
+        an `image_url` field with a URL to the image.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - image_url
+              properties:
+                image_url:
+                  type: string
+                  description: URL to an image of a vehicle's license plate.
+            example:
+              image_url: https://example.com/car-photo.jpg
+      responses:
+        '200':
+          description: Plate recognized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        plate:
+                          type: string
+                        box:
+                          type: object
+                          additionalProperties: true
+                        region:
+                          type: object
+                          additionalProperties: true
+                      additionalProperties: true
+                  processing_time:
+                    type: number
+                additionalProperties: true
+              example:
+                success: true
+                message: ''
+                results:
+                - box:
+                    xmin: 2045
+                    ymin: 1400
+                    xmax: 2732
+                  plate: 9djc652
+                  region:
+                    code: us-ca
+                    score: 0.849
+                processing_time: 117.822
+        '400':
+          description: Missing image URL in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing upload URL
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No plate could be recognized in the image.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No plates detected in image
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          description: Plate recognition service error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not get information at this time
+  /v1/vinocr:
+    post:
+      operationId: vinOcr
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Recognition
+      summary: VIN OCR
+      description: Extract a VIN from a photo. Send a JSON body containing an `image_url` field with either
+        a URL to an image or a base64-encoded image string.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - image_url
+              properties:
+                image_url:
+                  type: string
+                  description: URL to an image, or the base64 string of the image.
+            example:
+              image_url: https://example.com/vin-plate.jpg
+      responses:
+        '200':
+          description: VIN extracted from the image.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  vin:
+                    type: string
+                  box:
+                    type: object
+                    additionalProperties: true
+                  confidence:
+                    type: number
+                  candidates:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+                additionalProperties: true
+              example:
+                success: true
+                vin: JHLRD77874C026456
+                box:
+                  xmin: 257
+                  xmax: 1673
+                  ymin: 635
+                  ymax: 793
+                confidence: 0.9834251403808594
+                candidates:
+                - vin: JHLRD77874C026456
+                  confidence: 0.9834251403808594
+        '400':
+          description: Missing API key, missing image, invalid image data, image processing failure, or
+            no text detected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingKey:
+                  value:
+                    success: false
+                    message: Missing API key
+                missingImage:
+                  value:
+                    success: false
+                    message: Missing image data
+                invalidImage:
+                  value:
+                    success: false
+                    message: Invalid image data format. Must be a valid URL or base64 encoded string.
+                noText:
+                  value:
+                    success: false
+                    message: No text detected in the image
+        '401':
+          description: User with this API key is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+        '404':
+          description: API key not found, or no valid VIN found in the image.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                userNotFound:
+                  value:
+                    success: false
+                    message: User with this API key was not found or the API key is disabled
+                noVin:
+                  value:
+                    success: false
+                    message: No valid VIN candidates found in the image
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+components:
+  responses:
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

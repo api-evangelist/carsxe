@@ -4,175 +4,154 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: CarsXE
 providerId: carsxe
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Automotive
-  - Vehicles
-  - VIN
-  - Vehicle Data
-  - License Plate
-  - OCR
-  - Automobiles
-description: Machine-readable plans and pricing scaffold for this API provider. Conforms to the API Commons
-  Plans schema. Tier limits and prices are scaffold defaults; replace with provider-published values.
+modified: '2026-09-05'
+generated: '2026-09-05'
+method: searched
+source: https://carsxe.com/pricing
+sources:
+  - https://carsxe.com/pricing
+  - https://carsxe.com/pricing/calculator
+  - https://carsxe.com/llms.txt
+note: >-
+  Replaces the 2026-05-04 scaffold, which carried invented tier names and limits. Every figure below
+  is published by CarsXE. The llms.txt block these were read from stamps its own provenance —
+  "Pricing data: loaded from live /get-pricing (id ODgapw4jFHN1uVHjf7NY, updatedAt
+  2026-08-16T16:28:05.486Z)" — so this is the provider's own live pricing document, not a marketing
+  page reading. Quotas are PER-ENDPOINT monthly volumes of SUCCESSFUL calls, not one shared pool;
+  400 validation failures are free and do not count.
+plan_count: 4
+currency: USD
+billing_periods: [month, year]
+model: tiered subscription with per-endpoint included quota plus metered overage
+overage_behaviour:
+  enabled: requests keep succeeding and each unit past the included volume is billed at the tier rate
+  disabled: requests are rejected with 429 until the period resets or overage is re-enabled
+  default: enabled on plans with overage pricing
+  usage_alerts: email to the account owner at 80%, 90% and 100% of an endpoint's included volume
 plans:
-  - id: carsxe-free
-    name: Free
-    type: freemium
-    description: Free entry tier for the CarsXE API surface. Intended for evaluation, prototyping, and
-      low-volume integrations. Real limits and pricing must be reconciled with the provider's published
-      plan documentation.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota across all included endpoints
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 1000
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api.carsxe.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the free tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 10
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api.carsxe.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-    elements:
-      - name: Public Documentation
-      - name: Community Support
-      - name: Sandbox Access
-      - name: CarsXE Vehicle Specifications API
-      - name: CarsXE Vehicle Market Value API
-      - name: CarsXE Vehicle Images API
-      - name: CarsXE VIN OCR API
-      - name: CarsXE Vehicle Plate Decoder API
-      - name: CarsXE Vehicle Plate Recognition API
-      - name: CarsXE Vehicle History API
-      - name: CarsXE Vehicle Recalls API
-  - id: carsxe-pro
-    name: Professional
+  - id: carsxe-sandbox
+    name: Sandbox
+    type: free
+    price: '0.00'
+    currency: USD
+    period: lifetime
+    description: >-
+      Free integration-testing tier. A lifetime shared pool of 100 successful API calls that does not
+      reset monthly, with premium endpoints capped inside the pool.
+    quota_type: lifetime shared pool
+    quota: 100
+    caps:
+      market_value: 5
+      history: 1
+      lien_theft: 5
+      recalls_batch: 5
+    overage: false
+  - id: carsxe-starter
+    name: Starter
     type: paid
-    description: Production tier for CarsXE. Provides higher quotas, priority support, and access to the
-      broader API portfolio. Pricing placeholder; align with the provider's pricing page.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 100000
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api.carsxe.com
-        unit: 1
-        price: TBD
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the professional tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 100
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api.carsxe.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Overage
-        description: Per-request price after monthly quota is exceeded
-        name: overage
-        type: metered
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api.carsxe.com
-        unit: 1000
-        price: TBD
-        userMultiplied: false
-    elements:
-      - name: All Production Endpoints
-      - name: Email Support
-      - name: SLA Targets
-      - name: Webhook Subscriptions
-      - name: CarsXE Vehicle Specifications API
-      - name: CarsXE Vehicle Market Value API
-      - name: CarsXE Vehicle Images API
-      - name: CarsXE VIN OCR API
-      - name: CarsXE Vehicle Plate Decoder API
-      - name: CarsXE Vehicle Plate Recognition API
-      - name: CarsXE Vehicle History API
-      - name: CarsXE Vehicle Recalls API
-      - name: CarsXE International VIN Decoder API
-      - name: CarsXE OBD Codes Decoder API
+    price: '49.00'
+    price_annual: '490.00'
+    currency: USD
+    period: month
+    description: >-
+      Entry production tier. Per-endpoint monthly included volumes plus metered overage. Market
+      value, history and lien & theft carry no included volume — they are overage-only on this tier.
+    included_monthly:
+      specifications: 2000
+      international_vin_decoder: 10
+      plate_decoder: 10
+      us_plate_decoder: 20
+      images: 1000
+      vehicle_recalls: 50
+      vehicle_recalls_ymm: 50
+      bulk_recall_batch: 200
+      plate_image_recognition: 200
+      vin_optical_character_recognition: 200
+      obd_codes_decoder: 500
+      year_make_model: 2000
+      year_make_model_options: 2000
+      market_value: 0
+      history: 0
+      lien_theft: 0
+      ownership: 0
+      ownership_vin_batch: 0
+  - id: carsxe-pro
+    name: Pro
+    type: paid
+    price: '249.00'
+    price_annual: '2490.00'
+    currency: USD
+    period: month
+    description: >-
+      Production tier with substantially larger per-endpoint volumes and lower overage rates. Market
+      value, history and lien & theft remain overage-only.
+    included_monthly:
+      specifications: 25000
+      international_vin_decoder: 100
+      plate_decoder: 100
+      us_plate_decoder: 500
+      images: 15000
+      vehicle_recalls: 500
+      vehicle_recalls_ymm: 500
+      bulk_recall_batch: 1000
+      plate_image_recognition: 1000
+      vin_optical_character_recognition: 1000
+      obd_codes_decoder: 2000
+      year_make_model: 25000
+      year_make_model_options: 25000
+      market_value: 0
+      history: 0
+      lien_theft: 0
+      ownership: 0
+      ownership_vin_batch: 0
   - id: carsxe-enterprise
     name: Enterprise
-    type: enterprise
-    description: Custom-negotiated tier for CarsXE. Includes dedicated capacity, contractual SLAs, security
-      review, data residency options, and named technical account management.
-    entries:
-      - label: API Requests
-        description: Negotiated request volume; -1 indicates uncapped subject to fair use
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: configurable
-        domains:
-          - https://api.carsxe.com
-        unit: 1
-        price: custom
-        userMultiplied: false
-      - label: Rate Limit
-        description: Negotiated burst and steady-state rate
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 1000
-        timeFrame: minute
-        geo: configurable
-        domains:
-          - https://api.carsxe.com
-        unit: 1
-        price: custom
-        userMultiplied: false
-    elements:
-      - name: Unlimited / Negotiated Volume
-      - name: 24/7 Dedicated Support
-      - name: Contractual SLA
-      - name: Security & Compliance Review
-      - name: Dedicated Account Manager
-      - name: Custom Data Residency
-      - name: CarsXE Vehicle Specifications API
-      - name: CarsXE Vehicle Market Value API
-      - name: CarsXE Vehicle Images API
-      - name: CarsXE VIN OCR API
-      - name: CarsXE Vehicle Plate Decoder API
-      - name: CarsXE Vehicle Plate Recognition API
-      - name: CarsXE Vehicle History API
-      - name: CarsXE Vehicle Recalls API
-      - name: CarsXE International VIN Decoder API
-      - name: CarsXE OBD Codes Decoder API
-maintainers:
-  - FN: Kin Lane
-    email: info@apievangelist.com
+    type: custom
+    price: null
+    currency: USD
+    period: month
+    description: >-
+      Custom quotas, custom pricing and consolidated monthly invoicing, set in contract. The
+      Ownership API (owner identity, contact details, address residents) is Enterprise-only.
+    contact: https://carsxe.com/contact-us
+overage_rates:
+  unit: USD per successful call after the included quota
+  note: overage applies on Starter and Pro; Sandbox has no overage
+  rates:
+    - {endpoint: specifications, starter: '0.15', pro: '0.10'}
+    - {endpoint: international_vin_decoder, starter: '0.40', pro: '0.35'}
+    - {endpoint: plate_decoder, starter: '0.50', pro: '0.45'}
+    - {endpoint: us_plate_decoder, starter: '0.30', pro: '0.25'}
+    - {endpoint: market_value, starter: '1.50', pro: '1.50'}
+    - {endpoint: history, starter: '4.99', pro: '4.99'}
+    - {endpoint: images, starter: '0.15', pro: '0.10'}
+    - {endpoint: vehicle_recalls, starter: '0.25', pro: '0.20'}
+    - {endpoint: recalls_by_ymm, starter: '0.25', pro: '0.20'}
+    - {endpoint: recalls_batch, starter: '0.12', pro: '0.08'}
+    - {endpoint: vehicle_recalls_reports, starter: '0.25', pro: '0.20'}
+    - {endpoint: plate_image_recognition, starter: '0.15', pro: '0.10'}
+    - {endpoint: vin_ocr, starter: '0.15', pro: '0.10'}
+    - {endpoint: obd_codes_decoder, starter: '0.15', pro: '0.10'}
+    - {endpoint: year_make_model, starter: '0.20', pro: '0.15'}
+    - {endpoint: year_make_model_options, starter: '0.02', pro: '0.01'}
+    - {endpoint: lien_theft, starter: '1.00', pro: '1.00'}
+    - {endpoint: ownership, starter: '0.20', pro: '0.20'}
+    - {endpoint: ownership_vin_batch, starter: '0.20', pro: '0.20'}
+unit_rules:
+  - most requests consume 1 unit
+  - Recalls Batch consumes 1 unit per VIN in the batch
+  - "YMM Options bulk variants (dimension=variants + year + make) consume 1 unit per model; see modelCount"
+  - "decodePlateV2 with require_vin=true (Spain) is billed 2x and counts 2x"
+  - 400 validation failures are rejected before any lookup and are free
+trial:
+  time_limited_trial: false
+  note: >-
+    "There is no time-limited free trial on paid tiers; start with Sandbox, then upgrade to a paid
+    plan when you are ready for production quotas."
+x402:
+  supported: true
+  note: >-
+    Supported operations accept x402 payment with no CarsXE subscription at all — call without a key,
+    receive HTTP 402 with the payment requirements, retry with a PAYMENT-SIGNATURE header. This is a
+    pay-per-call access path that sits outside the subscription tiers above; CarsXE publishes no
+    separate x402 price list, so no per-call figure is recorded here.

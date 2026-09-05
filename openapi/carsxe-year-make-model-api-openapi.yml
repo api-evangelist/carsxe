@@ -1,0 +1,539 @@
+openapi: 3.1.0
+info:
+  title: CarsXE Year Make Model API
+  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
+
+    specifications (VIN decoding), market values, vehicle history, recalls,
+
+    license plate decoding, vehicle images, plate/VIN image recognition,
+
+    Year Make Model data and OBD code decoding.
+
+
+    ## Authentication
+
+
+    Most requests use a CarsXE API key in the `key` query parameter, e.g.
+
+    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
+
+    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
+
+    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
+
+
+    ## Caching
+
+
+    Many endpoints cache upstream results. A cached response may include the
+
+    message "The response is from the cache".
+
+    '
+  version: 1.0.0
+  contact:
+    name: CarsXE
+    url: https://api.carsxe.com
+servers:
+- url: https://api.carsxe.com
+security:
+- ApiKeyQuery: []
+tags:
+- name: Year Make Model
+  description: Year/make/model and OBD code endpoints
+paths:
+  /v1/ymm:
+    get:
+      operationId: getYearMakeModel
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Year Make Model
+      summary: Year Make Model
+      description: Look up vehicle data by year, make and model (and optionally trim) without a VIN.
+      parameters:
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The manufacturing year of the vehicle (numeric, between 1900 and the current model
+          year plus one).
+      - name: make
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The manufacturer of the vehicle (e.g., Toyota, Ford, BMW).
+      - name: model
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The specific model of the vehicle (e.g., Camry, F-150, X5).
+      - name: trim
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The vehicle trim (e.g., XLE, XSE).
+      - name: allTrimOptions
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+        description: Return all trim options available for the year, make and model. Set to `1` to use.
+      responses:
+        '200':
+          description: Vehicle matched.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  bestMatch:
+                    type: object
+                    additionalProperties: true
+                  trimOptions:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+                  input:
+                    type: object
+                    additionalProperties: true
+                  timestamp:
+                    type: string
+                additionalProperties: true
+              example:
+                bestMatch:
+                  make: Toyota
+                  model: Camry
+                  year: '2023'
+                  name: XLE 4dr Sedan (3.5L 6cyl 8A)
+                trimOptions: []
+                success: true
+                input:
+                  year: '2023'
+                  make: Toyota
+                  model: Camry
+                  trim: XLE
+                timestamp: '2024-03-19T12:00:00.000Z'
+        '400':
+          description: Missing or invalid year, make or model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing:
+                  value:
+                    success: false
+                    message: Missing year, make, or model
+                invalidYear:
+                  value:
+                    success: false
+                    message: Invalid year. Provide a numeric year between 1900 and the current model year
+                      plus one.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No vehicle matched the specified year, make and model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: No vehicle found matching the specified year, make, and model. Try case-sensitive
+                  search such as "2023 Toyota Camry"
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          description: Could not fetch data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not fetch data
+  /v1/ymm-options:
+    get:
+      operationId: getYearMakeModelOptions
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Year Make Model
+      summary: Year Make Model Options
+      description: 'Populate Year, Make, Model, and Variant dropdown menus. Each response returns exactly
+        one layer. `dimension` is optional — when omitted, the response shape is inferred from `make`/`model`/`year`.
+        Billing: most calls cost 1 unit. `dimension=variants` with `year` + `make` (no `model`) costs
+        1 unit per model; the response includes `modelCount`. Required filters help you get better, more
+        relevant results. `year`, `make`, and `model` can be combined for reversed lookups (e.g. years
+        for a given make+model).'
+      parameters:
+      - name: dimension
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - years
+          - makes
+          - models
+          - trims
+          - variants
+        description: Return exactly this array when required filters are present. If omitted, the response
+          is inferred automatically from `make`/`model`/`year`.
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter to a specific manufacturing year. Required when filtering by `model` without
+          `make`.
+      - name: make
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter to a specific manufacturer (e.g., Toyota, Ford, Lexus). Required for `dimension=models`.
+      - name: model
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter to a specific model (e.g., Camry, F-150, LX). Required for `dimension=trims`
+          and for `dimension=variants` unless both `year` and `make` are set.
+      - name: trim
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Optional substring filter on trim names. Only applied when querying `dimension=trims`
+          or `dimension=variants`.
+      responses:
+        '200':
+          description: Distinct values for the requested (or inferred) dimension(s).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  input:
+                    type: object
+                    additionalProperties: true
+                  message:
+                    type: string
+                    description: Optional guidance when the returned layer differs from the requested
+                      dimension or when explaining how to get better results.
+                  years:
+                    type: array
+                    items:
+                      type: integer
+                  makes:
+                    type: array
+                    items:
+                      type: string
+                  models:
+                    type: array
+                    items:
+                      type: string
+                  trims:
+                    type: array
+                    items:
+                      type: string
+                  variants:
+                    type: array
+                    items:
+                      type: string
+                  modelCount:
+                    type: integer
+                    description: Present only for bulk variants (`dimension=variants` + year + make, no
+                      model). Number of distinct models, which is also the amount billed — except a zero-match
+                      query, which returns 0 but still bills a minimum of 1 unit.
+                additionalProperties: true
+              examples:
+                variants:
+                  summary: make+model given -> variants only
+                  value:
+                    success: true
+                    input:
+                      year: 2026
+                      make: Toyota
+                      model: Tacoma
+                    variants:
+                    - Tacoma Limited
+                    - Tacoma SR
+                    - Tacoma SR5
+                    - Tacoma TRD Off-Road
+                    - Tacoma TRD PreRunner
+                    - Tacoma TRD Pro
+                    - Tacoma TRD Sport
+                    - Tacoma Trailhunter
+                modelsForMakeOnly:
+                  summary: make given, no model -> models only (one layer per response)
+                  value:
+                    success: true
+                    input:
+                      year: 2026
+                      make: Toyota
+                    models:
+                    - 4Runner
+                    - Camry
+                    - Corolla
+                    - Tacoma
+                    - Tundra
+                variantsForYearAndModel:
+                  summary: year+model given, no make -> variants only
+                  value:
+                    success: true
+                    input:
+                      year: 2026
+                      model: Tacoma
+                    variants:
+                    - Tacoma Limited
+                    - Tacoma SR
+                    - Tacoma SR5
+                    - Tacoma TRD Pro
+                variantsForYearAndMake:
+                  summary: dimension=variants with year+make -> billed per model (modelCount)
+                  value:
+                    success: true
+                    input:
+                      dimension: variants
+                      year: 2025
+                      make: Lexus
+                    variants:
+                    - ES 250
+                    - ES 300h
+                    - GX 550 Premium
+                    - IS 300
+                    - LX 600 Premium
+                    - RX 350
+                    modelCount: 6
+                variantsFallbackToModels:
+                  summary: dimension=variants with make only (no year) -> models + message
+                  value:
+                    success: true
+                    input:
+                      dimension: variants
+                      make: Toyota
+                    message: To receive variants, include a model filter with this make. Models are returned
+                      instead.
+                    models:
+                    - 4Runner
+                    - Camry
+                    - Corolla
+                    - Tacoma
+                    - Tundra
+                yearsForMakeModel:
+                  summary: 'Reversed combination: dimension=years filtered by make+model'
+                  value:
+                    success: true
+                    input:
+                      dimension: years
+                      make: Lexus
+                      model: TX
+                    years:
+                    - 2026
+                    - 2025
+                    - 2024
+        '400':
+          description: Invalid dimension, invalid year, missing required filters, or model without make/year.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidDimension:
+                  value:
+                    success: false
+                    message: 'Invalid dimension. Must be one of: years, makes, models, trims, variants.'
+                invalidYear:
+                  value:
+                    success: false
+                    message: Invalid year. Provide a numeric year between 1900 and the current model year
+                      plus one.
+                missingMakeForModels:
+                  value:
+                    success: false
+                    message: A make filter is required to list models. Add make=... to get better results.
+                missingMakeOrModelForTrimsVariants:
+                  value:
+                    success: false
+                    message: Trims and variants require a make or model filter. Add make=... or model=...
+                      to get better results.
+                missingYearWhenModelWithoutMake:
+                  value:
+                    success: false
+                    message: When filtering by model without make, a year filter is required. Add year=...
+                      to get better results.
+                missingMakeWhenModelAmbiguous:
+                  value:
+                    success: false
+                    message: This model name appears under multiple makes. Add make=... together with
+                      year and model to get better results.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '500':
+          description: Could not fetch data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not fetch data
+  /obdcodesdecoder:
+    get:
+      operationId: decodeObdCode
+      security:
+      - ApiKeyQuery: []
+      - X402Payment: []
+      - {}
+      tags:
+      - Year Make Model
+      summary: OBD Codes Decoder
+      description: Decode an OBD-II diagnostic trouble code (e.g. P0115).
+      parameters:
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The OBD code.
+      responses:
+        '200':
+          description: OBD code decoded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  diagnosis:
+                    type: string
+                  date:
+                    type: string
+                  code:
+                    type: string
+                additionalProperties: true
+              example:
+                success: true
+                diagnosis: Engine Coolant Temperature Circuit Malfunction
+                date: '2020-07-04T21:44:39.767Z'
+                code: P0115
+        '400':
+          description: Missing OBD code.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Missing OBD code
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: The OBD code could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                message: Could not find code P9999
+        '429':
+          $ref: '#/components/responses/UsageLimitExceeded'
+components:
+  responses:
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: Your CarsXE API key, passed as the `key` query parameter.
+    X402Payment:
+      type: apiKey
+      in: header
+      name: PAYMENT-SIGNATURE
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
+        HTTP 402 payment requirements, then retry the identical request with the payment header produced
+        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.

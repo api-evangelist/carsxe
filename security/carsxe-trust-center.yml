@@ -1,14 +1,59 @@
-generated: '2026-07-11'
+generated: '2026-09-05'
 method: searched
 probe: true
-source: https://api.carsxe.com/trust
-url: https://api.carsxe.com/trust
+source: https://carsxe.com/trust
+url: https://carsxe.com/trust
+http_status: 200
 certifications:
-- SOC 2
-- ISO 27001
+  - name: SOC 2 Type II
+    status: certified
+    auditor: GreenHat Assurance
+    opinion: clean
+    cadence: annual
+    criteria: [Security, Availability, Confidentiality]
+    report_access: available under NDA on request via the form on the trust page
+  - name: ISO 27001
+    status: in-progress
+    note: >-
+      The page labels ISO 27001 "In Progress" — CarsXE states it is working toward certification, not
+      that it holds one. Recorded as in-progress so this is never read as a held certification.
+controls:
+  total: 75
+  domains:
+    infrastructure_security: 9
+    organizational_security: 32
+    product_security: 13
+    internal_security_procedures: 12
+    data_and_privacy: 9
+encryption:
+  at_rest: AES-256
+  in_transit: TLS 1.3
+  key_management: cloud-native KMS with automatic rotation policies
+  backups: encrypted
+  other: [certificate transparency monitoring, forward secrecy]
+availability:
+  uptime_sla: 99.9%
+  service_credits: true
+  status_page: https://carsxe.com/status
+infrastructure:
+  provider: Google Cloud Platform
+  regions: multi-region, data primarily hosted in the United States
+  controls: [web application firewall, DDoS protection, network segmentation, RBAC, MFA, least privilege]
+vulnerability_management:
+  stated: >-
+    "Regular penetration testing, automated vulnerability scanning, and a responsible disclosure
+    program."
+  disclosure_page: null
+  security_contact: null
+  note: >-
+    The trust page asserts a responsible disclosure program in prose, but CarsXE publishes no
+    disclosure page, no security.txt (404 on carsxe.com, api.carsxe.com and mcp.carsxe.com), no
+    security@ address and no bug-bounty listing. probe-security-programs.py returned vdp=none on
+    2026-09-05, so no VulnerabilityDisclosure or Security pointer is emitted — the program is
+    claimed but not reachable, which is a real and reportable gap.
+resources:
+  - {title: "CarsXE - Letter of Engagement from Mycroft", format: PDF, access: request}
+  - {title: "CarsXE SOC 2 Type 2 Report - March 2026", format: PDF, access: request (NDA)}
 evidence:
-- source: https://api.carsxe.com/trust
-  keywords:
-  - soc 2
-  - iso 27001
-  - trust center
+  - source: https://carsxe.com/trust
+    keywords: [soc 2 type ii, iso 27001, trust center, aes-256, tls 1.3, 99.9% uptime sla, responsible disclosure]
