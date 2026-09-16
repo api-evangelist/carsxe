@@ -52,6 +52,19 @@ tags:
   - Recalls
   - Market Value
   - Vehicle History
+  - MCP
+  - Agents
+tags_raw:
+  - Automotive
+  - Vehicles
+  - VIN
+  - Vehicle Data
+  - License Plate
+  - OCR
+  - Automobiles
+  - Recalls
+  - Market Value
+  - Vehicle History
   - Model Context Protocol
   - Agents
 created: '2025-02-24'
@@ -215,9 +228,9 @@ apis:
 - aid: carsxe:carsxe-specifications-api
   name: CarsXE Specifications API
   description: >-
-    VIN decoding for North American and international vehicles — 2 operations (getVehicleSpecs,
-    getInternationalVinDecoder) returning year, make, model, trim, engine, drivetrain, body style,
-    dimensions, equipment and option data from a 17-character VIN.
+    VIN decoding for North American and international vehicles — 2 operations (getVehicleSpecs, getInternationalVinDecoder)
+    returning year, make, model, trim, engine, drivetrain, body style, dimensions, equipment and option
+    data from a 17-character VIN.
   humanURL: https://carsxe.com/docs/v1/specifications
   baseURL: https://api.carsxe.com
   tags:
@@ -247,30 +260,12 @@ apis:
     url: overlays/carsxe-market-value-api-overlay.yaml
   - type: APIReference
     url: https://carsxe.com/docs/v2/market-value
-- aid: carsxe:carsxe-plate-api
-  name: CarsXE Plate Decoder API
-  description: >-
-    License plate decoding — 3 operations (decodePlate, decodeUsPlate, decodePlateV2) resolving a
-    registration plate plus country/state to vehicle make, model, year and (where available) VIN,
-    across 50+ countries on the v2 endpoint.
-  humanURL: https://carsxe.com/docs/v2/plate-decoder
-  baseURL: https://api.carsxe.com
-  tags:
-  - License Plate
-  - Plate Decoder
-  properties:
-  - type: OpenAPI
-    url: openapi/carsxe-plate-api-openapi.yml
-  - type: Overlay
-    url: overlays/carsxe-plate-api-overlay.yaml
-  - type: APIReference
-    url: https://carsxe.com/docs/v2/plate-decoder
 - aid: carsxe:carsxe-recalls-api
   name: CarsXE Recalls API
   description: >-
-    Safety recall lookup — 6 operations covering single-VIN recalls, recalls by year/make/model, and
-    the asynchronous Recalls Batch surface (submit up to 10,000 VINs, poll status, retrieve or
-    download results, with an optional completion webhook).
+    Safety recall lookup — 6 operations covering single-VIN recalls, recalls by year/make/model, and the
+    asynchronous Recalls Batch surface (submit up to 10,000 VINs, poll status, retrieve or download results,
+    with an optional completion webhook).
   humanURL: https://carsxe.com/docs/v1/vehicle-recalls
   baseURL: https://api.carsxe.com
   tags:
@@ -289,8 +284,8 @@ apis:
 - aid: carsxe:carsxe-history-api
   name: CarsXE History API
   description: >-
-    Vehicle history reporting — 1 operation (getVehicleHistory) returning title records, junk and
-    salvage events, insurance records, odometer readings and brand history for a VIN.
+    Vehicle history reporting — 1 operation (getVehicleHistory) returning title records, junk and salvage
+    events, insurance records, odometer readings and brand history for a VIN.
   humanURL: https://carsxe.com/docs/v1/history
   baseURL: https://api.carsxe.com
   tags:
@@ -306,12 +301,15 @@ apis:
 - aid: carsxe:carsxe-images-api
   name: CarsXE Images API
   description: >-
-    Vehicle imagery search — 1 operation (getVehicleImages) returning photo links, thumbnails,
-    sources and dimensions filtered by make, model, year, trim, colour, angle, photo type and
-    transparent-background option.
+    Vehicle imagery search — 1 operation (getVehicleImages) returning photo links, thumbnails, sources
+    and dimensions filtered by make, model, year, trim, colour, angle, photo type and transparent-background
+    option.
   humanURL: https://carsxe.com/docs/v1/images
   baseURL: https://api.carsxe.com
   tags:
+  - Image
+  - Media
+  tags_raw:
   - Images
   - Media
   properties:
@@ -324,9 +322,9 @@ apis:
 - aid: carsxe:carsxe-recognition-api
   name: CarsXE Recognition API
   description: >-
-    Image recognition — 2 operations (recognizePlate, vinOcr) that read a license plate or a VIN out
-    of a supplied image URL or base64 payload, returning detected text, confidence scores and
-    bounding boxes for mobile capture and inspection workflows.
+    Image recognition — 2 operations (recognizePlate, vinOcr) that read a license plate or a VIN out of
+    a supplied image URL or base64 payload, returning detected text, confidence scores and bounding boxes
+    for mobile capture and inspection workflows.
   humanURL: https://carsxe.com/docs/v1/plate-image-recognition
   baseURL: https://api.carsxe.com
   tags:
@@ -343,9 +341,9 @@ apis:
 - aid: carsxe:carsxe-year-make-model-api
   name: CarsXE Year Make Model API
   description: >-
-    Vehicle lookup without a VIN — 3 operations (getYearMakeModel, getYearMakeModelOptions,
-    decodeObdCode) returning trims, features and option packages by year/make/model, dropdown
-    population data, and OBD-II diagnostic trouble code descriptions.
+    Vehicle lookup without a VIN — 3 operations (getYearMakeModel, getYearMakeModelOptions, decodeObdCode)
+    returning trims, features and option packages by year/make/model, dropdown population data, and OBD-II
+    diagnostic trouble code descriptions.
   humanURL: https://carsxe.com/docs/v1/year-make-model
   baseURL: https://api.carsxe.com
   tags:
@@ -362,8 +360,8 @@ apis:
 - aid: carsxe:carsxe-lien-theft-api
   name: CarsXE Lien & Theft API
   description: >-
-    Encumbrance and theft screening — 1 operation (getLienTheft) returning active lien holders,
-    theft reports and recovery status for a VIN, for lenders and pre-purchase due diligence.
+    Encumbrance and theft screening — 1 operation (getLienTheft) returning active lien holders, theft
+    reports and recovery status for a VIN, for lenders and pre-purchase due diligence.
   humanURL: https://carsxe.com/docs/v1/lien-theft
   baseURL: https://api.carsxe.com
   tags:
@@ -381,8 +379,8 @@ apis:
   name: CarsXE Auth API
   description: >-
     API key validation — 1 operation (validateKey) against /v1/auth/validate, the endpoint the CarsXE
-    authentication guide documents for confirming that a key is present, valid and active before
-    issuing product calls.
+    authentication guide documents for confirming that a key is present, valid and active before issuing
+    product calls.
   humanURL: https://carsxe.com/docs/authentication
   baseURL: https://api.carsxe.com
   tags:
@@ -398,8 +396,8 @@ apis:
   name: CarsXE MCP Server
   description: >-
     Remote Model Context Protocol server exposing the CarsXE vehicle-data endpoints as 12 named agent
-    tools over streamable HTTP, authenticated with an X-API-Key header or an OAuth 2.1 authorization
-    code + PKCE flow whose discovery documents are served from the same host.
+    tools over streamable HTTP, authenticated with an X-API-Key header or an OAuth 2.1 authorization code
+    + PKCE flow whose discovery documents are served from the same host.
   humanURL: https://carsxe.com/docs/integrations/mcp-quickstart
   baseURL: https://mcp.carsxe.com/mcp
   tags:
@@ -413,8 +411,21 @@ apis:
     url: mcp/carsxe-tool-crosswalk.yml
   - type: Documentation
     url: https://carsxe.com/docs/integrations/mcp-quickstart
-
+- aid: carsxe:carsxe-plate-decoder-api
+  name: CarsXE Plate Decoder API
+  description: Decode license plates into vehicle data
+  humanURL: https://api.carsxe.com/vehicle-specifications
+  baseURL: https://api.carsxe.com
+  tags:
+  - Plate Decoder
+  properties:
+  - type: OpenAPI
+    url: openapi/carsxe-plate-decoder-api-openapi.yml
+  - type: APIReference
+    url: https://carsxe.com/docs/v2/plate-decoder
 common:
+  - type: Overlay
+    url: overlays/carsxe-plate-api-overlay.yaml
   - type: AgenticAccess
     url: agentic-access/carsxe-agentic-access.yml
   - type: Packages
