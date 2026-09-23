@@ -1,35 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: CarsXE Specifications API
-  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
-
-    specifications (VIN decoding), market values, vehicle history, recalls,
-
-    license plate decoding, vehicle images, plate/VIN image recognition,
-
-    Year Make Model data and OBD code decoding.
-
-
-    ## Authentication
-
-
-    Most requests use a CarsXE API key in the `key` query parameter, e.g.
-
-    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
-
-    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
-
-    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
-
-
-    ## Caching
-
-
-    Many endpoints cache upstream results. A cached response may include the
-
-    message "The response is from the cache".
-
-    '
+  description: CarsXE is a B2B vehicle data API by PiWaves, LLC.
   version: 1.0.0
   contact:
     name: CarsXE
@@ -58,9 +30,7 @@ paths:
 
         cannot be decoded, an International VIN decoding check is run as a
 
-        fallback unless `disableIntVINDecoding=1` is set.
-
-        '
+        fallback unless `disableIntVINDecoding=1` is set.'
       parameters:
       - $ref: '#/components/parameters/vin'
       - $ref: '#/components/parameters/format'
@@ -71,8 +41,7 @@ paths:
           type: string
           enum:
           - '1'
-        description: Request extra data. Set to `1` to use. Significantly slower than the regular request
-          but retrieves additional data.
+        description: Request extra data. Set to `1` to use. Significantly slower than the regular request but retrieves additional data.
       - name: disableIntVINDecoding
         in: query
         required: false
@@ -80,8 +49,7 @@ paths:
           type: string
           enum:
           - '1'
-        description: Set to `1` to disable the International VIN decoding fallback and return an error
-          instead of a potential partial response.
+        description: Set to `1` to disable the International VIN decoding fallback and return an error instead of a potential partial response.
       responses:
         '200':
           description: Vehicle specifications retrieved.
@@ -213,70 +181,24 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
-  parameters:
-    format:
-      name: format
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - json
-        - xml
-        default: json
-      description: The format of the response. One of `json` or `xml`.
-    vin:
-      name: vin
-      in: query
-      required: true
-      schema:
-        type: string
-        minLength: 17
-        maxLength: 17
-      description: The 17 character long vehicle identification number.
-  responses:
-    InternalServerError:
-      description: Internal server error.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            message: Internal server error
-    Unauthorized:
-      description: Missing API key, unknown/disabled API key, or inactive account.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            missingKey:
-              value:
-                success: false
-                message: Missing API key
-            userNotFound:
-              value:
-                success: false
-                message: User with this API key was not found or the API key is disabled
-            userNotActive:
-              value:
-                success: false
-                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
-    UsageLimitExceeded:
-      description: API usage limit exceeded for the current billing period.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UsageLimitError'
-          example:
-            success: false
-            message: API usage limit exceeded
-            usage:
-              current: 1000
-              limit: 1000
-              remaining: 0
   schemas:
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
     Error:
       type: object
       properties:
@@ -289,6 +211,19 @@ components:
       - success
       - message
       additionalProperties: true
+    SuccessEnvelope:
+      type: object
+      description: Generic success envelope. Endpoint-specific payload fields appear at the top level alongside these common fields.
+      properties:
+        success:
+          type: boolean
+        input:
+          type: object
+          description: Echo of the input parameters specified by the query.
+          additionalProperties: true
+        timestamp:
+          type: string
+      additionalProperties: true
     SpecsResponse:
       allOf:
       - $ref: '#/components/schemas/SuccessEnvelope'
@@ -296,9 +231,7 @@ components:
         properties:
           attributes:
             type: object
-            description: A map of specifications about the VIN (year, make, model, trim, style, type,
-              size, category, made_in, doors, fuel_type, engine, transmission, drivetrain, dimensions,
-              pricing and more).
+            description: A map of specifications about the VIN (year, make, model, trim, style, type, size, category, made_in, doors, fuel_type, engine, transmission, drivetrain, dimensions, pricing and more).
             additionalProperties: true
           colors:
             type: array
@@ -332,37 +265,69 @@ components:
             type: object
             description: More information on the vehicle from the deep data search (present when `deepdata=1`).
             additionalProperties: true
-    SuccessEnvelope:
-      type: object
-      description: Generic success envelope. Endpoint-specific payload fields appear at the top level
-        alongside these common fields.
-      properties:
-        success:
-          type: boolean
-        input:
-          type: object
-          description: Echo of the input parameters specified by the query.
-          additionalProperties: true
-        timestamp:
-          type: string
-      additionalProperties: true
-    UsageLimitError:
-      allOf:
-      - $ref: '#/components/schemas/Error'
-      - type: object
-        properties:
-          usage:
-            type: object
-            properties:
-              current:
-                type: number
-                description: Current usage in the billing period.
-              limit:
-                type: number
-                description: Included quota for the billing period.
-              remaining:
-                type: number
-                description: Remaining included quota.
+  responses:
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+  parameters:
+    vin:
+      name: vin
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+    format:
+      name: format
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
@@ -373,6 +338,9 @@ components:
       type: apiKey
       in: header
       name: PAYMENT-SIGNATURE
-      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
-        HTTP 402 payment requirements, then retry the identical request with the payment header produced
-        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive HTTP 402 payment requirements, then retry the identical request with the payment header produced by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+    RecallsBatchToken:
+      type: apiKey
+      in: header
+      name: X-CarsXE-Batch-Token
+      description: Batch-scoped token returned by an x402 Recalls Batch submission.

@@ -1,35 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: CarsXE Plate Decoder API
-  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
-
-    specifications (VIN decoding), market values, vehicle history, recalls,
-
-    license plate decoding, vehicle images, plate/VIN image recognition,
-
-    Year Make Model data and OBD code decoding.
-
-
-    ## Authentication
-
-
-    Most requests use a CarsXE API key in the `key` query parameter, e.g.
-
-    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
-
-    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
-
-    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
-
-
-    ## Caching
-
-
-    Many endpoints cache upstream results. A cached response may include the
-
-    message "The response is from the cache".
-
-    '
+  description: CarsXE is a B2B vehicle data API by PiWaves, LLC.
   version: 1.0.0
   contact:
     name: CarsXE
@@ -58,9 +30,7 @@ paths:
 
         code, Australian state, or one of the legacy country codes `BR`, `UK`,
 
-        `IR`, `IT`, `ES`, `IND`, `MX`, `NZ`.
-
-        '
+        `IR`, `IT`, `ES`, `IND`, `MX`, `NZ`.'
       parameters:
       - name: plate
         in: query
@@ -73,9 +43,7 @@ paths:
         required: true
         schema:
           type: string
-        description: The two letter state code (US) such as `CA` or `NY`, Australian state, or Brazil
-          `BR`, United Kingdom `UK`, Ireland `IR`, Italy `IT`, Spain `ES`, India `IND`, Mexico `MX`, New
-          Zealand `NZ`.
+        description: The two letter state code (US) such as `CA` or `NY`, Australian state, or Brazil `BR`, United Kingdom `UK`, Ireland `IR`, Italy `IT`, Spain `ES`, India `IND`, Mexico `MX`, New Zealand `NZ`.
       - name: country
         in: query
         required: false
@@ -180,9 +148,7 @@ paths:
         50 US states, the District of Columbia (DC) and Puerto Rico (PR).
 
 
-        This endpoint is **not** available on the free Sandbox tier.
-
-        '
+        This endpoint is **not** available on the free Sandbox tier.'
       parameters:
       - name: plate
         in: query
@@ -195,8 +161,7 @@ paths:
         required: true
         schema:
           type: string
-        description: Two-letter abbreviation for one of the 50 US states, the District of Columbia (`DC`),
-          or Puerto Rico (`PR`).
+        description: Two-letter abbreviation for one of the 50 US states, the District of Columbia (`DC`), or Puerto Rico (`PR`).
       - name: decodeVIN
         in: query
         required: false
@@ -205,8 +170,7 @@ paths:
           enum:
           - 'true'
           - '1'
-        description: Set to `true` or `1` to decode the resolved VIN and include a `vehicle_specs` object
-          in the response (identical in shape to the Specifications endpoint response).
+        description: Set to `true` or `1` to decode the resolved VIN and include a `vehicle_specs` object in the response (identical in shape to the Specifications endpoint response).
       responses:
         '200':
           description: Plate decoded successfully.
@@ -323,9 +287,7 @@ paths:
 
         Additional charges apply: when `require_vin=true`, the request is
 
-        billed 2x and usage counts 2x.
-
-        '
+        billed 2x and usage counts 2x.'
       parameters:
       - name: plate
         in: query
@@ -338,29 +300,25 @@ paths:
         required: false
         schema:
           type: string
-        description: ISO 3166-1 alpha-2 country code such as `AU` for Australia or `ZA` for South Africa.
-          Optional for `US`.
+        description: ISO 3166-1 alpha-2 country code such as `AU` for Australia or `ZA` for South Africa. Optional for `US`.
       - name: state
         in: query
         required: false
         schema:
           type: string
-        description: The two letter state code (US) such as `CA` or `NY`, an Australian state (e.g. `NSW`,
-          `VIC`), or a Canadian province (e.g. `ON`). Required only for `US`, `AU` and `CA`.
+        description: The two letter state code (US) such as `CA` or `NY`, an Australian state (e.g. `NSW`, `VIC`), or a Canadian province (e.g. `ON`). Required only for `US`, `AU` and `CA`.
       - name: district
         in: query
         required: false
         schema:
           type: string
-        description: The district of the vehicle registration number. Required for Pakistan (`PK`) plates
-          registered in the Khyber-Pakhtunkhwa province.
+        description: The district of the vehicle registration number. Required for Pakistan (`PK`) plates registered in the Khyber-Pakhtunkhwa province.
       - name: require_vin
         in: query
         required: false
         schema:
           type: boolean
-        description: Only supported when `country=ES`. Set to `true` to always include a VIN. The request
-          is billed 2x and usage counts 2x.
+        description: Only supported when `country=ES`. Set to `true` to always include a VIN. The request is billed 2x and usage counts 2x.
       responses:
         '200':
           description: Plate decoded.
@@ -442,66 +400,28 @@ paths:
                 notFound:
                   value:
                     success: false
-                    message: Plate searches for this country have been disabled, or No data found for
-                      this plate
+                    message: Plate searches for this country have been disabled, or No data found for this plate
         '429':
           $ref: '#/components/responses/UsageLimitExceeded'
 components:
-  parameters:
-    format:
-      name: format
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - json
-        - xml
-        default: json
-      description: The format of the response. One of `json` or `xml`.
-  responses:
-    InternalServerError:
-      description: Internal server error.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            message: Internal server error
-    Unauthorized:
-      description: Missing API key, unknown/disabled API key, or inactive account.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            missingKey:
-              value:
-                success: false
-                message: Missing API key
-            userNotFound:
-              value:
-                success: false
-                message: User with this API key was not found or the API key is disabled
-            userNotActive:
-              value:
-                success: false
-                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
-    UsageLimitExceeded:
-      description: API usage limit exceeded for the current billing period.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UsageLimitError'
-          example:
-            success: false
-            message: API usage limit exceeded
-            usage:
-              current: 1000
-              limit: 1000
-              remaining: 0
   schemas:
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
     Error:
       type: object
       properties:
@@ -514,6 +434,19 @@ components:
       - success
       - message
       additionalProperties: true
+    SuccessEnvelope:
+      type: object
+      description: Generic success envelope. Endpoint-specific payload fields appear at the top level alongside these common fields.
+      properties:
+        success:
+          type: boolean
+        input:
+          type: object
+          description: Echo of the input parameters specified by the query.
+          additionalProperties: true
+        timestamp:
+          type: string
+      additionalProperties: true
     SpecsResponse:
       allOf:
       - $ref: '#/components/schemas/SuccessEnvelope'
@@ -521,9 +454,7 @@ components:
         properties:
           attributes:
             type: object
-            description: A map of specifications about the VIN (year, make, model, trim, style, type,
-              size, category, made_in, doors, fuel_type, engine, transmission, drivetrain, dimensions,
-              pricing and more).
+            description: A map of specifications about the VIN (year, make, model, trim, style, type, size, category, made_in, doors, fuel_type, engine, transmission, drivetrain, dimensions, pricing and more).
             additionalProperties: true
           colors:
             type: array
@@ -557,37 +488,60 @@ components:
             type: object
             description: More information on the vehicle from the deep data search (present when `deepdata=1`).
             additionalProperties: true
-    SuccessEnvelope:
-      type: object
-      description: Generic success envelope. Endpoint-specific payload fields appear at the top level
-        alongside these common fields.
-      properties:
-        success:
-          type: boolean
-        input:
-          type: object
-          description: Echo of the input parameters specified by the query.
-          additionalProperties: true
-        timestamp:
-          type: string
-      additionalProperties: true
-    UsageLimitError:
-      allOf:
-      - $ref: '#/components/schemas/Error'
-      - type: object
-        properties:
-          usage:
-            type: object
-            properties:
-              current:
-                type: number
-                description: Current usage in the billing period.
-              limit:
-                type: number
-                description: Included quota for the billing period.
-              remaining:
-                type: number
-                description: Remaining included quota.
+  responses:
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+  parameters:
+    format:
+      name: format
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
@@ -598,6 +552,9 @@ components:
       type: apiKey
       in: header
       name: PAYMENT-SIGNATURE
-      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
-        HTTP 402 payment requirements, then retry the identical request with the payment header produced
-        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive HTTP 402 payment requirements, then retry the identical request with the payment header produced by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+    RecallsBatchToken:
+      type: apiKey
+      in: header
+      name: X-CarsXE-Batch-Token
+      description: Batch-scoped token returned by an x402 Recalls Batch submission.

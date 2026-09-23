@@ -1,29 +1,40 @@
 {
   "provider": "carsxe",
   "sources": [
-    "carsxe-auth-api-openapi.yml",
-    "carsxe-market-value-api-openapi.yml",
-    "carsxe-plate-api-openapi.yml",
-    "carsxe-recalls-api-openapi.yml",
-    "carsxe-specifications-api-openapi.yml"
+    "_original/carsxe-openapi.yml",
+    "carsxe-auth-api-openapi.yml"
   ],
   "outputs": [
-    "carsxe-auth-api-openapi.yml",
+    "carsxe-history-api-openapi.yml",
+    "carsxe-images-api-openapi.yml",
+    "carsxe-lien-theft-api-openapi.yml",
     "carsxe-market-value-api-openapi.yml",
-    "carsxe-plate-api-openapi.yml",
+    "carsxe-plate-decoder-api-openapi.yml",
     "carsxe-recalls-api-openapi.yml",
-    "carsxe-specifications-api-openapi.yml"
+    "carsxe-recognition-api-openapi.yml",
+    "carsxe-specifications-api-openapi.yml",
+    "carsxe-year-make-model-api-openapi.yml",
+    "carsxe-auth-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
-  "warnings": [],
+  "warnings": [
+    "carsxe-auth-api-openapi.yml: previously refined output kept for 1 operation(s) no archived document covers (e.g. /v1/auth/validate post); its other 0 operation(s) came from the archive and were dropped from it. The archive is incomplete for this provider \u2014 re-harvest to restore _original/ as the full source of truth."
+  ],
   "notes": [
-    "carsxe-auth-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "carsxe-market-value-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "carsxe-plate-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "carsxe-recalls-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "carsxe-specifications-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "carsxe-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "carsxe-history-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-images-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-lien-theft-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-market-value-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-plate-decoder-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-recalls-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-recognition-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-specifications-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "carsxe-year-make-model-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

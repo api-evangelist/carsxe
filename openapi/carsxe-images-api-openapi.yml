@@ -1,35 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: CarsXE Images API
-  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
-
-    specifications (VIN decoding), market values, vehicle history, recalls,
-
-    license plate decoding, vehicle images, plate/VIN image recognition,
-
-    Year Make Model data and OBD code decoding.
-
-
-    ## Authentication
-
-
-    Most requests use a CarsXE API key in the `key` query parameter, e.g.
-
-    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
-
-    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
-
-    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
-
-
-    ## Caching
-
-
-    Many endpoints cache upstream results. A cached response may include the
-
-    message "The response is from the cache".
-
-    '
+  description: CarsXE is a B2B vehicle data API by PiWaves, LLC.
   version: 1.0.0
   contact:
     name: CarsXE
@@ -109,8 +81,7 @@ paths:
           - interior
           - exterior
           - engine
-        description: Request images of the interior, exterior or engine. Can only be used in conjunction
-          with year, make, model and trim query params.
+        description: Request images of the interior, exterior or engine. Can only be used in conjunction with year, make, model and trim query params.
       - name: size
         in: query
         required: false
@@ -220,18 +191,36 @@ paths:
                     success: false
                     message: Cannot access the internet at this time
 components:
-  parameters:
-    format:
-      name: format
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - json
-        - xml
-        default: json
-      description: The format of the response. One of `json` or `xml`.
+  schemas:
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
   responses:
     Unauthorized:
       description: Missing API key, unknown/disabled API key, or inactive account.
@@ -265,36 +254,18 @@ components:
               current: 1000
               limit: 1000
               remaining: 0
-  schemas:
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
-    UsageLimitError:
-      allOf:
-      - $ref: '#/components/schemas/Error'
-      - type: object
-        properties:
-          usage:
-            type: object
-            properties:
-              current:
-                type: number
-                description: Current usage in the billing period.
-              limit:
-                type: number
-                description: Included quota for the billing period.
-              remaining:
-                type: number
-                description: Remaining included quota.
+  parameters:
+    format:
+      name: format
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
@@ -305,6 +276,9 @@ components:
       type: apiKey
       in: header
       name: PAYMENT-SIGNATURE
-      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
-        HTTP 402 payment requirements, then retry the identical request with the payment header produced
-        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive HTTP 402 payment requirements, then retry the identical request with the payment header produced by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+    RecallsBatchToken:
+      type: apiKey
+      in: header
+      name: X-CarsXE-Batch-Token
+      description: Batch-scoped token returned by an x402 Recalls Batch submission.

@@ -1,35 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: CarsXE Recalls API
-  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
-
-    specifications (VIN decoding), market values, vehicle history, recalls,
-
-    license plate decoding, vehicle images, plate/VIN image recognition,
-
-    Year Make Model data and OBD code decoding.
-
-
-    ## Authentication
-
-
-    Most requests use a CarsXE API key in the `key` query parameter, e.g.
-
-    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
-
-    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
-
-    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
-
-
-    ## Caching
-
-
-    Many endpoints cache upstream results. A cached response may include the
-
-    message "The response is from the cache".
-
-    '
+  description: CarsXE is a B2B vehicle data API by PiWaves, LLC.
   version: 1.0.0
   contact:
     name: CarsXE
@@ -251,9 +223,7 @@ paths:
 
         x402 submissions must use the JSON `vins` array. The `csv` and `csvUrl`
 
-        forms require CarsXE API-key authentication.
-
-        '
+        forms require CarsXE API-key authentication.'
       requestBody:
         required: true
         content:
@@ -268,17 +238,13 @@ paths:
                   description: Array of 17-character VINs (max 10,000 per batch).
                 csv:
                   type: string
-                  description: Inline CSV text containing VINs. Available with CarsXE API-key authentication
-                    only; x402 does not accept this form.
+                  description: Inline CSV text containing VINs. Available with CarsXE API-key authentication only; x402 does not accept this form.
                 csvUrl:
                   type: string
-                  description: HTTPS link to a CSV file of VINs (max 5 MB) hosted on a supported storage
-                    provider (e.g. S3, GCS, Firebase, Dropbox). Available with CarsXE API-key authentication
-                    only; x402 does not accept this form.
+                  description: HTTPS link to a CSV file of VINs (max 5 MB) hosted on a supported storage provider (e.g. S3, GCS, Firebase, Dropbox). Available with CarsXE API-key authentication only; x402 does not accept this form.
                 webhookUrl:
                   type: string
-                  description: HTTPS URL for a customer webhook. CarsXE POSTs a JSON payload when the
-                    batch finishes. Must be a valid HTTPS URL allowed by CarsXE validation rules.
+                  description: HTTPS URL for a customer webhook. CarsXE POSTs a JSON payload when the batch finishes. Must be a valid HTTPS URL allowed by CarsXE validation rules.
             example:
               vins:
               - 1HGBH41JXMN109186
@@ -307,8 +273,7 @@ paths:
                         type: integer
                       batchToken:
                         type: string
-                        description: Opaque batch-scoped credential returned only for x402 submissions.
-                          Send it in X-CarsXE-Batch-Token on follow-up requests.
+                        description: Opaque batch-scoped credential returned only for x402 submissions. Send it in X-CarsXE-Batch-Token on follow-up requests.
                     additionalProperties: true
                   message:
                     type: string
@@ -320,11 +285,9 @@ paths:
                   status: uploading
                   totalVins: 3
                   processedVins: 0
-                message: Batch submitted and queued for processing. Poll the status endpoint or wait for
-                  the webhook.
+                message: Batch submitted and queued for processing. Poll the status endpoint or wait for the webhook.
         '400':
-          description: Invalid request body — missing VINs, invalid VINs, more than 10,000 VINs, invalid
-            `webhookUrl`, or a `csvUrl` that is invalid / not allowed / too large.
+          description: Invalid request body — missing VINs, invalid VINs, more than 10,000 VINs, invalid `webhookUrl`, or a `csvUrl` that is invalid / not allowed / too large.
           content:
             application/json:
               schema:
@@ -333,8 +296,7 @@ paths:
                 missingVins:
                   value:
                     success: false
-                    message: 'Request body must include at least one of: "vins" (non-empty array), "csv"
-                      (text), or "csvUrl" (https link to a CSV) with valid 17-character VINs.'
+                    message: 'Request body must include at least one of: "vins" (non-empty array), "csv" (text), or "csvUrl" (https link to a CSV) with valid 17-character VINs.'
                 invalidVin:
                   value:
                     success: false
@@ -549,41 +511,37 @@ paths:
         '409':
           description: Batch processing is not yet complete.
 components:
-  parameters:
-    batchId:
-      name: batchId
-      in: query
-      required: true
-      schema:
-        type: string
-      description: The batch ID returned from the submit endpoint.
-    recallsBatchToken:
-      name: X-CarsXE-Batch-Token
-      in: header
-      required: false
-      schema:
-        type: string
-      description: Batch-scoped token returned by an x402 submit call. Use this instead of the key query
-        parameter for status, results, and download requests.
-    vin:
-      name: vin
-      in: query
-      required: true
-      schema:
-        type: string
-        minLength: 17
-        maxLength: 17
-      description: The 17 character long vehicle identification number.
+  schemas:
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
   responses:
-    InternalServerError:
-      description: Internal server error.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            message: Internal server error
     Unauthorized:
       description: Missing API key, unknown/disabled API key, or inactive account.
       content:
@@ -616,36 +574,39 @@ components:
               current: 1000
               limit: 1000
               remaining: 0
-  schemas:
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
-    UsageLimitError:
-      allOf:
-      - $ref: '#/components/schemas/Error'
-      - type: object
-        properties:
-          usage:
-            type: object
-            properties:
-              current:
-                type: number
-                description: Current usage in the billing period.
-              limit:
-                type: number
-                description: Included quota for the billing period.
-              remaining:
-                type: number
-                description: Remaining included quota.
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: Internal server error
+  parameters:
+    vin:
+      name: vin
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+    recallsBatchToken:
+      name: X-CarsXE-Batch-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Batch-scoped token returned by an x402 submit call. Use this instead of the key query parameter for status, results, and download requests.
+    batchId:
+      name: batchId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: The batch ID returned from the submit endpoint.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
@@ -656,9 +617,7 @@ components:
       type: apiKey
       in: header
       name: PAYMENT-SIGNATURE
-      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
-        HTTP 402 payment requirements, then retry the identical request with the payment header produced
-        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive HTTP 402 payment requirements, then retry the identical request with the payment header produced by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
     RecallsBatchToken:
       type: apiKey
       in: header

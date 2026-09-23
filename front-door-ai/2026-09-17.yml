@@ -1,0 +1,25 @@
+# Front Door AI Index — carsxe — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: carsxe
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: carsxe.com
+  final_host: carsxe.com
+  ownership: own
+  owner: carsxe
+  shares_host_with: null
+  inherited_from: null
+  verdict: silent
+  score: 0
+  host_score: 0
+  density: 0.0
+  words: 932
+  tiers:
+    agentic: 0
+    core: 0
+    model: 0
+  ambiguous: 2
+  top_terms:
+    intelligence: 2

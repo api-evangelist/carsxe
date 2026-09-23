@@ -1,35 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: CarsXE Year Make Model API
-  description: 'CarsXE is a B2B vehicle data API by PiWaves, LLC. It provides vehicle
-
-    specifications (VIN decoding), market values, vehicle history, recalls,
-
-    license plate decoding, vehicle images, plate/VIN image recognition,
-
-    Year Make Model data and OBD code decoding.
-
-
-    ## Authentication
-
-
-    Most requests use a CarsXE API key in the `key` query parameter, e.g.
-
-    `https://api.carsxe.com/specs?key=YOUR_API_KEY&vin=...`. Supported endpoints
-
-    also accept x402 payment without a CarsXE key. Recalls Batch x402 follow-up
-
-    requests use the scoped `X-CarsXE-Batch-Token` returned at submission.
-
-
-    ## Caching
-
-
-    Many endpoints cache upstream results. A cached response may include the
-
-    message "The response is from the cache".
-
-    '
+  description: CarsXE is a B2B vehicle data API by PiWaves, LLC.
   version: 1.0.0
   contact:
     name: CarsXE
@@ -59,8 +31,7 @@ paths:
         required: true
         schema:
           type: string
-        description: The manufacturing year of the vehicle (numeric, between 1900 and the current model
-          year plus one).
+        description: The manufacturing year of the vehicle (numeric, between 1900 and the current model year plus one).
       - name: make
         in: query
         required: true
@@ -139,8 +110,7 @@ paths:
                 invalidYear:
                   value:
                     success: false
-                    message: Invalid year. Provide a numeric year between 1900 and the current model year
-                      plus one.
+                    message: Invalid year. Provide a numeric year between 1900 and the current model year plus one.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -151,8 +121,7 @@ paths:
                 $ref: '#/components/schemas/Error'
               example:
                 success: false
-                message: No vehicle found matching the specified year, make, and model. Try case-sensitive
-                  search such as "2023 Toyota Camry"
+                message: No vehicle found matching the specified year, make, and model. Try case-sensitive search such as "2023 Toyota Camry"
         '429':
           $ref: '#/components/responses/UsageLimitExceeded'
         '500':
@@ -174,12 +143,7 @@ paths:
       tags:
       - Year Make Model
       summary: Year Make Model Options
-      description: 'Populate Year, Make, Model, and Variant dropdown menus. Each response returns exactly
-        one layer. `dimension` is optional — when omitted, the response shape is inferred from `make`/`model`/`year`.
-        Billing: most calls cost 1 unit. `dimension=variants` with `year` + `make` (no `model`) costs
-        1 unit per model; the response includes `modelCount`. Required filters help you get better, more
-        relevant results. `year`, `make`, and `model` can be combined for reversed lookups (e.g. years
-        for a given make+model).'
+      description: 'Populate Year, Make, Model, and Variant dropdown menus. Each response returns exactly one layer. `dimension` is optional — when omitted, the response shape is inferred from `make`/`model`/`year`. Billing: most calls cost 1 unit. `dimension=variants` with `year` + `make` (no `model`) costs 1 unit per model; the response includes `modelCount`. Required filters help you get better, more relevant results. `year`, `make`, and `model` can be combined for reversed lookups (e.g. years for a given make+model).'
       parameters:
       - name: dimension
         in: query
@@ -192,15 +156,13 @@ paths:
           - models
           - trims
           - variants
-        description: Return exactly this array when required filters are present. If omitted, the response
-          is inferred automatically from `make`/`model`/`year`.
+        description: Return exactly this array when required filters are present. If omitted, the response is inferred automatically from `make`/`model`/`year`.
       - name: year
         in: query
         required: false
         schema:
           type: string
-        description: Filter to a specific manufacturing year. Required when filtering by `model` without
-          `make`.
+        description: Filter to a specific manufacturing year. Required when filtering by `model` without `make`.
       - name: make
         in: query
         required: false
@@ -212,15 +174,13 @@ paths:
         required: false
         schema:
           type: string
-        description: Filter to a specific model (e.g., Camry, F-150, LX). Required for `dimension=trims`
-          and for `dimension=variants` unless both `year` and `make` are set.
+        description: Filter to a specific model (e.g., Camry, F-150, LX). Required for `dimension=trims` and for `dimension=variants` unless both `year` and `make` are set.
       - name: trim
         in: query
         required: false
         schema:
           type: string
-        description: Optional substring filter on trim names. Only applied when querying `dimension=trims`
-          or `dimension=variants`.
+        description: Optional substring filter on trim names. Only applied when querying `dimension=trims` or `dimension=variants`.
       responses:
         '200':
           description: Distinct values for the requested (or inferred) dimension(s).
@@ -236,8 +196,7 @@ paths:
                     additionalProperties: true
                   message:
                     type: string
-                    description: Optional guidance when the returned layer differs from the requested
-                      dimension or when explaining how to get better results.
+                    description: Optional guidance when the returned layer differs from the requested dimension or when explaining how to get better results.
                   years:
                     type: array
                     items:
@@ -260,9 +219,7 @@ paths:
                       type: string
                   modelCount:
                     type: integer
-                    description: Present only for bulk variants (`dimension=variants` + year + make, no
-                      model). Number of distinct models, which is also the amount billed — except a zero-match
-                      query, which returns 0 but still bills a minimum of 1 unit.
+                    description: Present only for bulk variants (`dimension=variants` + year + make, no model). Number of distinct models, which is also the amount billed — except a zero-match query, which returns 0 but still bills a minimum of 1 unit.
                 additionalProperties: true
               examples:
                 variants:
@@ -330,8 +287,7 @@ paths:
                     input:
                       dimension: variants
                       make: Toyota
-                    message: To receive variants, include a model filter with this make. Models are returned
-                      instead.
+                    message: To receive variants, include a model filter with this make. Models are returned instead.
                     models:
                     - 4Runner
                     - Camry
@@ -364,8 +320,7 @@ paths:
                 invalidYear:
                   value:
                     success: false
-                    message: Invalid year. Provide a numeric year between 1900 and the current model year
-                      plus one.
+                    message: Invalid year. Provide a numeric year between 1900 and the current model year plus one.
                 missingMakeForModels:
                   value:
                     success: false
@@ -373,18 +328,15 @@ paths:
                 missingMakeOrModelForTrimsVariants:
                   value:
                     success: false
-                    message: Trims and variants require a make or model filter. Add make=... or model=...
-                      to get better results.
+                    message: Trims and variants require a make or model filter. Add make=... or model=... to get better results.
                 missingYearWhenModelWithoutMake:
                   value:
                     success: false
-                    message: When filtering by model without make, a year filter is required. Add year=...
-                      to get better results.
+                    message: When filtering by model without make, a year filter is required. Add year=... to get better results.
                 missingMakeWhenModelAmbiguous:
                   value:
                     success: false
-                    message: This model name appears under multiple makes. Add make=... together with
-                      year and model to get better results.
+                    message: This model name appears under multiple makes. Add make=... together with year and model to get better results.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '429':
@@ -462,6 +414,19 @@ paths:
           $ref: '#/components/responses/UsageLimitExceeded'
 components:
   responses:
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
     Unauthorized:
       description: Missing API key, unknown/disabled API key, or inactive account.
       content:
@@ -481,32 +446,7 @@ components:
               value:
                 success: false
                 message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
-    UsageLimitExceeded:
-      description: API usage limit exceeded for the current billing period.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UsageLimitError'
-          example:
-            success: false
-            message: API usage limit exceeded
-            usage:
-              current: 1000
-              limit: 1000
-              remaining: 0
   schemas:
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
     UsageLimitError:
       allOf:
       - $ref: '#/components/schemas/Error'
@@ -524,6 +464,18 @@ components:
               remaining:
                 type: number
                 description: Remaining included quota.
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
@@ -534,6 +486,9 @@ components:
       type: apiKey
       in: header
       name: PAYMENT-SIGNATURE
-      description: x402 payment proof for supported operations. Start without a CarsXE key to receive
-        HTTP 402 payment requirements, then retry the identical request with the payment header produced
-        by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+      description: x402 payment proof for supported operations. Start without a CarsXE key to receive HTTP 402 payment requirements, then retry the identical request with the payment header produced by your x402 client. CarsXE also accepts the legacy X-PAYMENT header.
+    RecallsBatchToken:
+      type: apiKey
+      in: header
+      name: X-CarsXE-Batch-Token
+      description: Batch-scoped token returned by an x402 Recalls Batch submission.
