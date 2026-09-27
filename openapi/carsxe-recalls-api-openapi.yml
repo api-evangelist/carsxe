@@ -511,37 +511,44 @@ paths:
         '409':
           description: Batch processing is not yet complete.
 components:
-  schemas:
-    UsageLimitError:
-      allOf:
-      - $ref: '#/components/schemas/Error'
-      - type: object
-        properties:
-          usage:
-            type: object
-            properties:
-              current:
-                type: number
-                description: Current usage in the billing period.
-              limit:
-                type: number
-                description: Included quota for the billing period.
-              remaining:
-                type: number
-                description: Remaining included quota.
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
+  parameters:
+    recallsBatchToken:
+      name: X-CarsXE-Batch-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Batch-scoped token returned by an x402 submit call. Use this instead of the key query parameter for status, results, and download requests.
+    vin:
+      name: vin
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+      description: The 17 character long vehicle identification number.
+    batchId:
+      name: batchId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: The batch ID returned from the submit endpoint.
   responses:
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
     Unauthorized:
       description: Missing API key, unknown/disabled API key, or inactive account.
       content:
@@ -561,19 +568,6 @@ components:
               value:
                 success: false
                 message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
-    UsageLimitExceeded:
-      description: API usage limit exceeded for the current billing period.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UsageLimitError'
-          example:
-            success: false
-            message: API usage limit exceeded
-            usage:
-              current: 1000
-              limit: 1000
-              remaining: 0
     InternalServerError:
       description: Internal server error.
       content:
@@ -583,30 +577,36 @@ components:
           example:
             success: false
             message: Internal server error
-  parameters:
-    vin:
-      name: vin
-      in: query
-      required: true
-      schema:
-        type: string
-        minLength: 17
-        maxLength: 17
-      description: The 17 character long vehicle identification number.
-    recallsBatchToken:
-      name: X-CarsXE-Batch-Token
-      in: header
-      required: false
-      schema:
-        type: string
-      description: Batch-scoped token returned by an x402 submit call. Use this instead of the key query parameter for status, results, and download requests.
-    batchId:
-      name: batchId
-      in: query
-      required: true
-      schema:
-        type: string
-      description: The batch ID returned from the submit endpoint.
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
+    UsageLimitError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          usage:
+            type: object
+            properties:
+              current:
+                type: number
+                description: Current usage in the billing period.
+              limit:
+                type: number
+                description: Included quota for the billing period.
+              remaining:
+                type: number
+                description: Remaining included quota.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
