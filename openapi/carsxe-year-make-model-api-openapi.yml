@@ -447,6 +447,18 @@ components:
               limit: 1000
               remaining: 0
   schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
     UsageLimitError:
       allOf:
       - $ref: '#/components/schemas/Error'
@@ -464,18 +476,6 @@ components:
               remaining:
                 type: number
                 description: Remaining included quota.
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
   securitySchemes:
     ApiKeyQuery:
       type: apiKey

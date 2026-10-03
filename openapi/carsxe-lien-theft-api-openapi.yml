@@ -136,6 +136,18 @@ components:
                 success: false
                 message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
   schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
     UsageLimitError:
       allOf:
       - $ref: '#/components/schemas/Error'
@@ -153,18 +165,6 @@ components:
               remaining:
                 type: number
                 description: Remaining included quota.
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
   parameters:
     vin:
       name: vin

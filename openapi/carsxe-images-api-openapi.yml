@@ -224,19 +224,19 @@ components:
               value:
                 success: false
                 message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
-  parameters:
-    format:
-      name: format
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - json
-        - xml
-        default: json
-      description: The format of the response. One of `json` or `xml`.
   schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+      required:
+      - success
+      - message
+      additionalProperties: true
     UsageLimitError:
       allOf:
       - $ref: '#/components/schemas/Error'
@@ -254,18 +254,18 @@ components:
               remaining:
                 type: number
                 description: Remaining included quota.
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: false
-        message:
-          type: string
-      required:
-      - success
-      - message
-      additionalProperties: true
+  parameters:
+    format:
+      name: format
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - json
+        - xml
+        default: json
+      description: The format of the response. One of `json` or `xml`.
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
