@@ -155,3 +155,40 @@ x402:
     receive HTTP 402 with the payment requirements, retry with a PAYMENT-SIGNATURE header. This is a
     pay-per-call access path that sits outside the subscription tiers above; CarsXE publishes no
     separate x402 price list, so no per-call figure is recorded here.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - negotiated
+  - subscription
+  units: []
+  plans:
+  - name: Sandbox
+    access: free
+    model: free
+    model_how: derived
+    units: []
+    periods:
+    - one-time
+  - name: Starter
+    access: paid
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Pro
+    access: paid
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Enterprise
+    access: negotiated
+    model: negotiated
+    model_how: stated
+    units: []
+    periods:
+    - month
