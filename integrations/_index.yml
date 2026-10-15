@@ -45,7 +45,7 @@
     app_slug: carsxe
     beta: false
     builder: unknown (not in the directory record)
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
 - slug: carsxe-n8n
   label: n8n
@@ -72,5 +72,5 @@
     published: '2026-09-10T17:44:28.056Z'
     matched_on: publisher-email
     builder: provider (package published from the provider's own domain)
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
