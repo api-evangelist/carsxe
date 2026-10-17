@@ -222,39 +222,6 @@ paths:
         '429':
           $ref: '#/components/responses/UsageLimitExceeded'
 components:
-  responses:
-    Unauthorized:
-      description: Missing API key, unknown/disabled API key, or inactive account.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            missingKey:
-              value:
-                success: false
-                message: Missing API key
-            userNotFound:
-              value:
-                success: false
-                message: User with this API key was not found or the API key is disabled
-            userNotActive:
-              value:
-                success: false
-                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
-    UsageLimitExceeded:
-      description: API usage limit exceeded for the current billing period.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UsageLimitError'
-          example:
-            success: false
-            message: API usage limit exceeded
-            usage:
-              current: 1000
-              limit: 1000
-              remaining: 0
   schemas:
     Error:
       type: object
@@ -285,6 +252,39 @@ components:
               remaining:
                 type: number
                 description: Remaining included quota.
+  responses:
+    UsageLimitExceeded:
+      description: API usage limit exceeded for the current billing period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageLimitError'
+          example:
+            success: false
+            message: API usage limit exceeded
+            usage:
+              current: 1000
+              limit: 1000
+              remaining: 0
+    Unauthorized:
+      description: Missing API key, unknown/disabled API key, or inactive account.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingKey:
+              value:
+                success: false
+                message: Missing API key
+            userNotFound:
+              value:
+                success: false
+                message: User with this API key was not found or the API key is disabled
+            userNotActive:
+              value:
+                success: false
+                message: User with this API key is not active. To activate update your billing on https://carsxe.com/dashboard/billing
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
