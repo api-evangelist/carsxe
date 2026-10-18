@@ -81,7 +81,7 @@ apis:
   humanURL: https://api.carsxe.com/vehicle-specifications
   baseURL: https://api.carsxe.com
   tags:
-  - VIN Decoder
+  - VIN Decoding
   - Specification
   - Vehicle Data
   tags_raw:
@@ -209,7 +209,7 @@ apis:
   humanURL: https://api.carsxe.com/international-vin-decoder
   baseURL: https://api.carsxe.com
   tags:
-  - VIN Decoder
+  - VIN Decoding
   - International
   - Specification
   tags_raw:
@@ -243,7 +243,7 @@ apis:
   baseURL: https://api.carsxe.com
   tags:
   - Specification
-  - VIN Decoder
+  - VIN Decoding
   tags_raw:
   - Specifications
   - VIN Decoder
