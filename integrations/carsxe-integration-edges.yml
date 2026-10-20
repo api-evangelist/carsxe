@@ -1,35 +1,4 @@
 edges:
-- partner_name: MCP Registry
-  partner: mcp
-  partner_match: register
-  type: register
-  channel: standard-directory
-  relationship: standard-participant
-  direction: partner-built
-  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=io.github.carsxe
-  contract_reference:
-    register: registry.modelcontextprotocol.io
-    spec_file: null
-    role: mcp-server-listing
-    registered_name: io.github.carsxe/carsxe-mcp
-    register_id: io.github.carsxe/carsxe-mcp
-    detected_by: sweep-agent-tools.py
-    detected: '2026-10-15'
-  mcp_registry:
-    servers:
-    - io.github.carsxe/carsxe-mcp
-    hosted_remote: 1
-    local_package: 0
-    transports:
-      streamable-http: 1
-    auth_declared: 0
-    catalog_declared: true
-    namespace_domains:
-    - carsxe.com
-  matched_by:
-  - remote-domain
-  detected_by: sweep-agent-tools.py
-  first_seen: '2026-10-14'
 - partner_name: Zapier
   partner: zapier
   partner_match: aggregator
@@ -181,11 +150,77 @@ edges:
     detected: '2026-10-18'
   detected_by: sweep-official-sdks.py
   first_seen: '2026-10-18'
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official CLI (npm registry)
+  evidence: https://www.npmjs.com/package/@carsxe/cli
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public package index)
+    spec_file: null
+    packages:
+    - name: '@carsxe/cli'
+      version: 1.2.0
+      released: '2026-09-09'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@carsxe/cli
+      cli: bin carsxe
+      repo_leg: domain:carsxe.com
+      publisher_leg: email:carsxe.com
+      matched_by: domain
+    current: true
+    signal_note: 'the provider''s own command-line tool on a package manager: distribution, not an integration;
+      lapsed = no release in 24 months or deprecated / disabled by the manager'
+    detected_by: sweep-official-clis.py
+    detected: '2026-10-20'
+  detected_by: sweep-official-clis.py
+  first_seen: '2026-10-20'
+- partner_name: MCP Registry
+  partner: mcp
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=io.github.carsxe
+  contract_reference:
+    register: registry.modelcontextprotocol.io
+    spec_file: null
+    role: mcp-server-listing
+    registered_name: io.github.carsxe/carsxe-mcp
+    register_id: io.github.carsxe/carsxe-mcp
+    detected_by: sweep-agent-tools.py
+    detected: '2026-10-15'
+  mcp_registry:
+    servers:
+    - io.github.carsxe/carsxe-mcp
+    hosted_remote: 1
+    local_package: 0
+    transports:
+      streamable-http: 1
+    auth_declared: 0
+    catalog_declared: true
+    namespace_domains:
+    - carsxe.com
+  matched_by:
+  - remote-domain
+  detected_by: sweep-agent-tools.py
+  first_seen: '2026-10-14'
 generated: '2026-10-14'
 method: searched
 checked:
 - https://api.nuget.org/v3
+- https://cdn.winget.microsoft.com/cache
 - https://crates.io/api/v1
+- https://formulae.brew.sh/api/cask.json
+- https://formulae.brew.sh/api/formula.json
+- https://github.com/ScoopInstaller/Extras
+- https://github.com/ScoopInstaller/Main
 - https://proxy.golang.org
 - https://pypi.org/pypi
 - https://registry.modelcontextprotocol.io/v0/servers
