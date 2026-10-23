@@ -219,3 +219,9 @@ components:
       in: header
       name: X-CarsXE-Batch-Token
       description: Batch-scoped token returned by an x402 Recalls Batch submission.
+x-provenance:
+  method: harvested
+  publisher: CarsXE
+  source: https://api.carsxe.com/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
