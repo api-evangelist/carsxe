@@ -1,4 +1,4 @@
-# CarsXE (carsxe)
+# CarsXE
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,243 +64,197 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-CarsXE is a comprehensive vehicle data API platform offering VIN decoding, vehicle specifications, market value estimates, vehicle history, vehicle imagery, license plate recognition, OBD fault-code decoding, international VIN decoding, and recall lookups. Designed for automotive marketplaces, dealerships, insurance, lending, fleet, and claims platforms that need programmatic access to rich, current vehicle data.
+CarsXE is a B2B vehicle data API platform operated by PiWaves, LLC, offering VIN decoding, vehicle specifications, market value estimates, vehicle history, vehicle imagery, license plate decoding and recognition, VIN OCR, OBD fault-code decoding, international VIN decoding, lien and theft screening, year/make/model lookup and single-VIN or 10,000-VIN batch recall checks. A single OpenAPI 3.1 contract covering 21 operations is published at api.carsxe.com/openapi.json, alongside a remote MCP server, an RFC 9727 api-catalog, an llms.txt index, first-party SDKs for eight languages, and a CLI. Designed for automotive marketplaces, dealerships, insurance, lending, fleet, parking and claims platforms that need programmatic access to rich, current vehicle data.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/carsxe/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/carsxe/refs/heads/main/apis.yml)
+**Areas:** Automotive · Vehicles · VIN · Vehicle Data · License Plate · OCR · Automobiles · Recalls · Market Value · Vehicle History · MCP · Agents
 
-## Scope
+## CarsXE on APIs.io
 
-- **Type:** Index
-- **Position:** Provider
-- **Access:** 3rd-Party
+Everything profiled for CarsXE is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/carsxe/](https://apis.io/providers/carsxe/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (21)
 
-- Automotive
-- Vehicles
-- VIN
-- Vehicle Data
-- License Plate
-- OCR
-- Automobiles
+- [CarsXE Vehicle Specifications API](https://apis.io/apis/carsxe/vehicle-specifications-api/) — VIN decoding and comprehensive vehicle specification lookup. Returns year, make, model, trim, engine, drivetrain, body style, and detailed feature and…
+- [CarsXE Vehicle Market Value API](https://apis.io/apis/carsxe/vehicle-market-value-api/) — Returns market value estimates (retail, wholesale, trade-in) for new and used vehicles by VIN, informed by millions of historical vehicle sales.
+- [CarsXE Vehicle Images API](https://apis.io/apis/carsxe/vehicle-images-api/) — Retrieves high-quality photos of vehicles by year, make, model (and optional trim / color / background-transparency options) for use in marketplaces, dealer…
+- [CarsXE VIN OCR API](https://apis.io/apis/carsxe/vin-ocr-api/) — OCR endpoint that extracts a VIN string from an image of a VIN plate, windshield, or document, enabling mobile-first vehicle-onboarding and inspection…
+- [CarsXE Vehicle Plate Decoder API](https://apis.io/apis/carsxe/vehicle-plate-decoder-api/) — Decodes vehicle information from a license plate plus state/province, returning make, model, year, and VIN where available.
+- [CarsXE Vehicle Plate Recognition API](https://apis.io/apis/carsxe/vehicle-plate-recognition-api/) — Image-to-text OCR for license plates. Paired with the Plate Decoder, enables full vehicle lookup starting from a plate image, supporting parking,…
+- [CarsXE Vehicle History API](https://apis.io/apis/carsxe/vehicle-history-api/) — Raw vehicle-history data endpoint returning title records, accident history, odometer readings, service history, and salvage/lemon flags for a given VIN.
+- [CarsXE Vehicle Recalls API](https://apis.io/apis/carsxe/vehicle-recalls-api/) — Returns safety-recall and campaign data for a given VIN, sourced from manufacturer and NHTSA data, for use in inspection, compliance, and pre-purchase…
+- [CarsXE International VIN Decoder API](https://apis.io/apis/carsxe/international-vin-decoder-api/) — VIN decoding for non-US vehicles, returning make, model, year, and market-specific trim/spec data for international markets.
+- [CarsXE OBD Codes Decoder API](https://apis.io/apis/carsxe/obd-codes-decoder-api/) — Matches an OBD-II diagnostic trouble code (DTC) to a human-readable vehicle fault description for use in service, maintenance, and connected-car applications.
+- [CarsXE Specifications API](https://apis.io/apis/carsxe/carsxe-specifications-api/) — VIN decoding for North American and international vehicles — 2 operations (getVehicleSpecs, getInternationalVinDecoder) returning year, make, model, trim,…
+- [CarsXE Market Value API](https://apis.io/apis/carsxe/carsxe-market-value-api/) — Vehicle market valuation — 2 operations (getMarketValue v1, getMarketValueV2) returning wholesale, retail and trade-in figures by VIN, with optional state,…
+- [CarsXE Recalls API](https://apis.io/apis/carsxe/carsxe-recalls-api/) — Safety recall lookup — 6 operations covering single-VIN recalls, recalls by year/make/model, and the asynchronous Recalls Batch surface (submit up to 10,000…
+- [CarsXE History API](https://apis.io/apis/carsxe/carsxe-history-api/) — Vehicle history reporting — 1 operation (getVehicleHistory) returning title records, junk and salvage events, insurance records, odometer readings and brand…
+- [CarsXE Images API](https://apis.io/apis/carsxe/carsxe-images-api/) — Vehicle imagery search — 1 operation (getVehicleImages) returning photo links, thumbnails, sources and dimensions filtered by make, model, year, trim,…
+- [CarsXE Recognition API](https://apis.io/apis/carsxe/carsxe-recognition-api/) — Image recognition — 2 operations (recognizePlate, vinOcr) that read a license plate or a VIN out of a supplied image URL or base64 payload, returning…
+- [CarsXE Year Make Model API](https://apis.io/apis/carsxe/carsxe-year-make-model-api/) — Vehicle lookup without a VIN — 3 operations (getYearMakeModel, getYearMakeModelOptions, decodeObdCode) returning trims, features and option packages by…
+- [CarsXE Lien & Theft API](https://apis.io/apis/carsxe/carsxe-lien-theft-api/) — Encumbrance and theft screening — 1 operation (getLienTheft) returning active lien holders, theft reports and recovery status for a VIN, for lenders and…
+- [CarsXE Auth API](https://apis.io/apis/carsxe/carsxe-auth-api/) — API key validation — 1 operation (validateKey) against /v1/auth/validate, the endpoint the CarsXE authentication guide documents for confirming that a key…
+- [CarsXE MCP Server](https://apis.io/apis/carsxe/carsxe-mcp-server/) — Remote Model Context Protocol server exposing the CarsXE vehicle-data endpoints as 12 named agent tools over streamable HTTP, authenticated with an…
+- [CarsXE Plate Decoder API](https://apis.io/apis/carsxe/carsxe-plate-decoder-api/) — Decode license plates into vehicle data
 
-## Timestamps
+### Published properties
 
-- **Created:** 2025-02-24
-- **Modified:** 2026-04-23
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### AsyncAPI (1)
 
-### CarsXE Vehicle Specifications API
+Event-driven and webhook contracts.
 
-VIN decoding and comprehensive vehicle specification lookup. Returns year, make, model, trim, engine, drivetrain, body style, and detailed feature and option data for a given North American VIN.
+- [Carsxe Recalls Batch Webhooks](https://apis.io/asyncapis/carsxe/carsxe-recalls-batch-webhooks/)
 
-- **Human URL:** [https://api.carsxe.com/vehicle-specifications](https://api.carsxe.com/vehicle-specifications)
-- **Base URL:** `https://api.carsxe.com`
+#### MCP servers (1)
 
-#### Tags
+Model Context Protocol servers that expose the API to agents.
 
-- VIN Decoder
-- Specifications
-- Vehicle Data
+- [carsxe](https://apis.io/servers/carsxe/carsxe/)
 
-#### Properties
+#### Agentic access (1)
 
-- [Documentation](https://api.carsxe.com/vehicle-specifications)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-### CarsXE Vehicle Market Value API
+- [Carsxe Agentic Access](https://apis.io/agentic-access/carsxe/carsxe-agentic-access/)
 
-Returns market value estimates (retail, wholesale, trade-in) for new and used vehicles by VIN, informed by millions of historical vehicle sales.
+#### JSON-LD (1)
 
-- **Human URL:** [https://api.carsxe.com/vehicle-market-value](https://api.carsxe.com/vehicle-market-value)
-- **Base URL:** `https://api.carsxe.com`
+Linked-data contexts for the provider's vocabulary.
 
-#### Tags
+- [Carsxe Context](https://apis.io/jsonld/carsxe/carsxe-context/)
 
-- Market Value
-- Pricing
-- Valuation
+#### Collections (6)
 
-#### Properties
+Postman and Open Collection request collections.
 
-- [Documentation](https://api.carsxe.com/vehicle-market-value)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [CarsXE Vehicle Data API](https://apis.io/collections/carsxe/open-carsxe/)
+- [CarsXE Vehicle Data Auth API](https://apis.io/collections/carsxe/open-carsxe-auth-api/)
+- [CarsXE Vehicle Data Auth Market Value API](https://apis.io/collections/carsxe/open-carsxe-market-value-api/)
+- [CarsXE Vehicle Data Auth Plate API](https://apis.io/collections/carsxe/open-carsxe-plate-api/)
+- [CarsXE Vehicle Data Auth Recalls API](https://apis.io/collections/carsxe/open-carsxe-recalls-api/)
+- [CarsXE Vehicle Data Auth Specifications API](https://apis.io/collections/carsxe/open-carsxe-specifications-api/)
 
-### CarsXE Vehicle Images API
+#### Overlays (20)
 
-Retrieves high-quality photos of vehicles by year, make, model (and optional trim / color / background-transparency options) for use in marketplaces, dealer sites, and comparison tools.
+OpenAPI overlays, including conversational phrasing for each operation.
 
-- **Human URL:** [https://api.carsxe.com/vehicle-images](https://api.carsxe.com/vehicle-images)
-- **Base URL:** `https://api.carsxe.com`
+- [Carsxe Auth Api Overlay](https://apis.io/overlays/carsxe/carsxe-auth-api-overlay/)
+- [Carsxe Auth Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-auth-api-phrasing-overlay/)
+- [Carsxe History Api Overlay](https://apis.io/overlays/carsxe/carsxe-history-api-overlay/)
+- [Carsxe History Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-history-api-phrasing-overlay/)
+- [Carsxe Images Api Overlay](https://apis.io/overlays/carsxe/carsxe-images-api-overlay/)
+- [Carsxe Images Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-images-api-phrasing-overlay/)
+- [Carsxe Lien Theft Api Overlay](https://apis.io/overlays/carsxe/carsxe-lien-theft-api-overlay/)
+- [Carsxe Lien Theft Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-lien-theft-api-phrasing-overlay/)
+- [Carsxe Market Value Api Overlay](https://apis.io/overlays/carsxe/carsxe-market-value-api-overlay/)
+- [Carsxe Market Value Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-market-value-api-phrasing-overlay/)
+- [Carsxe Plate Api Overlay](https://apis.io/overlays/carsxe/carsxe-plate-api-overlay/)
+- [Carsxe Plate Decoder Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-plate-decoder-api-phrasing-overlay/)
+- [Carsxe Recalls Api Overlay](https://apis.io/overlays/carsxe/carsxe-recalls-api-overlay/)
+- [Carsxe Recalls Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-recalls-api-phrasing-overlay/)
+- [Carsxe Recognition Api Overlay](https://apis.io/overlays/carsxe/carsxe-recognition-api-overlay/)
+- [Carsxe Recognition Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-recognition-api-phrasing-overlay/)
+- [Carsxe Specifications Api Overlay](https://apis.io/overlays/carsxe/carsxe-specifications-api-overlay/)
+- [Carsxe Specifications Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-specifications-api-phrasing-overlay/)
+- [Carsxe Year Make Model Api Overlay](https://apis.io/overlays/carsxe/carsxe-year-make-model-api-overlay/)
+- [Carsxe Year Make Model Api Phrasing Overlay](https://apis.io/overlays/carsxe/carsxe-year-make-model-api-phrasing-overlay/)
 
-#### Tags
+#### Security (3)
 
-- Images
-- Media
-- Vehicle Data
+Authentication, trust centre, and vulnerability disclosure.
 
-#### Properties
+- [Carsxe Authentication](https://apis.io/security/carsxe/carsxe-authentication/)
+- [Carsxe Domain Security](https://apis.io/security/carsxe/carsxe-domain-security/)
+- [Carsxe Trust Center](https://apis.io/security/carsxe/carsxe-trust-center/)
 
-- [Documentation](https://api.carsxe.com/vehicle-images)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Plans and pricing (1)
 
-### CarsXE VIN OCR API
+Published plans, tiers and prices.
 
-OCR endpoint that extracts a VIN string from an image of a VIN plate, windshield, or document, enabling mobile-first vehicle-onboarding and inspection workflows.
+- [Carsxe Plans Pricing](https://apis.io/plans/carsxe/carsxe-plans-pricing/)
 
-- **Human URL:** [https://api.carsxe.com/vin-ocr](https://api.carsxe.com/vin-ocr)
-- **Base URL:** `https://api.carsxe.com`
+#### Rate limits (1)
 
-#### Tags
+Published request limits.
 
-- OCR
-- VIN
-- AI
+- [Carsxe Rate Limits](https://apis.io/rate-limits/carsxe/carsxe-rate-limits/)
 
-#### Properties
+#### FinOps (1)
 
-- [Documentation](https://api.carsxe.com/vin-ocr)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+What the API costs to run, by operation.
 
-### CarsXE Vehicle Plate Decoder API
+- [Carsxe Finops](https://apis.io/finops/carsxe/carsxe-finops/)
 
-Decodes vehicle information from a license plate plus state/province, returning make, model, year, and VIN where available.
+## Where to find this API
 
-- **Human URL:** [https://api.carsxe.com/vehicle-plate-decoder](https://api.carsxe.com/vehicle-plate-decoder)
-- **Base URL:** `https://api.carsxe.com`
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Tags
+- [Website](https://carsxe.com/)
+- [Documentation](https://carsxe.com/docs)
+- [Getting started](https://carsxe.com/docs/quickstart)
+- [API reference](https://carsxe.com/docs/v1)
+- [Pricing](https://carsxe.com/pricing)
+- [Sign up](https://carsxe.com/register)
+- [Support](https://carsxe.com/support)
+- [Blog](https://carsxe.com/blog)
+- [Compliance](https://carsxe.com/trust)
+- [Terms of service](https://carsxe.com/terms-and-conditions)
+- [Privacy policy](https://carsxe.com/privacy-policy)
+- [GitHub](https://github.com/carsxe)
+- [Status](https://carsxe.com/status)
 
-- License Plate
-- Lookup
-- Vehicle Data
+## API Evangelist rating
 
-#### Properties
+**Kin Score 72.4** — exemplar · rubric 0.25.0 · scored 2026-10-23
 
-- [Documentation](https://api.carsxe.com/vehicle-plate-decoder)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+| Facet | Score |
+|---|---|
+| Discoverability | 85.0 |
+| Contract quality | 62.4 |
+| Contract governance | 31.8 |
+| Operational transparency | 65.8 |
+| Developer ergonomics | 80.4 |
+| Access clarity | 92.1 |
 
-### CarsXE Vehicle Plate Recognition API
+**Agent readiness 69.1** — agent-ready (gated down from agent-native)
 
-Image-to-text OCR for license plates. Paired with the Plate Decoder, enables full vehicle lookup starting from a plate image, supporting parking, access-control, law-enforcement, and valet use cases.
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | documented (partial credit) |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | yes |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
 
-- **Human URL:** [https://api.carsxe.com/vehicle-plate-recognition](https://api.carsxe.com/vehicle-plate-recognition)
-- **Base URL:** `https://api.carsxe.com`
+**Regulatory alignment 29.4** — Horizontal (data, software, accessibility, platform)
 
-#### Tags
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/carsxe/](https://apis.io/providers/carsxe/).
 
-- License Plate
-- OCR
-- AI
+## How this profile is made
 
-#### Properties
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
 
-- [Documentation](https://api.carsxe.com/vehicle-plate-recognition)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for CarsXE: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
 
-### CarsXE Vehicle History API
+## Open an issue
 
-Raw vehicle-history data endpoint returning title records, accident history, odometer readings, service history, and salvage/lemon flags for a given VIN.
-
-- **Human URL:** [https://api.carsxe.com/vehicle-history](https://api.carsxe.com/vehicle-history)
-- **Base URL:** `https://api.carsxe.com`
-
-#### Tags
-
-- History
-- Title
-- Accident
-
-#### Properties
-
-- [Documentation](https://api.carsxe.com/vehicle-history)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### CarsXE Vehicle Recalls API
-
-Returns safety-recall and campaign data for a given VIN, sourced from manufacturer and NHTSA data, for use in inspection, compliance, and pre-purchase workflows.
-
-- **Human URL:** [https://api.carsxe.com/vehicle-recalls](https://api.carsxe.com/vehicle-recalls)
-- **Base URL:** `https://api.carsxe.com`
-
-#### Tags
-
-- Recalls
-- Safety
-- Compliance
-
-#### Properties
-
-- [Documentation](https://api.carsxe.com/vehicle-recalls)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### CarsXE International VIN Decoder API
-
-VIN decoding for non-US vehicles, returning make, model, year, and market-specific trim/spec data for international markets.
-
-- **Human URL:** [https://api.carsxe.com/international-vin-decoder](https://api.carsxe.com/international-vin-decoder)
-- **Base URL:** `https://api.carsxe.com`
-
-#### Tags
-
-- VIN Decoder
-- International
-- Specifications
-
-#### Properties
-
-- [Documentation](https://api.carsxe.com/international-vin-decoder)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### CarsXE OBD Codes Decoder API
-
-Matches an OBD-II diagnostic trouble code (DTC) to a human-readable vehicle fault description for use in service, maintenance, and connected-car applications.
-
-- **Human URL:** [https://api.carsxe.com/obd-codes-decoder](https://api.carsxe.com/obd-codes-decoder)
-- **Base URL:** `https://api.carsxe.com`
-
-#### Tags
-
-- OBD
-- Diagnostics
-- Maintenance
-
-#### Properties
-
-- [Documentation](https://api.carsxe.com/obd-codes-decoder)
-- [Postman Collection](collections/carsxe.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/carsxe.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [GitHub Organization](https://github.com/carsxe)
-- [LinkedIn](https://www.linkedin.com/company/carsxe)
-- [Website](https://api.carsxe.com/)
-- [Portal](https://api.carsxe.com/)
-- [Documentation](https://api.carsxe.com/docs)
-- [Getting Started](https://api.carsxe.com/docs/quickstart)
-- [Authentication](https://api.carsxe.com/docs/authentication)
-- [Errors](https://api.carsxe.com/docs/errors)
-- [Pricing](https://api.carsxe.com/pricing)
-- [About](https://api.carsxe.com/about)
-- [Blog](https://api.carsxe.com/blog)
-- [Support](https://api.carsxe.com/support)
-- [Contact](https://api.carsxe.com/contact-us)
-- [Terms of Service](https://api.carsxe.com/terms-and-conditions)
-- [Login](https://api.carsxe.com/login)
-- [Sign Up](https://api.carsxe.com/register)
-
-## Maintainers
-
-**FN:** Kin Lane
-**Email:** info@apievangelist.com
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/carsxe/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
