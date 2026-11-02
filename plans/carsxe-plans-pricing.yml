@@ -1,0 +1,94 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://carsxe.com/pricing
+sources:
+- https://carsxe.com/pricing
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T120612
+  grounding: every price_text was found verbatim in the fetched page text
+audience: developer-api
+pricing_basis: tiered-subscription
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-28'
+published: true
+note: Monthly/Annual toggle; displayed prices are annual-billed monthly equivalents in USD. Per-endpoint
+  quota tables listed; several endpoints say 'Check overage pricing' without numbers.
+plan_count: 4
+currency: USD
+plans:
+- name: Sandbox
+  price_text: $0 /mo, billed annually
+  price: 0
+  currency: USD
+  period: month
+  unit: plan
+  included_quota: Up to 100 API calls lifetime; Data Retention 7 days
+- name: Starter
+  price_text: $40 .83 /mo, billed annually
+  currency: USD
+  period: month
+  unit: plan
+  included_quota: Monthly quota included; Specifications 2,000 calls / results per month; Images 1,000
+    calls / results per month; Data Retention 7 days
+  overage: Pay-as-you-go beyond limits; Check overage pricing
+- name: Pro
+  price_text: $207 .50 /mo, billed annually
+  currency: USD
+  period: month
+  unit: plan
+  included_quota: Monthly quota included; Specifications 25,000 calls / results per month; Images 15,000
+    calls / results per month; Data Retention 14 days
+  overage: Pay-as-you-go beyond limits; Check overage pricing
+- name: Business
+  price_text: Contact Us
+  period: none
+  included_quota: Custom credit pricing; Data Retention 14 days; Volume discounts; Custom integrations
+rate_limit_statements:
+- Up to 100 API calls lifetime
+- Monthly quota included with your plan. Quotas reset each month. Overage fees apply for usage beyond
+  quota.
+- Quota up to 2,000/month
+- Quota up to 25,000/month
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - free
+  - metered
+  units: []
+  plans:
+  - name: Sandbox
+    access: other
+    model: free
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Starter
+    access: other
+    model: metered
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Pro
+    access: other
+    model: metered
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Business
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
