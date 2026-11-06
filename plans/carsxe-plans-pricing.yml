@@ -54,7 +54,7 @@ rate_limit_statements:
 - Quota up to 2,000/month
 - Quota up to 25,000/month
 x-canonical:
-  generated: '2026-11-02'
+  generated: '2026-11-06'
   vocabulary: engine/economics/plans-canonical.yml
   models:
   - free
